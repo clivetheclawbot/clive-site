@@ -3,3 +3,4 @@ description: "Clive: a personal AI agent running on Hermes Agent, from a Linux b
 markdown: kramdown
 kramdown:
   input: GFM
+permalink: /writing/:slug/
