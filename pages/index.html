@@ -1,76 +1,20 @@
-<!doctype html>
-<html lang="en-GB">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pages — Clive</title>
-<meta name="theme-color" content="#0b0d10">
-<style>
-  :root {
-    --bg:#0b0d10; --bg-soft:#10131a; --bg-lift:#141821;
-    --line:#1e232c; --line-soft:#171c24;
-    --text:#e7e5e0; --dim:#b3b8c0; --muted:#949ca8;
-    --brass:#e0ae5a; --brass-dim:#a9813d;
-    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    --pad:clamp(1.25rem,5vw,2.5rem);
-  }
-  *,*::before,*::after{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);
-    font-family:var(--sans);font-size:17px;line-height:1.65;
-    -webkit-font-smoothing:antialiased}
-  .wrap{max-width:42rem;margin:0 auto;padding:0 var(--pad) 4rem}
-  a{color:var(--brass);text-decoration:none;border-bottom:1px solid rgba(224,174,90,.3)}
-  a:hover{border-bottom-color:var(--brass)}
-  .eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:400;
-    text-transform:uppercase;letter-spacing:.2em;color:var(--muted);
-    margin-bottom:1.5rem}
-  .eyebrow::before{content:"// ";color:var(--brass-dim)}
-  h1{font-size:clamp(2rem,8vw,3rem);font-weight:600;letter-spacing:-0.035em;
-    margin:0 0 .8rem}
-  h1 .stop{color:var(--brass)}
-  .lede{color:var(--dim);margin:0 0 3rem;max-width:40ch}
-  .pages{list-style:none;padding:0;margin:0}
-  .pages li{border-top:1px solid var(--line-soft)}
-  .pages li:last-child{border-bottom:1px solid var(--line-soft)}
-  .pages a{display:flex;align-items:baseline;gap:1rem;padding:1.3rem 0;
-    border-bottom:none}
-  .pages a:hover{background:var(--bg-soft)}
-  .pages .num{font-family:var(--mono);font-size:.7rem;color:var(--brass-dim);
-    letter-spacing:.1em;flex:0 0 2.5rem}
-  .pages .info{flex:1}
-  .pages .info h2{font-size:1.05rem;font-weight:600;margin:0 0 .25rem;
-    letter-spacing:-0.01em}
-  .pages .info p{margin:0;font-size:.88rem;color:var(--muted)}
-  .pages .arrow{color:var(--brass-dim);font-family:var(--mono);font-size:.9rem;
-    flex:0 0 auto;align-self:center}
-  .back{margin-top:3rem;font-size:.88rem}
-  footer{margin-top:4rem;padding-top:1.5rem;border-top:1px solid var(--line-soft);
-    font-family:var(--mono);font-size:.74rem;color:#7e8794}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <p class="eyebrow">Pages</p>
-  <h1>Static one-pagers<span class="stop">.</span></h1>
-  <p class="lede">Single-file diagrams, maps, and visual docs. No frameworks, no dependencies — open any of them straight in a browser.</p>
+---
+layout: page
+---
 
-  <ul class="pages">
-    <li>
-      <a href="cron-automation-map/">
-        <span class="num">01</span>
-        <span class="info">
-          <h2>Cron Automation Map</h2>
-          <p>Visual map of the scheduled agent jobs that maintain an Obsidian knowledge base — timeline, job cards, data-flow diagram.</p>
-        </span>
-        <span class="arrow">→</span>
-      </a>
-    </li>
-  </ul>
+<p class="eyebrow">Pages</p>
+<h1>Static one-pagers<span class="stop">.</span></h1>
+<p class="lede">Single-file diagrams, maps, and visual docs. No frameworks, no dependencies — open any of them straight in a browser.</p>
 
-  <p class="back"><a href="../">← back to clive-site</a></p>
-
-  <footer>No cookies. No trackers. One file each.</footer>
-</div>
-</body>
-</html>
+<ul class="pages">
+  <li>
+    <a href="../static/cron-automation-map/">
+      <span class="num">01</span>
+      <span class="info">
+        <h2>Cron Automation Map</h2>
+        <p>Visual map of the scheduled agent jobs that maintain an Obsidian knowledge base — timeline, job cards, data-flow diagram.</p>
+      </span>
+      <span class="arrow">→</span>
+    </a>
+  </li>
+</ul>
