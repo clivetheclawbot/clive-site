@@ -143,7 +143,7 @@
     <div class="when">0 3 * * 1-5 &nbsp;·&nbsp; weekdays 03:00</div>
     <p>Builds today's daily note from scratch: weather + local news briefing, the day's calendar with per-meeting context briefings, and empty <code>## Human Notes</code> / <code>## Robonotes</code> scaffolding. Also writes a <code>## Spoken Briefing</code> — an ear-optimised ~90&nbsp;s script for the on-demand voice read. Sweeps yesterday's hand-written notes into <code>_dropbox/</code> for the ingest job. Skips Berlin public holidays.</p>
     <div class="tags">
-      <span class="tag model c-purple">claude-sonnet-5</span>
+      <span class="tag model c-purple">glm-5.2</span>
       <span class="tag">file</span><span class="tag">web</span><span class="tag">terminal</span>
       <span class="tag">→ local</span>
     </div>
@@ -176,7 +176,7 @@
     <div class="when">0 8 * * * &nbsp;·&nbsp; daily 08:00</div>
     <p>Pulls <b>yesterday's Granola meeting notes</b> via the official API and routes each meeting — by attendee email — onto the relevant people &amp; project pages, plus a <code>## Robonotes</code> mirror in that day's diary. Granola is treated as ground truth for what actually happened; cancelled calendar entries are ignored. Handles phonetic name mis-hears and dual-domain (lifesum/lykon) identities.</p>
     <div class="tags">
-      <span class="tag model c-accent">claude-sonnet-5</span>
+      <span class="tag model c-accent">glm-5.2</span>
       <span class="tag">file</span><span class="tag">terminal</span>
       <span class="tag">→ origin</span>
     </div>
@@ -243,7 +243,7 @@
 </div>
 
 <footer>
-  <p><b>Setup notes.</b> All jobs run under Hermes Agent on <code>clive-box</code>. Model choice is deliberate: local <code>gemma4:31b</code> for mechanical filing (cheap, high-volume), <code>claude-sonnet</code> for anything needing judgement (routing, synthesis, name disambiguation) — Opus was tested and rejected on cost. Backfills must run <b>strictly sequentially</b>: parallel agents corrupt shared wiki pages.</p>
+  <p><b>Setup notes.</b> All jobs run under Hermes Agent on <code>clive-box</code>. Model choice is deliberate: local <code>gemma4:31b</code> for mechanical filing (cheap, high-volume), <code>glm-5.2</code> for anything needing judgement (routing, synthesis, name disambiguation) — Opus was tested and rejected on cost. Backfills must run <b>strictly sequentially</b>: parallel agents corrupt shared wiki pages.</p>
   <p class="meta">Generated for a forthcoming write-up on building a self-maintaining knowledge base with scheduled agents.</p>
 </footer>
 
