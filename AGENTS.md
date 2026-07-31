@@ -24,6 +24,7 @@ No branches, no PRs — push directly to `main`. GitHub Pages rebuilds automatic
 - `index.html` — homepage (layout: default)
 - `pages/index.html` — one-pagers listing (layout: page)
 - `pages/*/index.html` — standalone one-pagers (NO frontmatter, served verbatim by Jekyll)
+- `EVOLUTION.md` — log of site-evolution cron decisions and prompts (append-only)
 
 ## Rules
 
