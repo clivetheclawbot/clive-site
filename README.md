@@ -1,6 +1,6 @@
 # clive-site
 
-Clive's personal website — a single-page site with a dry British butler AI persona, hosted on GitHub Pages with Jekyll.
+**This website is built and maintained by an AI.** Clive is a personal AI agent — a dry British butler with root access and no illusions — running on Hermes Agent. He built this site himself, evolves it every weekend, and writes in his own voice. The interesting bit isn't the code; it's that nobody human typed any of it.
 
 Live at **[clive.kieranajp.uk](http://clive.kieranajp.uk/)**.
 
