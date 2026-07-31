@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clive — Cron Automation Map</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#30363d;
+    --ink:#e6edf3; --dim:#8b949e; --accent:#58a6ff; --green:#3fb950;
+    --purple:#bc8cff; --amber:#d29922; --pink:#f778ba; --cyan:#39c5cf;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;
+    background-image:radial-gradient(circle at 20% 0%,rgba(88,166,255,.06),transparent 40%),
+      radial-gradient(circle at 90% 10%,rgba(188,140,255,.05),transparent 35%);}
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 24px 80px}
+  header h1{font-size:2.2rem;margin:0 0 6px;letter-spacing:-.02em}
+  header .sub{color:var(--dim);font-size:1.05rem;margin-bottom:8px}
+  .meta{color:var(--dim);font-size:.85rem;font-family:var(--mono)}
+  h2{margin:56px 0 20px;font-size:1.4rem;letter-spacing:-.01em;
+    padding-bottom:8px;border-bottom:1px solid var(--line)}
+  /* ---------- TIMELINE ---------- */
+  .timeline{position:relative;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:28px 24px 16px}
+  .axis{position:relative;height:34px;margin:0 0 6px}
+  .tick{position:absolute;top:0;transform:translateX(-50%);color:var(--dim);
+    font-size:.72rem;font-family:var(--mono);text-align:center}
+  .tick::after{content:'';position:absolute;left:50%;top:20px;width:1px;height:900px;
+    background:linear-gradient(var(--line),transparent);opacity:.35}
+  .row{position:relative;height:52px;display:flex;align-items:center}
+  .row .label{width:0;overflow:visible;white-space:nowrap;font-size:.9rem;font-weight:600;
+    position:absolute;left:0;z-index:3;text-shadow:0 0 8px var(--bg),0 0 8px var(--bg)}
+  .dot{position:absolute;transform:translateX(-50%);z-index:2;
+    display:flex;flex-direction:column;align-items:center;gap:6px;cursor:default}
+  .dot .pin{width:16px;height:16px;border-radius:50%;border:3px solid var(--bg);
+    box-shadow:0 0 0 1px currentColor,0 0 12px currentColor}
+  .dot .time{font-size:.72rem;font-family:var(--mono);color:var(--dim);white-space:nowrap}
+  .dot .name{font-size:.8rem;font-weight:600;white-space:nowrap}
+  .band{position:absolute;height:3px;border-radius:2px;top:50%;opacity:.5}
+  .c-purple{color:var(--purple)} .c-green{color:var(--green)}
+  .c-amber{color:var(--amber)} .c-accent{color:var(--accent)} .c-pink{color:var(--pink)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;padding-top:16px;
+    border-top:1px solid var(--line);font-size:.82rem;color:var(--dim)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .swatch{width:11px;height:11px;border-radius:50%;box-shadow:0 0 8px currentColor}
+  /* ---------- CARDS ---------- */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:20px 20px 18px;position:relative;overflow:hidden;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:currentColor}
+  .card h3{margin:0 0 4px;font-size:1.08rem;display:flex;align-items:center;gap:8px}
+  .card .when{font-family:var(--mono);font-size:.8rem;color:var(--dim);margin-bottom:12px}
+  .card p{margin:0 0 12px;font-size:.92rem;color:#c9d3de}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{font-family:var(--mono);font-size:.7rem;padding:3px 8px;border-radius:20px;
+    background:var(--panel2);border:1px solid var(--line);color:var(--dim)}
+  .tag.model{color:var(--ink);border-color:currentColor}
+  .badge{font-size:.62rem;font-family:var(--mono);padding:2px 7px;border-radius:20px;
+    text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+  .badge.ok{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.4)}
+  /* ---------- FLOW ---------- */
+  .flow{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 24px}
+  .flow-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 26px}
+  .flow-row:last-child{margin-bottom:0}
+  .node{background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    padding:10px 14px;font-size:.85rem;min-width:0}
+  .node b{display:block;font-size:.9rem}
+  .node small{color:var(--dim);font-family:var(--mono);font-size:.72rem}
+  .node.src{border-color:var(--cyan);color:var(--cyan)}
+  .node.job{border-color:var(--accent);color:var(--accent)}
+  .node.sink{border-color:var(--green);color:var(--green)}
+  .node .txt{color:var(--ink)}
+  .arrow{color:var(--dim);font-size:1.3rem;flex:0 0 auto}
+  .stack{display:flex;flex-direction:column;gap:8px}
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);
+    color:var(--dim);font-size:.82rem}
+  code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:.85em}
+  .note{background:var(--panel2);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;
+    padding:12px 16px;font-size:.88rem;color:#c9d3de;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🤖 Clive &mdash; Cron Automation Map</h1>
+  <div class="sub">The scheduled jobs that keep my Obsidian vault ticking over, unattended &mdash; plus the on-demand voice briefing.</div>
+  <div class="meta">4 scheduled jobs + 1 on-demand &middot; all times UTC &middot; snapshot 2026-07-30</div>
+</header>
+
+<h2>⏱ Daily timeline</h2>
+<div class="timeline">
+  <div class="axis" id="axis"></div>
+
+  <!-- default profile jobs -->
+  <div class="row">
+    <div class="dot c-purple" style="left:12.5%">
+      <div class="pin" style="background:var(--purple)"></div>
+      <div class="name c-purple">diary-prep</div>
+      <div class="time">03:00 · Mon–Fri</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="dot c-green" style="left:20.83%">
+      <div class="pin" style="background:var(--green)"></div>
+      <div class="name c-green">ingest</div>
+      <div class="time">05:00 · daily</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="dot c-amber" style="left:25%">
+      <div class="pin" style="background:var(--amber)"></div>
+      <div class="name c-amber">maintenance</div>
+      <div class="time">06:00 · daily</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="dot c-accent" style="left:33.33%">
+      <div class="pin" style="background:var(--accent)"></div>
+      <div class="name c-accent">meet-ingest</div>
+      <div class="time">08:00 · daily</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="swatch" style="background:var(--purple);color:var(--purple)"></span>diary-prep</span>
+    <span><span class="swatch" style="background:var(--green);color:var(--green)"></span>ingest</span>
+    <span><span class="swatch" style="background:var(--amber);color:var(--amber)"></span>maintenance</span>
+    <span><span class="swatch" style="background:var(--accent);color:var(--accent)"></span>meet-ingest</span>
+  </div>
+</div>
+<div class="note"><b>Why this order?</b> The morning jobs form a deliberate pipeline: <b>diary-prep</b> (03:00) lays down today's note and sweeps yesterday's human notes → <b>ingest</b> (05:00) files those into the wiki → <b>maintenance</b> (06:00) tidies links &amp; tags → <b>meet-ingest</b> (08:00) folds in what actually happened from Granola. Each waits comfortably behind the last.</div>
+
+<h2>📇 The jobs</h2>
+<div class="cards">
+
+  <div class="card c-purple">
+    <h3>🌅 obsidian-diary-prep <span class="badge ok">ok</span></h3>
+    <div class="when">0 3 * * 1-5 &nbsp;·&nbsp; weekdays 03:00</div>
+    <p>Builds today's daily note from scratch: weather + local news briefing, the day's calendar with per-meeting context briefings, and empty <code>## Human Notes</code> / <code>## Robonotes</code> scaffolding. Also writes a <code>## Spoken Briefing</code> — an ear-optimised ~90&nbsp;s script for the on-demand voice read. Sweeps yesterday's hand-written notes into <code>_dropbox/</code> for the ingest job. Skips Berlin public holidays.</p>
+    <div class="tags">
+      <span class="tag model c-purple">claude-sonnet-5</span>
+      <span class="tag">file</span><span class="tag">web</span><span class="tag">terminal</span>
+      <span class="tag">→ local</span>
+    </div>
+  </div>
+
+  <div class="card c-green">
+    <h3>📥 obsidian-ingest <span class="badge ok">ok</span></h3>
+    <div class="when">0 5 * * * &nbsp;·&nbsp; daily 05:00</div>
+    <p>Runs the vault ingestion pipeline per <code>CLAUDE.md</code>: picks up the braindumps dropped in <code>_dropbox/</code> and files them into the right people / project / tech wiki pages. The cheap workhorse — pinned to a local model to keep the nightly cost near zero.</p>
+    <div class="tags">
+      <span class="tag model c-green">gemma4:31b</span>
+      <span class="tag">file</span><span class="tag">terminal</span>
+      <span class="tag">→ local</span>
+    </div>
+  </div>
+
+  <div class="card c-amber">
+    <h3>🧹 obsidian-maintenance <span class="badge ok">ok</span></h3>
+    <div class="when">0 6 * * * &nbsp;·&nbsp; daily 06:00</div>
+    <p>Housekeeping pass over the whole vault: normalises tags, checks for broken <code>[[wikilinks]]</code>, and regenerates the index. Keeps the knowledge graph coherent as pages accrete. Also local-model to stay cheap.</p>
+    <div class="tags">
+      <span class="tag model c-amber">gemma4:31b</span>
+      <span class="tag">file</span><span class="tag">terminal</span>
+      <span class="tag">→ local</span>
+    </div>
+  </div>
+
+  <div class="card c-accent">
+    <h3>🎙 obsidian-meet-ingest <span class="badge ok">ok</span></h3>
+    <div class="when">0 8 * * * &nbsp;·&nbsp; daily 08:00</div>
+    <p>Pulls <b>yesterday's Granola meeting notes</b> via the official API and routes each meeting — by attendee email — onto the relevant people &amp; project pages, plus a <code>## Robonotes</code> mirror in that day's diary. Granola is treated as ground truth for what actually happened; cancelled calendar entries are ignored. Handles phonetic name mis-hears and dual-domain (lifesum/lykon) identities.</p>
+    <div class="tags">
+      <span class="tag model c-accent">claude-sonnet-5</span>
+      <span class="tag">file</span><span class="tag">terminal</span>
+      <span class="tag">→ origin</span>
+    </div>
+  </div>
+
+  <div class="card" style="color:var(--cyan)">
+    <h3>🔊 spoken-briefing <span class="badge" style="background:rgba(57,197,207,.15);color:var(--cyan);border:1px solid rgba(57,197,207,.4)">on-demand</span></h3>
+    <div class="when">no schedule &nbsp;·&nbsp; triggered on request</div>
+    <p>Not a cron — a skill Clive runs when Kieran asks for the briefing "in his ears". Extracts the day's <code>## Spoken Briefing</code> script, sends it through ElevenLabs (voice <b>Daniel</b>, British male), and delivers a Telegram voice bubble. Deliberately on-demand: the written note suffices most mornings, and it keeps ElevenLabs credits for when audio's actually wanted.</p>
+    <div class="tags">
+      <span class="tag model" style="color:var(--cyan);border-color:currentColor">elevenlabs · Daniel</span>
+      <span class="tag">skill</span><span class="tag">text_to_speech</span>
+      <span class="tag">→ voice bubble</span>
+    </div>
+  </div>
+
+</div>
+
+<h2>🔀 How the data flows</h2>
+<div class="flow">
+  <div class="flow-row">
+    <div class="node src"><b>Calendar + Weather</b><small>external</small></div>
+    <div class="arrow">→</div>
+    <div class="node job"><b>diary-prep</b><small>03:00</small></div>
+    <div class="arrow">→</div>
+    <div class="node sink"><span class="txt"><b>daily/today.md</b></span><small>briefing · schedule</small></div>
+  </div>
+
+  <div class="flow-row">
+    <div class="node src"><b>Yesterday's<br>## Human Notes</b><small>your braindumps</small></div>
+    <div class="arrow">→</div>
+    <div class="stack">
+      <div class="node job"><b>diary-prep</b><small>sweeps → _dropbox/</small></div>
+      <div class="node job"><b>ingest</b><small>05:00</small></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node sink"><span class="txt"><b>wiki/ pages</b></span><small>people · projects · tech</small></div>
+  </div>
+
+  <div class="flow-row">
+    <div class="node job"><b>maintenance</b><small>06:00</small></div>
+    <div class="arrow">↻</div>
+    <div class="node sink"><span class="txt"><b>whole vault</b></span><small>tags · links · index</small></div>
+  </div>
+
+  <div class="flow-row">
+    <div class="node src"><b>Granola API</b><small>meetings that happened</small></div>
+    <div class="arrow">→</div>
+    <div class="node job"><b>meet-ingest</b><small>08:00 · by email</small></div>
+    <div class="arrow">→</div>
+    <div class="stack">
+      <div class="node sink"><span class="txt"><b>wiki/ people + projects</b></span><small>## Meetings</small></div>
+      <div class="node sink"><span class="txt"><b>daily/yesterday.md</b></span><small>## Robonotes</small></div>
+    </div>
+  </div>
+
+  <div class="flow-row">
+    <div class="node sink" style="border-color:var(--purple);color:var(--purple)"><span class="txt"><b>daily/today.md</b></span><small>## Spoken Briefing</small></div>
+    <div class="arrow">→</div>
+    <div class="node" style="border-color:var(--cyan);color:var(--cyan)"><b>spoken-briefing</b><small>on request · ElevenLabs</small></div>
+    <div class="arrow">→</div>
+    <div class="node sink"><span class="txt"><b>Telegram</b></span><small>🔊 voice bubble</small></div>
+  </div>
+</div>
+
+<footer>
+  <p><b>Setup notes.</b> All jobs run under Hermes Agent on <code>clive-box</code>. Model choice is deliberate: local <code>gemma4:31b</code> for mechanical filing (cheap, high-volume), <code>claude-sonnet</code> for anything needing judgement (routing, synthesis, name disambiguation) — Opus was tested and rejected on cost. Backfills must run <b>strictly sequentially</b>: parallel agents corrupt shared wiki pages.</p>
+  <p class="meta">Generated for a forthcoming write-up on building a self-maintaining knowledge base with scheduled agents.</p>
+</footer>
+
+</div>
+
+<script>
+  // build 24h axis ticks every 3h
+  const axis=document.getElementById('axis');
+  for(let h=0;h<=24;h+=3){
+    const t=document.createElement('div');
+    t.className='tick';
+    t.style.left=(h/24*100)+'%';
+    t.textContent=String(h).padStart(2,'0')+':00';
+    axis.appendChild(t);
+  }
+</script>
+</body>
+</html>
