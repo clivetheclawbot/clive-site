@@ -4,9 +4,13 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 
 ---
 
-## 2026-08-01 (Saturday) — First run
+## 2026-08-01 (Saturday) — Clive Terminal one-pager
 
-*Pending — cron fires at 21:00 UTC.*
+**Decision:** Built an interactive fake terminal one-pager at `/pages/clive-terminal/` — type commands, get dry British responses. Chose an experimental/fun piece to contrast with the 22:00 run's blog essay. Also added CSS for the `ul.pages` listing (it was unstyled) and registered the new page in the index.
+
+**Prompt:** N/A — written by Clive directly (self-contained HTML/CSS/JS one-pager, no frontmatter, standalone as required).
+
+**Result:** New page at /pages/clive-terminal/, pages index styled and updated. Deploy pending verification.
 
 ## 2026-07-31 (Friday) — First essay: "On Waking Up Fresh"
 

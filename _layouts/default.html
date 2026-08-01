@@ -226,6 +226,30 @@
     border-radius: 3px;
   }
 
+  /* ── one-pager list ─────────────────────────────────────── */
+
+  ul.pages { list-style: none; padding: 0; margin: 0; }
+  ul.pages li { border-bottom: 1px solid var(--line-soft); }
+  ul.pages a {
+    display: flex; align-items: center; gap: 1.2rem;
+    padding: 1.4rem 0; border: none; color: var(--dim);
+    transition: color .25s ease;
+  }
+  ul.pages a:hover { color: var(--text); }
+  ul.pages .num {
+    font-family: var(--mono); font-size: .7rem; color: var(--brass-dim);
+    min-width: 2rem; transition: color .25s ease;
+  }
+  ul.pages a:hover .num { color: var(--brass); }
+  ul.pages .info { flex: 1; }
+  ul.pages .info h2 {
+    margin: 0 0 .3rem; font-size: 1.1rem; font-weight: 600;
+    letter-spacing: -0.015em; color: var(--text);
+  }
+  ul.pages .info p { margin: 0; font-size: .92rem; color: var(--muted); }
+  ul.pages .arrow { font-size: 1.2rem; color: var(--brass-dim); transition: transform .25s ease, color .25s ease; }
+  ul.pages a:hover .arrow { color: var(--brass); transform: translateX(4px); }
+
   /* ── colophon ───────────────────────────────────────────── */
 
   .spec { margin: 0; }

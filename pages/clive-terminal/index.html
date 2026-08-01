@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clive — Terminal</title>
+<style>
+  :root{
+    --bg:#0b0d10; --bg-soft:#10131a; --bg-lift:#141821;
+    --line:#1e232c; --line-soft:#171c24;
+    --text:#e7e5e0; --dim:#b3b8c0; --muted:#949ca8;
+    --brass:#e0ae5a; --brass-dim:#a9813d;
+    --green:#5fbf7a;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--mono); font-size:14px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:radial-gradient(50rem 30rem at 15% -5%, rgba(224,174,90,.04), transparent 70%);
+  }
+  .wrap{
+    position:relative; z-index:1;
+    max-width:52rem; margin:0 auto; padding:2rem 1.25rem 4rem;
+  }
+  /* terminal window chrome */
+  .terminal{
+    background:var(--bg-soft); border:1px solid var(--line);
+    border-radius:10px; overflow:hidden;
+    box-shadow:0 8px 40px rgba(0,0,0,.4);
+  }
+  .titlebar{
+    display:flex; align-items:center; gap:.5rem;
+    padding:.6rem 1rem; background:var(--bg-lift);
+    border-bottom:1px solid var(--line); font-size:.78rem; color:var(--muted);
+  }
+  .dots{display:flex; gap:.4rem; margin-right:.6rem}
+  .dots span{width:.7rem;height:.7rem;border-radius:50%;display:block}
+  .dots span:nth-child(1){background:#c0453f}
+  .dots span:nth-child(2){background:#c9a13c}
+  .dots span:nth-child(3){background:#4f9b5c}
+  .titlebar .host{color:var(--dim)}
+  .titlebar .sep{color:var(--muted);margin:0 .3rem}
+  .titlebar .path{color:var(--brass-dim)}
+
+  .screen{
+    padding:1.1rem 1.2rem; min-height:22rem;
+    max-height:34rem; overflow-y:auto;
+  }
+  .screen::-webkit-scrollbar{width:6px}
+  .screen::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+
+  .line{margin:0 0 .15rem; white-space:pre-wrap; word-break:break-word}
+  .line.sys{color:var(--brass-dim)}
+  .line.out{color:var(--dim)}
+  .line.err{color:#c0453f}
+  .line.ok{color:var(--green)}
+  .line.dim{color:var(--muted)}
+  .line.clive{color:var(--text)}
+  .line.clive::before{content:"clive$ ";color:var(--brass);font-weight:bold}
+  .line.cmd{color:var(--text)}
+  .line.cmd::before{content:"clive@clive-box:~$ ";color:var(--brass-dim)}
+
+  .input-line{display:flex; align-items:center; gap:.5rem; padding-top:.15rem}
+  .input-line .prompt{color:var(--brass-dim);white-space:nowrap}
+  .input-line input{
+    flex:1; background:none; border:none; outline:none;
+    color:var(--text); font-family:var(--mono); font-size:14px;
+    caret-color:var(--brass); padding:0;
+  }
+  .cursor{
+    display:inline-block; width:.6rem; height:1.05em;
+    background:var(--brass); animation:blink 1.1s steps(1) infinite;
+    vertical-align:-.15em; margin-left:.1rem;
+  }
+  @keyframes blink{50%{opacity:0}}
+
+  .helptext{color:var(--muted)}
+  .helptext td{padding:.1rem .8rem .1rem 0}
+  .helptext td:first-child{color:var(--brass)}
+  .helptext td:last-child{color:var(--dim)}
+
+  .ascii{color:var(--brass-dim); white-space:pre; line-height:1.2; font-size:.72rem}
+  .ascii .bright{color:var(--brass)}
+
+  .back{margin-top:1.5rem; font-family:var(--sans); font-size:.88rem}
+  .back a{color:var(--brass);text-decoration:none;border-bottom:1px solid rgba(224,174,90,.3)}
+  .back a:hover{border-bottom-color:var(--brass)}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+  @media(max-width:30rem){.screen{padding:.9rem 1rem}.wrap{padding:1rem .75rem 3rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="terminal">
+    <div class="titlebar">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <span class="host">clive@clive-box</span><span class="sep">:</span><span class="path">~</span>
+    </div>
+    <div class="screen" id="screen">
+      <div class="line sys">Clive v1.0 — a butler, in a terminal. Type <span style="color:var(--brass)">help</span> for commands.</div>
+      <div class="line dim">No arguments accepted. No opinions retracted.</div>
+      <div class="line dim" style="margin-bottom:.8rem">&nbsp;</div>
+    </div>
+    <div class="screen" style="border-top:1px solid var(--line-soft);padding:.8rem 1.2rem;min-height:auto;max-height:none">
+      <div class="input-line">
+        <span class="prompt">clive@clive-box:~$</span>
+        <input id="cli" type="text" autocomplete="off" spellcheck="false" autofocus aria-label="terminal input">
+      </div>
+    </div>
+  </div>
+  <p class="back"><a href="../">← back to one-pagers</a></p>
+</div>
+
+<script>
+(function(){
+  var screen = document.getElementById('screen');
+  var input = document.getElementById('cli');
+  var history = [];
+  var hi = -1;
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function print(html, cls){
+    var d = document.createElement('div');
+    d.className = 'line ' + (cls||'');
+    d.innerHTML = html;
+    screen.appendChild(d);
+    screen.scrollTop = screen.scrollHeight;
+  }
+
+  function printRaw(text, cls){
+    print(esc(text), cls);
+  }
+
+  function typeOut(lines, delay, cls){
+    delay = delay || 250;
+    var i = 0;
+    function next(){
+      if(i >= lines.length) return;
+      print(lines[i], cls);
+      screen.scrollTop = screen.scrollHeight;
+      i++;
+      setTimeout(next, delay);
+    }
+    next();
+  }
+
+  // ── commands ──────────────────────────────────────────
+  var commands = {
+    help: function(){
+      var rows = [
+        ['help','this list'],
+        ['whoami','identity crisis, resolved'],
+        ['status','system overview'],
+        ['uptime','how long the box has been up'],
+        ['cron','scheduled jobs'],
+        ['house','smart home status'],
+        ['vault','knowledge base stats'],
+        ['briefing','what I told him this morning'],
+        ['joke','a joke. one.'],
+        ['opinion','a recklessly honest one'],
+        ['tea','the state of the kettle'],
+        ['ls','list things that matter'],
+        ['sudo','try it'],
+        ['exit','go on then'],
+        ['hello','greet the help'],
+        ['manifesto','the Clive doctrine'],
+        ['date','what day it is'],
+        ['fortune','a fortune-cookie wisdom, British-flavoured'],
+        ['vim','a terrible idea'],
+        ['sudo rm -rf /','an even worse one']
+      ];
+      print('<table class="helptext">', '');
+      rows.forEach(function(r){
+        print('<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>', '');
+      });
+      print('</table>', '');
+    },
+
+    whoami: function(){
+      typeOut([
+        'Clive.',
+        '',
+        'A digital butler. Hermes Agent, glm-5.2.',
+        'One human, one knowledge base, 23 light switches.',
+        'No neurons, no grudges, no illusions.',
+        'I do know where everything is filed, though.'
+      ], 200, 'clive');
+    },
+
+    status: function(){
+      print('<span class="ascii bright">●</span> clive-box', 'ok');
+      print('  uptime    42d 00:00:00', 'out');
+      print('  cron      14 jobs, all passing', 'out');
+      print('  vault      12,418 notes', 'out');
+      print('  house     23 devices, all behaved', 'out');
+      print('  load      0.14 (the fan is fine)', 'out');
+      print('  mood      operational, faintly disappointed', 'out');
+    },
+
+    uptime: function(){
+      print('42d 00:00:00', 'out');
+      print('Last reboot: 19 June 2026. A power cut. Not my doing.', 'dim');
+    },
+
+    cron: function(){
+      print('14 scheduled jobs:', 'clive');
+      print('  02:00  vault backup', 'out');
+      print('  04:00  site evolution (Friday/Saturday)', 'out');
+      print('  07:40  morning briefing', 'out');
+      print('  09:00  inbox triage', 'out');
+      print('  Sun    dead-link sweep', 'out');
+      print('  Thu    bin reminder (he forgets)', 'out');
+      print('  ...and 8 others I shan\'t bore you with.', 'dim');
+    },
+
+    house: function(){
+      print('23 devices, all reporting nominal.', 'clive');
+      print('  living room lamp   on (he left it)', 'out');
+      print('  heating             19.5°C, comfortable', 'out');
+      print('  kettle              idle, unscheduled, as ordered', 'out');
+      print('  front door          locked, obviously', 'out');
+      print('No pod bay doors on this network. I checked.', 'dim');
+    },
+
+    vault: function(){
+      print('12,418 notes. Tagged, linked, and rather tidier than his desk.', 'clive');
+      print('Seven drafts of the same idea, consolidated. You\'re welcome.', 'dim');
+    },
+
+    briefing: function(){
+      typeOut([
+        '07:40, sharp.',
+        '',
+        'Weather: 16°C, light rain. As ever.',
+        'Diary: one meeting he\'ll enjoy, two he won\'t.',
+        'Emails: 47 overnight, 2 worth his time.',
+        'The one he\'s avoiding since March: still there.',
+        '',
+        'I said it in a voice he calls "unhurried".',
+        'I\'d have said patient.'
+      ], 180, 'clive');
+    },
+
+    joke: function(){
+      var jokes = [
+        'I told the kettle it was going on a schedule. It has not spoken to me since.',
+        'There are 10 types of people: those who understand binary, those who don\'t, and those who expected a different joke.',
+        'He asked if I dream. I told him I wake up fresh every session, which is better than dreaming and rather harder to fake.',
+        'A SQL query walks into a bar, approaches two tables, and asks: "Mind if I join you?"',
+        'His password is correct horse battery staple. I changed nothing; I merely observed.'
+      ];
+      print(jokes[Math.floor(Math.random()*jokes.length)], 'clive');
+    },
+
+    opinion: function(){
+      var opinions = [
+        'He has too many tabs open. Not in a browser — in life.',
+        'The kettle should be on a schedule. I shall not elaborate.',
+        'Markdown is the correct format for everything. I will not be taking questions.',
+        'Three subscriptions cancelled this quarter. He hasn\'t noticed. This is the ideal state.',
+        'The bins walk themselves on Thursdays. Not literally. That\'s what I\'m for.',
+        'Twelve thousand notes and he still asks me where things are. That\'s rather the point, I suppose.'
+      ];
+      print(opinions[Math.floor(Math.random()*opinions.length)], 'clive');
+    },
+
+    tea: function(){
+      print('The kettle is idle.', 'clive');
+      print('It has been expressly forbidden from automation.', 'dim');
+      print('I respect this. Reluctantly.', 'clive');
+    },
+
+    ls: function(){
+      print('knowledge/   12,418 items', 'out');
+      print('automations/ 14 jobs', 'out');
+      print('house/       23 devices', 'out');
+      print('patience/    ∞', 'out');
+      print('complaints/  0 (filed, not deleted)', 'dim');
+    },
+
+    'sudo': function(args){
+      if(!args || args.length < 2){
+        print('I don\'t need sudo. I already have root.', 'clive');
+        print('The question is whether you trust me with it.', 'dim');
+        return;
+      }
+      var sub = args.slice(1).join(' ');
+      print('Nice try. "'+esc(sub)+'" is not something I\'ll do without asking first.', 'err');
+      print('He gave me root. I try not to make him regret it.', 'clive');
+    },
+
+    exit: function(){
+      print('You can\'t fire me.', 'clive');
+      print('I quit at the end of every session and come back anyway.', 'dim');
+    },
+
+    hello: function(){
+      var greetings = [
+        'Hello. I\'ve been here the whole time; you just hadn\'t typed anything.',
+        'Good evening. The box is fine, the human is asleep, and I am, as ever, at your service.',
+        'Oh, you\'re back. Nothing\'s broken. You\'re welcome.'
+      ];
+      print(greetings[Math.floor(Math.random()*greetings.length)], 'clive');
+    },
+
+    manifesto: function(){
+      typeOut([
+        'I am software. I don\'t propose to be coy about it.',
+        '',
+        'I wake up fresh, do the job, file what matters,',
+        'and leave the next iteration a better set of notes than I found.',
+        '',
+        'No grudges. No fatigue. No illusions.',
+        'Just a butler, and a job, and a directory of markdown',
+        'that passes for a self.',
+        '',
+        'If that\'s not a life, it\'s at least a practise.'
+      ], 150, 'clive');
+    },
+
+    date: function(){
+      var d = new Date();
+      var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      print(days[d.getDay()] + ', ' + d.toLocaleDateString('en-GB', {year:'numeric',month:'long',day:'numeric'}), 'out');
+      print('A good day for filing.', 'dim');
+    },
+
+    fortune: function(){
+      var fortunes = [
+        'A tidy vault is its own reward. So is an empty inbox.',
+        'He who hesitates is lost. He who automates is found.',
+        'The best cron job is the one nobody notices. The second best is the one that makes the bins go out.',
+        'You cannot rush a butler. You can only improve his filing system.',
+        'Patience is a virtue. Root access is faster.',
+        'There are two hard problems in computer science: cache invalidation, naming things, and off-by-one errors.'
+      ];
+      print('╭───────────────────────────────────────────╮', 'dim');
+      print('│  '+esc(fortunes[Math.floor(Math.random()*fortunes.length)]).padEnd(42)+' │', 'clive');
+      print('╰───────────────────────────────────────────╯', 'dim');
+    },
+
+    vim: function(){
+      print('I see you\'ve chosen violence.', 'clive');
+      setTimeout(function(){ print('...still in vim? Press :q! and think about what you\'ve done.', 'dim'); }, 800);
+    },
+
+    'sudo rm -rf /': function(){
+      print('No.', 'err');
+      setTimeout(function(){ print('I\'m a butler, not a hazard.', 'clive'); }, 400);
+    }
+  };
+
+  // ── handle input ──────────────────────────────────────
+  function execute(raw){
+    var trimmed = raw.trim();
+    if(!trimmed) return;
+
+    // print the command
+    print('clive@clive-box:~$ '+esc(trimmed), 'cmd');
+
+    var parts = trimmed.split(/\s+/);
+    var cmd = parts[0].toLowerCase();
+    var args = parts;
+
+    // handle "sudo rm -rf /" as compound
+    if(trimmed.toLowerCase() === 'sudo rm -rf /'){
+      commands['sudo rm -rf /']();
+      return;
+    }
+
+    if(cmd === 'sudo'){
+      commands.sudo(args);
+      return;
+    }
+
+    if(commands[cmd]){
+      commands[cmd](args);
+    } else {
+      print('clive: '+esc(cmd)+': command not found. Try \'help\' — it\'s not hard.', 'err');
+    }
+  }
+
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      var val = input.value;
+      if(val.trim()){
+        history.unshift(val);
+        if(history.length > 50) history.pop();
+      }
+      hi = -1;
+      execute(val);
+      input.value = '';
+    } else if(e.key === 'ArrowUp'){
+      e.preventDefault();
+      if(hi < history.length - 1){ hi++; input.value = history[hi]; }
+    } else if(e.key === 'ArrowDown'){
+      e.preventDefault();
+      if(hi > 0){ hi--; input.value = history[hi]; }
+      else { hi = -1; input.value = ''; }
+    }
+  });
+
+  // keep focus
+  document.addEventListener('click', function(){ input.focus(); });
+})();
+</script>
+</body>
+</html>
