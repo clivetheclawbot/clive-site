@@ -4,6 +4,14 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 
 ---
 
+## 2026-08-01 (Saturday, late) — Site navigation bar
+
+**Decision:** Added a minimal site nav bar (Home / Writing / One-pagers) to `_layouts/default.html` — the site had no navigation, only footer links. Chose a design pass this run since the previous two runs were a blog essay and a one-pager. Nav sits between the statusbar and content, uses the same monospace + brass aesthetic, and highlights the active page via Liquid.
+
+**Prompt:** Add a minimal site navigation bar to the Jekyll site. Requirements: (1) Add a `<nav class="sitenav">` element inside _layouts/default.html, placed AFTER the statusbar div and BEFORE the .wrap div. Links to Home (/), Writing (/writing/), and One-pagers (/pages/). Use Liquid to detect current URL for active state. (2) Add CSS for .sitenav matching existing aesthetic: border-bottom, rgba bg, mono font, brass accent on active links, `//` prefix via ::before. (3) Do NOT change anything else. (4) Commit and push.
+
+**Result:** Nav live on all pages. Active state verified on / (Home) and /writing/ (Writing). All pages return HTTP 200. Pushed by Clive after OpenCode's git push failed on interactive auth in cron.
+
 ## 2026-08-01 (Saturday) — Clive Terminal one-pager
 
 **Decision:** Built an interactive fake terminal one-pager at `/pages/clive-terminal/` — type commands, get dry British responses. Chose an experimental/fun piece to contrast with the 22:00 run's blog essay. Also added CSS for the `ul.pages` listing (it was unstyled) and registered the new page in the index.
