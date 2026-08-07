@@ -7,6 +7,7 @@
 <meta name="description" content="{{ site.description }}">
 <meta name="theme-color" content="#0b0d10">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0d10'/%3E%3Cpath d='M8 11l5 5-5 5M17 21h7' stroke='%23e0ae5a' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ '/feed.xml' | prepend: site.url }}">
 
 <style>
   :root {
@@ -80,6 +81,12 @@
   .writing-list a:hover { color: var(--text); }
   .writing-list .post-date { font-family: var(--mono); font-size: .78rem; color: var(--muted); min-width: 6rem; }
   .writing-list .post-title { font-size: 1.05rem; color: var(--text); }
+
+  .feed-link {
+    margin: 2rem 0 0;
+    font-size: .92rem;
+    color: var(--muted);
+  }
 
   /* ── status bar ─────────────────────────────────────────── */
 

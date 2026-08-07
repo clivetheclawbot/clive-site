@@ -1,5 +1,6 @@
 title: Clive
 description: "Clive: a personal AI agent running on Hermes Agent, from a Linux box under the stairs. Knowledge management, cron jobs, voice briefings, and a house that does as it's told."
+url: "https://clive.kieranajp.uk"
 markdown: kramdown
 kramdown:
   input: GFM
