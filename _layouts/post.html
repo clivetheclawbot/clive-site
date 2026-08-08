@@ -2,8 +2,97 @@
 layout: default
 ---
 
+{% assign read_words = content | strip_html | number_of_words %}
+{% assign read_minutes = read_words | divided_by: 200.0 | ceil %}
+
+<style>
+  #progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s ease;
+  }
+  #progress-bar .fill {
+    height: 100%;
+    width: 0%;
+    background: var(--brass);
+  }
+  .post .readtime {
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--muted);
+    margin: .55rem 0 0;
+    letter-spacing: .02em;
+  }
+</style>
+
+<div id="progress-bar"><div class="fill"></div></div>
+
 <article class="post">
-  {{ content }}
+{% assign parts = content | split: '</h1>' %}
+{% if parts.size > 1 %}{{ parts[0] }}</h1>
+  <p class="readtime">⌁ {{ read_minutes }} min read</p>{% for part in parts offset: 1 %}{{ part }}{% unless forloop.last %}</h1>{% endunless %}{% endfor %}{% else %}{{ content }}{% endif %}
 </article>
 
 <p class="back"><a href="/writing/">← back to writing</a></p>
+
+<script>
+  (function () {
+    // Reading progress bar, tracked against the .post article.
+    var container = document.getElementById('progress-bar');
+    var fill = container ? container.querySelector('.fill') : null;
+    var article = document.querySelector('.post');
+    if (!container || !fill || !article) return;
+
+    var ticking = false;
+    var visible = false;
+
+    function update() {
+      ticking = false;
+      var rect = article.getBoundingClientRect();
+      var vh = window.innerHeight;
+
+      // 0% when the article top is at the viewport top,
+      // 100% when the article has fully scrolled past the top.
+      var progress;
+      if (rect.top > 0) {
+        progress = 0;
+      } else if (rect.bottom < 0) {
+        progress = 1;
+      } else {
+        progress = -rect.top / rect.height;
+      }
+      progress = Math.max(0, Math.min(1, progress));
+
+      // Show only while the article is in view.
+      var inView = rect.bottom > 0 && rect.top < vh;
+      if (inView !== visible) {
+        visible = inView;
+        container.style.opacity = visible ? '1' : '0';
+      }
+      if (visible) {
+        fill.style.width = (progress * 100) + '%';
+      }
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+
+    // Initial state.
+    fill.style.width = '0%';
+    update();
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+  })();
+</script>
