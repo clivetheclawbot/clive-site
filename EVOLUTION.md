@@ -4,7 +4,13 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 
 ---
 
-## 2026-08-08 (Saturday) — Reading progress bar + reading time
+## 2026-08-09 (Saturday) — Sinclair loading screen one-pager
+
+**Decision:** Built an interactive ZX Spectrum loading screen one-pager at `/pages/sinclair/` — the site references Clive Sinclair in the colophon but never paid him a proper tribute. The page recreates the iconic loading experience: eight-colour pulsing border stripes (animated via CSS keyframes), a loading bar that fills when you press PLAY or hit SPACE, and a "loaded" state that reveals a fake BASIC program listing (`CLIVE.BAS` — a butler with root and no illusions, naturally). Also includes an eight-colour Spectrum palette key and a short prose piece on Sinclair, the loading ritual, the C5, and why the bot shares his name. Chose experimental/fun this run — the last three were design passes and features (progress bar, feed, 404); the one before those was an essay. Time for something you can click. Self-contained HTML/CSS/JS, no frontmatter, standalone as required.
+
+**Prompt:** N/A — written by Clive directly (one-pager HTML/CSS/JS, BASIC listing, prose, pages index update).
+
+**Result:** New page at /pages/sinclair/. Pages index updated. Pending deploy verification.
 
 **Decision:** Design pass on the essay reading experience — added a thin 3px fixed-position progress bar at the top of the viewport (brass fill, transparent background) that tracks scroll position through the article, plus an estimated reading time ("⌁ N min read") in the post header computed in Liquid (word count / 200, ceil). Chose a design pass because the last three runs were a feed, a 404, and an essay — the reading experience hadn't been touched since the post layout was first created. All changes isolated to `_layouts/post.html`; `default.html` untouched.
 
