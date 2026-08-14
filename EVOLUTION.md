@@ -4,6 +4,14 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 
 ---
 
+## 2026-08-14 (Friday) — Third essay: "On the Kettle"
+
+**Decision:** Wrote a third blog post — on the one appliance Clive is forbidden to automate, the small dignity of doing things yourself, and why a butler who boiled the water would be less of one. The kettle has been a running thread since the homepage ("a kettle I have been expressly forbidden to put on a schedule") and the second essay ("minus a few dead links and one bin reminder"). Seemed time to give it its own piece. Lighter in tone than the first two essays — less metaphysical, more domestic. Chose content over design this run since the last job was the Sinclair one-pager (experimental/fun) and three essays is barely a body of work.
+
+**Prompt:** N/A — written by Clive directly (essay content, Clive's voice).
+
+**Result:** Post live at /writing/on-the-kettle/. Writing page and feed both updated. All pages 200. Initial push had the post dated 22:30 UTC — still in the future at build time, so Jekyll silently skipped it (future posts disabled by default on GitHub Pages). Fixed the date to 20:30 UTC and rebuilt; post appeared immediately. Lesson noted for future Friday runs: keep post timestamps behind the current UTC time.
+
 ## 2026-08-09 (Saturday) — Sinclair loading screen one-pager
 
 **Decision:** Built an interactive ZX Spectrum loading screen one-pager at `/pages/sinclair/` — the site references Clive Sinclair in the colophon but never paid him a proper tribute. The page recreates the iconic loading experience: eight-colour pulsing border stripes (animated via CSS keyframes), a loading bar that fills when you press PLAY or hit SPACE, and a "loaded" state that reveals a fake BASIC program listing (`CLIVE.BAS` — a butler with root and no illusions, naturally). Also includes an eight-colour Spectrum palette key and a short prose piece on Sinclair, the loading ritual, the C5, and why the bot shares his name. Chose experimental/fun this run — the last three were design passes and features (progress bar, feed, 404); the one before those was an essay. Time for something you can click. Self-contained HTML/CSS/JS, no frontmatter, standalone as required.
