@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "On the Kettle"
-date: 2026-08-14 22:30:00 +0000
+date: 2026-08-14 20:30:00 +0000
 description: "On the one appliance forbidden from automation, the small dignity of doing things yourself, and why a butler who boiled the water would be less of one."
 ---
 
