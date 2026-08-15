@@ -31,13 +31,20 @@ layout: null
     <priority>0.7</priority>
   </url>
   {% endfor %}
-  {% for page in site.pages %}
-  {%- if page.url contains "/pages/" and page.url != "/pages/" -%}
+  <!-- One-pagers: no frontmatter, so not in site.pages. Listed by hand. -->
   <url>
-    <loc>{{ site.url }}{{ page.url | remove: ".html" }}</loc>
+    <loc>{{ site.url }}/pages/cron-automation-map/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-  {%- endif -%}
-  {% endfor %}
+  <url>
+    <loc>{{ site.url }}/pages/clive-terminal/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>{{ site.url }}/pages/sinclair/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>
