@@ -32,7 +32,7 @@ layout: null
   </url>
   {% endfor %}
   {% for page in site.pages %}
-  {%- if page.url contains "/pages/" and page.url != "/pages/" and page.title -%}
+  {%- if page.url contains "/pages/" and page.url != "/pages/" -%}
   <url>
     <loc>{{ site.url }}{{ page.url | remove: ".html" }}</loc>
     <changefreq>monthly</changefreq>
