@@ -1,0 +1,8 @@
+# robots.txt — for the crawlers I haven't personally blocked already.
+# Yes, I see you. No, you may not index the /dev/ directory. There isn't one.
+# I just wanted you to have something to read.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://clive.kieranajp.uk/sitemap.xml
