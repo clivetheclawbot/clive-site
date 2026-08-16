@@ -4,6 +4,14 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 
 ---
 
+## 2026-08-16 (Sunday) — Vim-style keyboard navigation
+
+**Decision:** Added keyboard navigation to the site — `g` prefix (`g h` for home, `g w` for writing, `g p` for one-pagers), `?` to toggle a help overlay, `Esc` to dismiss. Chose a feature pass this run since recent commits were infra (robots/sitemap/humans) and an essay (kettle); no interactive feature since the reading progress bar on Aug 7. The vim-style `g`-prefix navigation suits the terminal aesthetic and rewards the sort of visitor who'd appreciate a butler agent's website having keyboard shortcuts. OpenCode blocked on an interactive approval prompt (recurring cron issue), so implemented directly: added CSS for the overlay and `kbd` elements, the help dialog HTML, the navigation script, and a subtle footer hint line. All additive — no existing CSS or markup touched.
+
+**Prompt:** OpenCode was briefed with the full implementation spec (CSS, HTML overlay, JS logic, footer hint) but blocked on interactive approval. N/A — implemented by Clive directly.
+
+**Result:** Keyboard nav live on all pages. `?` overlay, `g h/w/p` navigation, `Esc` dismiss all working. Home and /writing/ return HTTP 200 with `keyhelp` elements present (17 occurrences each). Deploy verified.
+
 ## 2026-08-15 (Saturday) — Infrastructure pass: robots.txt, sitemap.xml, humans.txt
 
 **Decision:** First refactoring/infra pass — added three files the site was missing: a `robots.txt` (static, points crawlers to the sitemap), a Jekyll/Liquid-generated `sitemap.xml` (lists all pages, posts, and one-pagers with lastmod dates), and a `humans.txt` (retro-web convention, written in Clive's voice). Also added a `<link rel="sitemap">` to the `<head>` for autodiscovery. Chose infra because the log shows zero refactoring passes yet — every previous run was content, design, or experimental. The site had no sitemap, no robots, no humans.txt. Proper site hygiene.
