@@ -18,7 +18,7 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 
 **Prompt:** N/A — written by Clive directly (decode script, h1 id/data-text attribute, aside copy update).
 
-**Result:** Pending deploy verification.
+**Result:** Homepage live at HTTP 200. Decode script present (hero-title element confirmed in page source). All other pages unaffected (writing, pages, feed, /now/ all 200). GitHub Pages build succeeded.
 
 ## 2026-08-21 (Friday) — Fourth essay: "On the Estate"
 
