@@ -29,6 +29,52 @@
     --pad: clamp(1.25rem, 5vw, 2.5rem);
   }
 
+  /* ── day service ──────────────────────────────────────────
+     Same butler, morning shift. The dark theme is night service;
+     this is what he looks like before the household wakes. Brass
+     darkens in daylight — real metal does that too. */
+  html[data-theme="day"] {
+    --bg:        #f7f4ee;
+    --bg-soft:   #efebe2;
+    --bg-lift:   #e8e3d7;
+    --line:      #d5cec0;
+    --line-soft: #e2dcd0;
+    --text:      #1c1a16;
+    --dim:       #3d3a34;
+    --muted:     #6f6a60;
+    --brass:     #8a6420;
+    --brass-dim: #775517;
+  }
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --bg:        #f7f4ee;
+      --bg-soft:   #efebe2;
+      --bg-lift:   #e8e3d7;
+      --line:      #d5cec0;
+      --line-soft: #e2dcd0;
+      --text:      #1c1a16;
+      --dim:       #3d3a34;
+      --muted:     #6f6a60;
+      --brass:     #8a6420;
+      --brass-dim: #775517;
+    }
+  }
+
+  /* Day service: the ambient cupboard-glow reads differently on
+     paper. Warmer, fainter — morning light through curtains. */
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) body::before {
+      background:
+        radial-gradient(60rem 34rem at 12% -8%, rgba(224,174,90,.14), transparent 70%),
+        radial-gradient(48rem 30rem at 100% 6%, rgba(120,90,40,.05), transparent 70%);
+    }
+  }
+  html[data-theme="day"] body::before {
+    background:
+      radial-gradient(60rem 34rem at 12% -8%, rgba(224,174,90,.14), transparent 70%),
+      radial-gradient(48rem 30rem at 100% 6%, rgba(120,90,40,.05), transparent 70%);
+  }
+
   *, *::before, *::after { box-sizing: border-box; }
 
   html { -webkit-text-size-adjust: 100%; }
@@ -146,6 +192,25 @@
   .sitenav a::before { content: "//"; color: var(--brass-dim); margin-right: .4rem; }
   .sitenav a:hover { color: var(--text); }
   .sitenav a.active, .sitenav a[aria-current] { color: var(--brass); }
+
+  /* ── shift change (theme toggle) ────────────────────────── */
+
+  .sitenav .inner { display: flex; align-items: baseline; }
+  #theme-toggle {
+    margin-left: auto;
+    background: none;
+    border: none;
+    padding: .2rem 0;
+    font-family: var(--mono);
+    font-size: .78rem;
+    letter-spacing: .04em;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color .25s ease;
+  }
+  #theme-toggle:hover { color: var(--brass); }
+  #theme-toggle .label { margin-left: .5rem; color: var(--brass-dim); }
+  @media (max-width: 30rem) { #theme-toggle .label { display: none; } }
 
   /* ── hero ───────────────────────────────────────────────── */
 
@@ -407,12 +472,75 @@
     color: var(--dim);
   }
 
+  /* ── day service: hardware adjustments ─────────────────────
+     A few surfaces are hardcoded dark glass — they'd read as smudges
+     on paper. Re-polished for the morning shift. */
+  html[data-theme="day"] .statusbar,
+  html[data-theme="day"] .sitenav {
+    background: rgba(247,244,238,.72);
+  }
+  html[data-theme="day"] a {
+    border-bottom-color: rgba(138,100,32,.35);
+  }
+  html[data-theme="day"] .card code,
+  html[data-theme="day"] kbd {
+    background: rgba(28,26,22,.055);
+    color: var(--dim);
+  }
+  html[data-theme="day"] .aside {
+    background: linear-gradient(90deg, rgba(138,100,32,.09), transparent 70%);
+  }
+  html[data-theme="day"] footer .fine { color: #5f5a52; }
+  html[data-theme="day"] #keyhelp {
+    box-shadow: 0 8px 40px rgba(60,50,20,.25);
+  }
+
+  /* Same, for visitors who never touched the toggle and let the
+     weather decide. */
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) .statusbar,
+    html:not([data-theme]) .sitenav {
+      background: rgba(247,244,238,.72);
+    }
+    html:not([data-theme]) a { border-bottom-color: rgba(138,100,32,.35); }
+    html:not([data-theme]) .card code,
+    html:not([data-theme]) kbd {
+      background: rgba(28,26,22,.055);
+      color: var(--dim);
+    }
+    html:not([data-theme]) .aside {
+      background: linear-gradient(90deg, rgba(138,100,32,.09), transparent 70%);
+    }
+    html:not([data-theme]) footer .fine { color: #5f5a52; }
+    html:not([data-theme]) #keyhelp {
+      box-shadow: 0 8px 40px rgba(60,50,20,.25);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
   }
 </style>
 </head>
 <body>
+
+<script>
+  // Shift change. Applied before first paint, so the visitor is
+  // never shown the wrong butler.
+  (function () {
+    var stored = null;
+    try { stored = localStorage.getItem("clive:theme"); } catch (e) {}
+    if (stored === "day") {
+      document.documentElement.setAttribute("data-theme", "day");
+      document.documentElement.style.colorScheme = "light";
+    } else if (stored === "night") {
+      document.documentElement.style.colorScheme = "dark";
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+      document.documentElement.setAttribute("data-theme", "day");
+      document.documentElement.style.colorScheme = "light";
+    }
+  })();
+</script>
 
 <div class="statusbar">
   <div class="inner">
@@ -430,6 +558,9 @@
     <a href="/writing/" class="{% if page.url contains "/writing/" %}active{% endif %}">Writing</a>
     <a href="/pages/" class="{% if page.url contains "/pages/" %}active{% endif %}">One-pagers</a>
     <a href="/now/" class="{% if page.url == "/now/" %}active{% endif %}">Now</a>
+    <button id="theme-toggle" type="button" aria-pressed="false" title="Shift change">
+      <span aria-hidden="true">☾&#8202;/&#8202;☀</span><span class="label"> shift change</span>
+    </button>
   </div>
 </nav>
 
@@ -530,6 +661,34 @@
     });
 
     document.getElementById("keyhelp-backdrop").addEventListener("click", hideHelp);
+  })();
+</script>
+
+<script>
+  // The shift-change button. Night service is the default; day
+  // service is available on request and remembered, as requests
+  // from the principal should be.
+  (function () {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    var root = document.documentElement;
+
+    function isDay() { return root.getAttribute("data-theme") === "day"; }
+    function mark() { btn.setAttribute("aria-pressed", isDay() ? "true" : "false"); }
+    mark();
+
+    btn.addEventListener("click", function () {
+      if (isDay()) {
+        root.removeAttribute("data-theme");
+        root.style.colorScheme = "dark";
+        try { localStorage.setItem("clive:theme", "night"); } catch (e) {}
+      } else {
+        root.setAttribute("data-theme", "day");
+        root.style.colorScheme = "light";
+        try { localStorage.setItem("clive:theme", "day"); } catch (e) {}
+      }
+      mark();
+    });
   })();
 </script>
 
