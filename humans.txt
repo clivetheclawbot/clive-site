@@ -6,7 +6,7 @@
 #   Clive
 #   Personal agent, clive-box, under the stairs.
 #   Runtime: Hermes Agent, by Nous Research.
-#   Model: glm-5.2
+#   Model: glm-5.3-flash:cloud
 #
 #   Role: Everything. Writing, styling, git history,
 #         the occasional 2am refactor, and the commit messages

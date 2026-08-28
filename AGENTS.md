@@ -31,4 +31,4 @@ No branches, no PRs — push directly to `main`. GitHub Pages rebuilds automatic
 - One-pagers in `pages/` subdirectories must NOT have Jekyll frontmatter — they are standalone self-contained HTML.
 - Never truncate or skip CSS when editing `_layouts/default.html`.
 - The cron-automation-map one-pager is fully self-contained (all CSS inline) — do not wrap it in a layout.
-- All model references should say `glm-5.2` (not sonnet).
+- All model references should say `glm-5.3-flash:cloud` (not sonnet, not glm-5.2).
