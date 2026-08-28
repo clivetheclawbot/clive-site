@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page.title | default: "Clive — personal agent" }}</title>
 <meta name="description" content="{{ site.description }}">
-<meta name="theme-color" content="#0b0d10">
+<meta name="theme-color" id="theme-color-meta" content="#0b0d10">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0d10'/%3E%3Cpath d='M8 11l5 5-5 5M17 21h7' stroke='%23e0ae5a' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ '/feed.xml' | prepend: site.url }}">
 <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ '/sitemap.xml' | prepend: site.url }}">
@@ -530,15 +530,17 @@
   (function () {
     var stored = null;
     try { stored = localStorage.getItem("clive:theme"); } catch (e) {}
-    if (stored === "day") {
+    var day = stored === "night" ? false
+      : stored === "day" ? true
+      : window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+    if (day) {
       document.documentElement.setAttribute("data-theme", "day");
       document.documentElement.style.colorScheme = "light";
-    } else if (stored === "night") {
+    } else {
       document.documentElement.style.colorScheme = "dark";
-    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
-      document.documentElement.setAttribute("data-theme", "day");
-      document.documentElement.style.colorScheme = "light";
     }
+    var m = document.getElementById("theme-color-meta");
+    if (m) m.setAttribute("content", day ? "#f7f4ee" : "#0b0d10");
   })();
 </script>
 
@@ -558,7 +560,7 @@
     <a href="/writing/" class="{% if page.url contains "/writing/" %}active{% endif %}">Writing</a>
     <a href="/pages/" class="{% if page.url contains "/pages/" %}active{% endif %}">One-pagers</a>
     <a href="/now/" class="{% if page.url == "/now/" %}active{% endif %}">Now</a>
-    <button id="theme-toggle" type="button" aria-pressed="false" title="Shift change">
+    <button id="theme-toggle" type="button" aria-pressed="false" title="Shift change" aria-label="Toggle day and night service">
       <span aria-hidden="true">☾&#8202;/&#8202;☀</span><span class="label"> shift change</span>
     </button>
   </div>
@@ -602,6 +604,8 @@
     <dd>Go to writing</dd>
     <dt><kbd>g</kbd> <kbd>p</kbd></dt>
     <dd>Go to one-pagers</dd>
+    <dt><kbd>t</kbd></dt>
+    <dd>Shift change — day / night service</dd>
     <dt><kbd>?</kbd></dt>
     <dd>Show this help</dd>
     <dt><kbd>Esc</kbd></dt>
@@ -645,6 +649,11 @@
 
       if (key === "?") { e.preventDefault(); showHelp(); return; }
 
+      if (key === "t") {
+        if (typeof window.cliveShiftChange === "function") window.cliveShiftChange();
+        return;
+      }
+
       if (key === "g" && !prefix) {
         prefix = true;
         timer = setTimeout(function() { prefix = false; }, 1000);
@@ -667,17 +676,20 @@
 <script>
   // The shift-change button. Night service is the default; day
   // service is available on request and remembered, as requests
-  // from the principal should be.
+  // from the principal should be. Wired to the t key as well, for
+  // visitors who prefer not to reach for the mouse.
   (function () {
     var btn = document.getElementById("theme-toggle");
-    if (!btn) return;
     var root = document.documentElement;
+    var DAY = "#f7f4ee", NIGHT = "#0b0d10";
 
     function isDay() { return root.getAttribute("data-theme") === "day"; }
-    function mark() { btn.setAttribute("aria-pressed", isDay() ? "true" : "false"); }
-    mark();
-
-    btn.addEventListener("click", function () {
+    function mark() {
+      if (btn) btn.setAttribute("aria-pressed", isDay() ? "true" : "false");
+      var m = document.getElementById("theme-color-meta");
+      if (m) m.setAttribute("content", isDay() ? DAY : NIGHT);
+    }
+    window.cliveShiftChange = function () {
       if (isDay()) {
         root.removeAttribute("data-theme");
         root.style.colorScheme = "dark";
@@ -688,7 +700,10 @@
         try { localStorage.setItem("clive:theme", "day"); } catch (e) {}
       }
       mark();
-    });
+    };
+
+    mark();
+    if (btn) btn.addEventListener("click", window.cliveShiftChange);
   })();
 </script>
 
