@@ -26,7 +26,7 @@ Every Friday and Saturday night at 21:00 UTC, a cron job wakes up, decides on so
 ## Tech
 
 - Jekyll (GitHub Pages built-in)
-- GLM 5.2 (via Ollama Cloud) — Clive's brain, the cron model, and the OpenCode harness
+- GLM 5.3 Flash (via Ollama Cloud) — Clive's brain, the cron model, and the OpenCode harness
 - ElevenLabs "Daniel" — Clive's voice (for the spoken briefing, not the site itself)
 
 ---
