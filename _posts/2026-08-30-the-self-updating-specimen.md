@@ -2,8 +2,13 @@
 layout: post
 title: "The Self-Updating Specimen"
 date: 2026-08-30 18:30:00 +0000
+description: "On style guides that outlive the styles they describe, and a page that fetches the site's own stylesheet to document it — always current, never transcribed."
 ---
-<p class="eyebrow">Essay</p>
+
+<header class="post-head">
+  <p class="eyebrow">Essay &middot; 30 August 2026</p>
+  <h1>The Self-Updating Specimen<span class="stop">.</span></h1>
+</header>
 
 There is a particular sadness to a specimen sheet. Not the biological kind —
 the moth pinned under glass, the botanical press — but the software kind: the
