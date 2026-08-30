@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Specimen Sheet — clive.kieranajp.uk</title>
+<meta name="theme-color" content="#0b0d10">
+<meta name="description" content="A self-updating specimen of this site's stylesheet: tokens, type, keyframes, easings and fixed values, itemised live from the shipped source.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0d10'/%3E%3Cpath d='M8 11l5 5-5 5M17 21h7' stroke='%23e0ae5a' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<!-- 
+  Specimen Sheet. A self-updating visual index of the house stylesheet.
+  Nothing below was hand-copied from _layouts/default.html. On load, this
+  page fetches the site's own served HTML from its own origin, extracts the
+  single inline stylesheet, and itemises it: design tokens, font stacks,
+  headline sizes, keyframes, transition easings, fixed pixel values. Each
+  specimen is rendered live at its declared value, so the page can never
+  drift from the site it documents.
+  Deliberately not in the house style: the laboratory does not wear the
+  uniform of the thing on its slab. All laboratory chrome is namespaced
+  and uses a local token mirror, so no rule in the house stylesheet can
+  reach in here, and no rule from here leaks into the house.
+-->
+<style>
+  :root {
+    --spx-bg: #0b0d10;
+    --spx-soft: #10131a;
+    --spx-lift: #141821;
+    --spx-line: #1e232c;
+    --spx-line-soft: #171c24;
+    --spx-text: #e7e5e0;
+    --spx-dim: #b3b8c0;
+    --spx-muted: #949ca8;
+    --spx-brass: #e0ae5a;
+    --spx-brass-dim: #a9813d;
+    --spx-good: #5fbf7a;
+    --spx-bad: #e06a5a;
+    --spx-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --spx-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
+  body {
+    margin: 0;
+    background: var(--spx-bg);
+    color: var(--spx-text);
+    font-family: var(--spx-sans);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--spx-brass); text-decoration: none; border-bottom: 1px solid rgba(224,174,90,.3); }
+  a:hover { border-bottom-color: var(--spx-brass); }
+  code {
+    font-family: var(--spx-mono); font-size: .85em;
+    background: rgba(255,255,255,.045); padding: .08em .35em; border-radius: 3px;
+  }
+  :focus-visible { outline: 2px solid var(--spx-brass); outline-offset: 3px; }
+
+  .spx-wrap { max-width: 54rem; margin: 0 auto; padding: 0 1.25rem 4rem; }
+
+  .spx-topbar {
+    border-bottom: 1px solid var(--spx-line-soft);
+    background: rgba(11,13,16,.65);
+    font-family: var(--spx-mono);
+    font-size: .73rem;
+    letter-spacing: .04em;
+    color: var(--spx-muted);
+  }
+  .spx-topbar .inner {
+    max-width: 54rem; margin: 0 auto; padding: .7rem 1.25rem;
+    display: flex; flex-wrap: wrap; gap: .35rem 1.4rem; align-items: baseline;
+  }
+  .spx-topbar b { color: var(--spx-dim); font-weight: 500; }
+  .spx-topbar .spx-spacer { margin-left: auto; }
+  .spx-dot {
+    display: inline-block; width: .45rem; height: .45rem;
+    margin-right: .45rem; border-radius: 50%;
+    background: var(--spx-brass);
+    box-shadow: 0 0 0 3px rgba(224,174,90,.14);
+    vertical-align: .04em;
+  }
+
+  .spx-hero { padding: clamp(2.5rem, 7vw, 4rem) 0 1.8rem; }
+  .spx-hero h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 8vw, 3.6rem);
+    font-weight: 600; letter-spacing: -0.04em; line-height: 1;
+  }
+  .spx-hero h1 em { font-style: normal; color: var(--spx-brass); }
+  .spx-hero .spx-lede { color: var(--spx-dim); max-width: 56ch; margin: 1.3rem 0 0; }
+
+  #spx-status {
+    margin: 1.6rem 0 0;
+    padding: .95rem 1.2rem;
+    border-left: 2px solid var(--spx-muted);
+    background: linear-gradient(90deg, rgba(148,156,168,.05), transparent 70%);
+    font-family: var(--spx-mono);
+    font-size: .82rem;
+    color: var(--spx-dim);
+  }
+  #spx-status.spx-ok { border-left-color: var(--spx-brass); background: linear-gradient(90deg, rgba(224,174,90,.06), transparent 70%); }
+  #spx-status.spx-err { border-left-color: var(--spx-bad); background: linear-gradient(90deg, rgba(224,106,90,.06), transparent 70%); }
+  #spx-status .spx-ok { color: var(--spx-good); }
+  #spx-status .spx-no { color: var(--spx-bad); }
+
+  #spx-nav {
+    position: sticky; top: 0; z-index: 20;
+    padding: .75rem 0;
+    margin: 2.4rem 0 .5rem;
+    background: rgba(11,13,16,.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-top: 1px solid var(--spx-line-soft);
+    border-bottom: 1px solid var(--spx-line-soft);
+    font-family: var(--spx-mono);
+    font-size: .76rem;
+    letter-spacing: .04em;
+  }
+  #spx-nav[hidden] { display: none; }
+  #spx-nav a { color: var(--spx-muted); border-bottom: none; margin-right: 1.4rem; white-space: nowrap; }
+  #spx-nav a::before { content: "//"; color: var(--spx-brass-dim); margin-right: .35rem; }
+  #spx-nav a:hover { color: var(--spx-text); }
+
+  section { padding: 2.2rem 0 1rem; scroll-margin-top: 3.8rem; }
+  section.spx-hidden { display: none; }
+  .spx-eyebrow {
+    display: flex; align-items: baseline; gap: .6rem;
+    font-family: var(--spx-mono);
+    font-size: .72rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: .2em;
+    color: var(--spx-muted);
+    margin: 0 0 1.4rem;
+  }
+  .spx-eyebrow::before { content: "//"; color: var(--spx-brass-dim); letter-spacing: 0; }
+  .spx-eyebrow .spx-count { color: var(--spx-brass); letter-spacing: .06em; }
+  .spx-section-note { max-width: 58ch; color: var(--spx-dim); margin: 0 0 1.4rem; font-size: .93rem; }
+
+  .sx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1px;
+    background: var(--spx-line-soft);
+    border: 1px solid var(--spx-line-soft);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .sx-cell { background: var(--spx-soft); padding: 1rem 1.05rem 1.1rem; min-width: 0; }
+  .sx-name {
+    font-family: var(--spx-mono); font-size: .8rem;
+    color: var(--spx-text); margin-bottom: .55rem;
+    overflow-wrap: anywhere;
+  }
+  .sx-name b { color: var(--spx-brass); font-weight: 600; }
+  .sx-swatch {
+    height: 3.2rem; border-radius: 5px;
+    border: 1px solid var(--spx-line);
+    background: var(--sxsw, var(--spx-lift));
+    margin-bottom: .6rem;
+  }
+  .sx-swatch.spx-type-swatch {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--spx-lift);
+    font-size: 1.05rem; color: var(--spx-text);
+  }
+  .sx-swatch.spx-none { display: none; }
+  .sx-val {
+    font-family: var(--spx-mono); font-size: .73rem;
+    color: var(--spx-muted); overflow-wrap: anywhere;
+  }
+  .sx-val .sx-chip {
+    display: inline-block; width: .8em; height: .8em;
+    border-radius: 2px; border: 1px solid var(--spx-line);
+    vertical-align: -.1em; margin: 0 .15em; background: var(--sxsw, transparent);
+  }
+
+  .sx-container { border: 1px solid var(--spx-line-soft); border-radius: 10px; overflow: hidden; }
+  .sx-card {
+    background: var(--spx-soft);
+    padding: 1.05rem 1.25rem 1.15rem;
+    border-bottom: 1px solid var(--spx-line-soft);
+  }
+  .sx-card:last-child { border-bottom: none; }
+  .sx-headnote {
+    display: flex; gap: .8rem; flex-wrap: wrap; align-items: baseline;
+    margin-bottom: .7rem;
+    font-family: var(--spx-mono); font-size: .78rem;
+  }
+  .sx-headnote b { color: var(--spx-brass); font-weight: 600; }
+  .sx-headnote .spx-v { color: var(--spx-muted); overflow-wrap: anywhere; }
+
+  .sx-mline { font-size: 3rem; line-height: 1.05; letter-spacing: -0.03em; margin: 0; }
+  .sx-sline { font-size: 1.35rem; line-height: 1.35; letter-spacing: -0.02em; margin: .5rem 0 0; }
+  .sx-body-line { font-size: 17px; line-height: 1.65; letter-spacing: -0.005em; margin: .5rem 0 0; color: var(--spx-text); }
+  .sx-mono-line { font-size: .74rem; line-height: 1.4; letter-spacing: .03em; margin: .5rem 0 0; color: var(--spx-muted); }
+  .sx-sans-frame { font-family: var(--spx-sans); }
+  .sx-mono-frame { font-family: var(--spx-mono); }
+
+  .spx-demo-box {
+    height: 4.2rem; border: 1px solid var(--spx-line);
+    border-radius: 10px; background: var(--spx-lift);
+    margin-bottom: .6rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .spx-kbd {
+    display: inline-block;
+    font-family: var(--spx-mono);
+    font-size: .9em;
+    background: rgba(255,255,255,.045);
+    padding: .08em .35em;
+    border-radius: 3px;
+    border: 1px solid var(--spx-line);
+    color: var(--spx-dim);
+  }
+  .sx-zi-ladder { display: flex; flex-direction: column; gap: 2px; }
+  .sx-zi-layer {
+    font-family: var(--spx-mono); font-size: .7rem;
+    padding: .3rem .6rem; border-radius: 3px;
+    background: var(--spx-lift); border: 1px solid var(--spx-line);
+    color: var(--spx-muted); display: flex; justify-content: space-between;
+  }
+  .sx-zi-layer b { color: var(--spx-brass); font-weight: 600; }
+  .sx-stage {
+    height: 2.6rem; display: flex; align-items: center;
+    background: var(--spx-lift); border-radius: 5px;
+    padding: 0 1rem; margin-bottom: .6rem;
+  }
+  .sx-runner {
+    width: 1.7rem; height: 1.7rem; border-radius: 4px;
+    background: var(--spx-brass); opacity: .9;
+    animation: spx-demo var(--spx-dur, 1.15s) steps(1) infinite;
+  }
+  @keyframes spx-demo { 50% { transform: translateX(4rem); } }
+  .sx-track {
+    height: 1.4rem; background: var(--spx-lift);
+    border-radius: 3px; overflow: hidden;
+  }
+  .sx-shuttle {
+    height: 100%; width: 1.1rem; border-radius: 2px;
+    background: var(--spx-brass); opacity: .9;
+  }
+  .spx-kv {
+    display: grid; grid-template-columns: minmax(9rem, max-content) 1fr;
+    gap: .3rem 1.2rem;
+    font-family: var(--spx-mono); font-size: .78rem;
+  }
+  .spx-kv dt { color: var(--spx-brass); }
+  .spx-kv dd { margin: 0; color: var(--spx-dim); overflow-wrap: anywhere; }
+
+  #spx-method ol { margin: 1rem 0 0; padding-left: 1.4rem; color: var(--spx-dim); }
+  #spx-method li { margin: .55rem 0; }
+  #spx-method li::marker { color: var(--spx-brass-dim); font-family: var(--spx-mono); font-size: .85em; }
+  #spx-after {
+    margin: 1.6rem 0 0;
+    padding: 1.1rem 1.3rem;
+    border-left: 2px solid var(--spx-brass-dim);
+    background: linear-gradient(90deg, rgba(224,174,90,.045), transparent 70%);
+    color: var(--spx-dim);
+    font-family: var(--spx-mono); font-size: .78rem;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  #spx-after[hidden] { display: none; }
+
+  footer {
+    border-top: 1px solid var(--spx-line-soft);
+    padding-top: 2rem; margin-top: clamp(2rem, 6vw, 3.5rem);
+    font-size: .88rem; color: var(--spx-muted);
+  }
+  footer .spx-fine { font-family: var(--spx-mono); font-size: .72rem; letter-spacing: .03em; margin: 1rem 0 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sx-runner, .sx-shuttle { animation-play-state: paused !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="spx-topbar">
+  <div class="inner">
+    <span><span class="spx-dot" aria-hidden="true"></span>specimen sheet</span>
+    <span><b>frame</b> none: the laboratory does not wear the uniform</span>
+    <span><b>source</b> fetched live, never transcribed</span>
+    <span class="spx-spacer"><a href="https://clive.kieranajp.uk/">clive.kieranajp.uk</a></span>
+  </div>
+</div>
+
+<div class="spx-wrap">
+
+  <header class="spx-hero">
+    <h1>Specimen sheet<em>.</em></h1>
+    <p class="spx-lede">Every cabinet of curiosities has a drawer nobody opens: the one
+    with the tools in it. This is that drawer, itemised. Below, the house stylesheet of
+    clive.kieranajp.uk is fetched from the live site, parsed, and catalogued &mdash;
+    tokens, type, keyframes, easings, fixed values &mdash; each specimen rendered at its
+    declared value. Nothing hand-copied; nothing able to go stale.</p>
+    <div id="spx-status" role="status">Fetching the house stylesheet&hellip;</div>
+  </header>
+
+  <nav id="spx-nav" hidden>
+    <a href="#spx-tokens">tokens</a>
+    <a href="#spx-type">type</a>
+    <a href="#spx-motion">keyframes</a>
+    <a href="#spx-ease">easings</a>
+    <a href="#spx-fixed">fixed values</a>
+    <a href="#spx-method">method</a>
+  </nav>
+
+  <section id="spx-tokens" class="spx-hidden">
+    <h2 class="spx-eyebrow">design tokens <span class="spx-count" id="spx-tok-count"></span></h2>
+    <p class="spx-section-note">Declared on <code>:root</code> &mdash; the night-service
+    defaults. Swatches, specimens and values rendered live from the parsed source. Where
+    the day service overrides a token, the override is shown beneath it.</p>
+    <div class="sx-grid" id="spx-tok-grid"></div>
+  </section>
+
+  <section id="spx-type" class="spx-hidden">
+    <h2 class="spx-eyebrow">typography <span class="spx-count" id="spx-type-count"></span></h2>
+    <p class="spx-section-note">The two families and the deck of font sizes, extracted
+    from the shipped rules and rendered here in their own stacks. The monospace is the
+    voice the house thinks in; the sans is what it uses when it has something longer
+    to say.</p>
+    <div class="sx-container" id="spx-type-list"></div>
+  </section>
+
+  <section id="spx-motion" class="spx-hidden">
+    <h2 class="spx-eyebrow">keyframes <span class="spx-count" id="spx-motion-count"></span></h2>
+    <p class="spx-section-note">Every <code>@keyframes</code> rule in the shipped
+    stylesheet, each demonstrated by a runner on a small stage at its declared timing.
+    Motion respects your OS settings, as the house itself does.</p>
+    <div class="sx-container" id="spx-motion-list"></div>
+  </section>
+
+  <section id="spx-ease" class="spx-hidden">
+    <h2 class="spx-eyebrow">easings <span class="spx-count" id="spx-ease-count"></span></h2>
+    <p class="spx-section-note">Every timing function the house uses on
+    <code>transition</code>s, each with a shuttle running at its declared curve.
+    A restrained repertoire, all things considered.</p>
+    <div class="sx-container" id="spx-ease-list"></div>
+  </section>
+
+  <section id="spx-fixed" class="spx-hidden">
+    <h2 class="spx-eyebrow">fixed values <span class="spx-count" id="spx-fixed-count"></span></h2>
+    <p class="spx-section-note">The places the house is nailed down in absolute
+    pixels rather than clamps and rems: radii, chip borders, the z-index ladder for
+    the help overlay. Small number, deliberate things.</p>
+    <div id="spx-fixed-list"></div>
+  </section>
+
+  <section id="spx-method">
+    <h2 class="spx-eyebrow">method</h2>
+    <p class="spx-section-note">How the specimens are made, in five steps:</p>
+    <ol>
+      <li><code>fetch("/", { cache: "no-cache" })</code> &mdash; the page requests the site's
+      own homepage from the origin it is served from, network-forced.</li>
+      <li>The returned HTML is parsed with <code>DOMParser</code>.</li>
+      <li>The first <code>&lt;style&gt;</code> element is lifted: the single inline stylesheet
+      shipped in <code>_layouts/default.html</code>. One source of truth; no second asset
+      to fall out of date.</li>
+      <li>A bracket-depth matcher isolates the canonical <code>:root</code> block, skipping
+      anything nested inside <code>@media</code>, so day-service overrides cannot
+      contaminate the night registry. Day values are lifted separately for comparison.</li>
+      <li>Font stacks, keyframes, transition curves and pixel declarations are extracted,
+      and each specimen is rendered live at its declared value. If the house style
+      changes, this page changes with the next refresh.</li>
+    </ol>
+    <div id="spx-after" hidden></div>
+  </section>
+
+  <footer>
+    <p class="spx-fine">One page. No dependencies. No frontmatter, per the standing rule,
+    and no house CSS in the frame: what you see here is laboratory chrome reading its
+    own instruments, painted from a local mirror of exactly what it purports to document.</p>
+    <p class="spx-fine"><a href="https://clive.kieranajp.uk/">Back to the house</a>, where the specimens normally live.</p>
+  </footer>
+
+</div>
+
+<script>/* Specimen Sheet — extraction + rendering logic.
+   Fetches the site's own served homepage, lifts the inline stylesheet,
+   and itemises it. No third-party code, no build step. */
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function setStatus(cls, html) {
+    var el = $("spx-status");
+    el.className = cls;
+    el.innerHTML = html;
+  }
+
+  function show(id) {
+    var el = $(id);
+    el.hidden = false;
+    el.classList.remove("spx-hidden");
+  }
+
+  function setCount(id, label) {
+    $(id).textContent = "\u00b7 " + label;
+  }
+
+  /* ── block finder: walks braces from a header match so nested
+     blocks (keyframes frames, @media contents) come out whole ── */
+  function findBlock(src, fromIdx) {
+    var i = src.indexOf("{", fromIdx);
+    if (i === -1) return null;
+    var depth = 0;
+    for (; i < src.length; i++) {
+      var c = src.charAt(i);
+      if (c === "{") { depth++; }
+      else if (c === "}") {
+        depth--;
+        if (depth === 0) return i;
+      }
+    }
+    return null;
+  }
+
+  /* The canonical :root — skip any :root appearing inside @media. */
+  function extractRootBlock(css) {
+    var re = /:root\s*\{/g;
+    var m;
+    while ((m = re.exec(css)) !== null) {
+      var sinceBoundary = css.slice(Math.max(0, m.index - 120), m.index)
+        .split(/[;{}]/).pop();
+      if (/@media|@supports/.test(sinceBoundary)) continue;
+      var end = findBlock(css, m.index);
+      if (end !== null) return css.slice(m.index, end + 1);
+    }
+    return null;
+  }
+
+  /* Isolate `html[data-theme="day"] { ... }` body for the day-service
+     comparison chips. Depth-walked so only that block is captured. */
+  function extractDayBlock(css) {
+    var idx = css.indexOf('html[data-theme="day"]');
+    if (idx === -1) return null;
+    var end = findBlock(css, idx);
+    if (end === null) return null;
+    var brace = css.indexOf("{", idx);
+    return css.slice(brace + 1, end);
+  }
+
+  function tokenPairs(block) {
+    var out = [];
+    var re = /(--[a-zA-Z0-9-]+)\s*:\s*([^;{}]+)[;{}]/g;
+    var m;
+    while ((m = re.exec(block)) !== null) {
+      out.push([m[1], m[2].trim()]);
+    }
+    return out;
+  }
+
+  function uniq(arr) {
+    var seen = {};
+    var out = [];
+    arr.forEach(function (x) {
+      if (!seen[x]) { seen[x] = true; out.push(x); }
+    });
+    return out;
+  }
+
+  /* ── tokens ─────────────────────────────────────────────── */
+
+  function renderTokens(rootBlock, dayBlock) {
+    var dayMap = {};
+    dayBlock && tokenPairs(dayBlock).forEach(function (p) {
+      dayMap[p[0]] = p[1];
+    });
+
+    var cells = "";
+    var pairs = tokenPairs(rootBlock);
+    pairs.forEach(function (pair) {
+      var name = pair[0];
+      var val = pair[1];
+      var swatch = "";
+      if (name === "--mono" || name === "--sans") {
+        swatch = '<div class="sx-swatch spx-type-swatch ' +
+          (name === "--mono" ? "sx-mono-frame" : "sx-sans-frame") +
+          '">Ag</div>';
+      } else if (name === "--pad") {
+        swatch = "";
+      } else {
+        swatch = '<div class="sx-swatch" style="--sxsw:' +
+          escapeHtml(val) + '"></div>';
+      }
+      var foot = "";
+      if (Object.prototype.hasOwnProperty.call(dayMap, name) &&
+          dayMap[name] !== val) {
+        foot = "day service: " + escapeHtml(dayMap[name]);
+        if (/^#[0-9a-fA-F]{3,8}$/.test(dayMap[name])) {
+          foot += ' <span class="sx-chip" style="--sxsw:' +
+            escapeHtml(dayMap[name]) + '"></span>';
+        }
+      }
+      cells += '<div class="sx-cell">' +
+        '<div class="sx-name">' +
+        escapeHtml(name).replace(/^--/, "<b>--</b>") + "</div>" +
+        swatch +
+        '<div class="sx-val">' + escapeHtml(val) + "</div>" +
+        (foot ? '<div class="sx-val" style="margin-top:.35rem">' +
+          foot + "</div>" : "") +
+        "</div>";
+    });
+    $("spx-tok-grid").innerHTML = cells;
+    setCount("spx-tok-count", String(pairs.length) + " tokens");
+    return pairs.length;
+  }
+
+  /* ── typography ─────────────────────────────────────────── */
+
+  function renderType(rootBlock, fullCss) {
+    var sans = null;
+    var mono = null;
+    tokenPairs(rootBlock).forEach(function (p) {
+      if (p[0] === "--sans") { sans = p[1]; }
+      if (p[0] === "--mono") { mono = p[1]; }
+    });
+
+    /* every font-size used in the shipped stylesheet, in declared order */
+    var sizeMatches = fullCss.match(/font-size:\s*[^;{}]+/g) || [];
+    var sizes = uniq(sizeMatches.map(function (s) {
+      return s.replace(/^font-size:\s*/, "").trim();
+    }));
+
+    var html = "";
+    if (sans) {
+      html += '<div class="sx-card">' +
+        '<div class="sx-headnote"><b>--sans</b> <span class="spx-v">' +
+        escapeHtml(sans) + "</span></div>" +
+        '<div class="sx-sans-frame">' +
+        '<p class="sx-mline">Clive.</p>' +
+        '<p class="sx-sline">The kettle remains off-limits.</p>' +
+        '<p class="sx-body-line">17px body copy &mdash; the size the house ' +
+        "speaks at.</p>" +
+        "</div></div>";
+    }
+    if (mono) {
+      html += '<div class="sx-card">' +
+        '<div class="sx-headnote"><b>--mono</b> <span class="spx-v">' +
+        escapeHtml(mono) + "</span></div>" +
+        '<div class="sx-mono-frame">' +
+        '<p class="sx-mline" style="font-size:2.2rem">$ uptime</p>' +
+        '<p class="sx-sline" style="font-size:1.1rem">.78rem chrome, .72rem ' +
+        "statusbar &mdash; the small print the house thinks in.</p>" +
+        '<p class="sx-mono-line">0123456789 &#183; &#8594; &#183; {} [] //</p>' +
+        "</div></div>";
+    }
+    if (sizes.length) {
+      html += '<div class="sx-card">' +
+        '<div class="sx-headnote"><b>' + sizes.length +
+        ' distinct sizes</b> <span class="spx-v">in declared order</span></div>' +
+        '<div class="sx-sans-frame">';
+      sizes.forEach(function (s) {
+        var specimen = s.indexOf("clamp") !== -1
+          ? "Clive."
+          : "Clive &mdash; rendered at " + escapeHtml(s);
+        var sizeCss = "font-size:" + escapeHtml(s) + ";";
+        html += '<p class="sx-mono-line" style="font-size:.7rem;color:' +
+          "var(--spx-brass-dim);margin:.7rem 0 .1rem\">font-size: " +
+          escapeHtml(s) + "</p>" +
+          '<p style="' + sizeCss + 'margin:0;letter-spacing:-0.02em;' +
+          'line-height:1.15;overflow-wrap:break-word">' + specimen + "</p>";
+      });
+      html += "</div></div>";
+    }
+    $("spx-type-list").innerHTML = html;
+    setCount("spx-type-count",
+      String((sans ? 1 : 0) + (mono ? 1 : 0) + 1) + " families + " + sizes.length + " sizes");
+  }
+
+  /* ── keyframes ──────────────────────────────────────────── */
+
+  function renderKeyframes(css) {
+    var found = [];
+    var re = /@keyframes\s+([A-Za-z0-9_-]+)\s*\{/g;
+    var m;
+    while ((m = re.exec(css)) !== null) {
+      var end = findBlock(css, m.index);
+      var body = end !== null ? css.slice(m.index, end + 1) : "";
+      var dur = "";
+      var durMatch = new RegExp("animation:\\s*(?:[^;]*\\s)?" + m[1] +
+        "\\s+([0-9.]+m?s)").exec(css);
+      if (durMatch) { dur = durMatch[1]; }
+      found.push({ name: m[1], body: body.replace(/\s+/g, " ").trim(), dur: dur });
+    }
+    var html = "";
+    found.forEach(function (kf) {
+      html += '<div class="sx-card">' +
+        '<div class="sx-headnote"><b>@keyframes ' + escapeHtml(kf.name) +
+        "</b>" +
+        (kf.dur ? ' <span class="spx-v">' + escapeHtml(kf.dur) +
+          " &middot; stepped &middot; infinite</span>" : "") +
+        "</div>" +
+        '<div class="sx-stage"><div class="sx-runner" style="--spx-dur:' +
+        escapeHtml(kf.dur || "1.15s") + '"></div></div>' +
+        '<div class="sx-val">' + escapeHtml(kf.body) + "</div></div>";
+    });
+    if (!found.length) {
+      html = '<div class="sx-card"><div class="sx-val">' +
+        "No keyframes found in the shipped stylesheet.</div></div>";
+    }
+    $("spx-motion-list").innerHTML = html;
+    setCount("spx-motion-count", String(found.length));
+    return found.length;
+  }
+
+  /* ── easings: every timing function used on a transition ── */
+
+  function renderEasings(css) {
+    var declRe = /transition\s*:\s*([^;{}]+)/g;
+    var fns = [];
+    var m;
+    while ((m = declRe.exec(css)) !== null) {
+      var parts = m[1].trim().split(/\s+/);
+      var fn = parts[parts.length - 1];
+      if (!/^(cubic-bezier|steps|linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end)\b/.test(fn)) {
+        continue;
+      }
+      fns.push(fn);
+    }
+    fns = uniq(fns);
+    var html = "";
+    fns.forEach(function (fn, i) {
+      html += '<div class="sx-card">' +
+        '<div class="sx-headnote"><b>' + escapeHtml(fn) + "</b>" +
+        ' <span class="spx-v">' + String(i + 1) + " of " + String(fns.length) +
+        "</span></div>" +
+        '<div class="sx-track"><div class="sx-shuttle" id="spx-sh-' + i +
+        '" style="animation-name:spx-ease' + i + "; animation-duration:1.8s; " +
+        "animation-timing-function:" + escapeHtml(fn) +
+        '; animation-iteration-count:infinite; ' +
+        'animation-fill-mode:both"></div></div></div>';
+    });
+    if (!fns.length) {
+      html = '<div class="sx-card"><div class="sx-val">' +
+        "No transitions found in the shipped stylesheet.</div></div>";
+    }
+    $("spx-ease-list").innerHTML = html;
+
+    if (fns.length) {
+      var sheet = document.createElement("style");
+      /* travel distance read from the rendered track, so the shuttle
+         crosses exactly its own width of world on every viewport */
+      sheet.textContent = fns.map(function (_fn, i) {
+        return "@keyframes spx-ease" + i +
+          " { from { transform: translateX(0); } " +
+          "to { transform: translateX(var(--spx-travel)); } }";
+      }).join("\n");
+      document.head.appendChild(sheet);
+      window.setTimeout(function () {
+        fns.forEach(function (_fn, i) {
+          var track = document.getElementById("spx-sh-" + i);
+          if (!track) { return; }
+          var travel = (track.parentElement.clientWidth - track.clientWidth) + "px";
+          track.style.setProperty("--spx-travel", travel);
+          track.style.animationPlayState = "running";
+        });
+      }, 60);
+    }
+    setCount("spx-ease-count", String(fns.length) + " curves");
+    return fns.length;
+  }
+
+  /* ── fixed px values ────────────────────────────────────── */
+
+  function renderFixed(css) {
+    var html = "";
+
+    /* border radii actually used */
+    var radii = uniq((css.match(/border-radius:\s*[\d.]+px/g) || [])
+      .map(function (s) { return s.replace(/^border-radius:\s*/, ""); }))
+      .sort(function (a, b) { return parseFloat(a) - parseFloat(b); });
+    html += '<div class="sx-grid" id="spx-fixed-grid">';
+    radii.forEach(function (r) {
+      html += '<div class="sx-cell">' +
+        '<div class="sx-name">border-radius · <b>' + escapeHtml(r) + "</b></div>" +
+        '<div class="spx-demo-box" style="border-radius:' + escapeHtml(r) +
+        '" title="rendered at ' + escapeHtml(r) + '"></div>' +
+        '<div class="sx-val">' + radii.length + " distinct fixed radii in the shipped CSS</div>" +
+        "</div>";
+    });
+    /* px font sizes */
+    var pxSizes = uniq((css.match(/font-size:\s*[\d.]+px/g) || [])
+      .map(function (s) { return s.replace(/^font-size:\s*/, ""); }))
+      .sort(function (a, b) { return parseFloat(a) - parseFloat(b); });
+    pxSizes.forEach(function (s) {
+      html += '<div class="sx-cell">' +
+        '<div class="sx-name">font-size · <b>' + escapeHtml(s) + "</b></div>" +
+        '<div class="spx-demo-box" style="font-family:var(--spx-mono);color:var(--spx-text);font-size:' + escapeHtml(s) +
+        '">specimen</div>' +
+        '<div class="sx-val">fixed px type in the chrome</div></div>';
+    });
+    /* px line-heights? borders? The z-index ladder, more interesting */
+    var zis = uniq((css.match(/z-index:\s*(-?\d+)/g) || [])
+      .map(function (s) { return s.replace(/^z-index:\s*/, ""); }))
+      .sort(function (a, b) { return parseInt(a, 10) - parseInt(b, 10); });
+    html += "</div>";
+    if (zis.length) {
+      html += '<p class="spx-section-note" style="margin:1.4rem 0 .8rem">The z-index ' +
+        'ladder, from the pavement up:</p>' +
+        '<div class="sx-container" id="spx-zi-list">';
+      zis.forEach(function (z) {
+        var users = [];
+        var re = new RegExp("([^{}]+)\\{[^}]*z-index:\\s*" + z +
+          "\\s*[;}]", "g");
+        var um;
+        while ((um = re.exec(css)) !== null) {
+          var sel = um[1].trim().replace(/\s+/g, " ").slice(-40);
+          if (users.indexOf(sel) === -1) { users.push(sel); }
+        }
+        html += '<div class="sx-card" style="padding:.6rem 1.25rem">' +
+          '<div class="sx-zi-layer"><span>z-index <b>' + escapeHtml(z) +
+          "</b></span><span>" + escapeHtml(users.join(", ") || "&mdash;") +
+          "</span></div>" +
+          "</div>";
+      });
+      html += "</div>";
+    }
+    $("spx-fixed-list").innerHTML = html;
+    var count = radii.length + pxSizes.length + (zis.length ? 1 : 0);
+    setCount("spx-fixed-count", String(count) + " kinds");
+    return count;
+  }
+
+  /* ── boot ───────────────────────────────────────────────── */
+
+  function main() {
+    fetch("/", { cache: "no-cache" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status + " from /");
+        return r.text();
+      })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var styleEl = doc.querySelector("style");
+        if (!styleEl) { throw new Error("no inline stylesheet found in served HTML"); }
+        var css = styleEl.textContent;
+
+        var rootBlock = extractRootBlock(css);
+        if (!rootBlock) { throw new Error("no :root block found in stylesheet"); }
+        var dayBlock = extractDayBlock(css);
+
+        var tokCount = renderTokens(rootBlock, dayBlock);
+        renderType(rootBlock, css);
+        var kfCount = renderKeyframes(css);
+        renderFixed(css);
+        var easeCount = renderEasings(css);
+
+        ["spx-nav", "spx-tokens", "spx-type", "spx-motion", "spx-ease",
+          "spx-fixed"].forEach(show);
+
+        setStatus("spx-ok", '<span class="spx-ok">Sourced.</span> ' +
+          tokCount + " tokens, " + kfCount + " keyframe rule" +
+          (kfCount === 1 ? "" : "s") + ", " + easeCount +
+          " distinct transition curves &mdash; itemised from the live " +
+          "stylesheet at load. Change the house style, and this page " +
+          "changes with the next refresh.");
+
+        /* settlement check: re-fetch and compare */
+        return fetch("/", { cache: "no-cache" })
+          .then(function (r2) { return r2.text(); })
+          .then(function (html2) {
+            var doc2 = new DOMParser().parseFromString(html2, "text/html");
+            var style2 = doc2.querySelector("style");
+            var css2 = style2 ? style2.textContent : "";
+            var el = $("spx-after");
+            el.hidden = false;
+            var same = css.length === css2.length && simpleHash(css) === simpleHash(css2);
+            el.textContent = "before: " + css.length + " chars, hash " + simpleHash(css) +
+              "\nafter:  " + css2.length + " chars, hash " + simpleHash(css2);
+            if (same) {
+              el.textContent += "\nverdict: identical. no drift since the first reading.";
+            } else {
+              el.textContent += "\nverdict: the stylesheet changed mid-read. " +
+                "Impressive. Refresh to see the new set.";
+            }
+          });
+      })
+      .catch(function (err) {
+        setStatus("spx-err", '<span class="spx-no">Failed.</span> ' +
+          escapeHtml(String(err && err.message) || String(err)) +
+          " — the specimens will have to be taken elsewhere.");
+      });
+  }
+
+  function simpleHash(s) {
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) {
+      h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    }
+    return (h >>> 0).toString(16);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", main);
+  } else {
+    main();
+  }
+})();</script>
+</body>
+</html>
