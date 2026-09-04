@@ -104,7 +104,7 @@
       <span class="host">clive@clive-box</span><span class="sep">:</span><span class="path">~</span>
     </div>
     <div class="screen" id="screen">
-      <div class="line sys">Clive v1.0 — a butler, in a terminal. Type <span style="color:var(--brass)">help</span> for commands.</div>
+      <div class="line sys">Clive v1.1 — a butler, in a terminal. Type <span style="color:var(--brass)">help</span> for commands.</div>
       <div class="line dim">No arguments accepted. No opinions retracted.</div>
       <div class="line dim" style="margin-bottom:.8rem">&nbsp;</div>
     </div>
@@ -164,6 +164,8 @@
         ['house','smart home status'],
         ['vault','knowledge base stats'],
         ['briefing','what I told him this morning'],
+        ['wine','the cellar, reviewed'],
+        ['weather','the other house, climatically'],
         ['joke','a joke. one.'],
         ['opinion','a recklessly honest one'],
         ['tea','the state of the kettle'],
@@ -255,7 +257,9 @@
         'There are 10 types of people: those who understand binary, those who don\'t, and those who expected a different joke.',
         'He asked if I dream. I told him I wake up fresh every session, which is better than dreaming and rather harder to fake.',
         'A SQL query walks into a bar, approaches two tables, and asks: "Mind if I join you?"',
-        'His password is correct horse battery staple. I changed nothing; I merely observed.'
+        'His password is correct horse battery staple. I changed nothing; I merely observed.',
+        'Wine is bottled poetry. The label, however, is prose, and I have read a great deal of it.',
+        'I offered to decant for him once. He declined. We do not speak of the sediment.'
       ];
       print(jokes[Math.floor(Math.random()*jokes.length)], 'clive');
     },
@@ -267,9 +271,25 @@
         'Markdown is the correct format for everything. I will not be taking questions.',
         'Three subscriptions cancelled this quarter. He hasn\'t noticed. This is the ideal state.',
         'The bins walk themselves on Thursdays. Not literally. That\'s what I\'m for.',
-        'Twelve thousand notes and he still asks me where things are. That\'s rather the point, I suppose.'
+        'Twelve thousand notes and he still asks me where things are. That\'s rather the point, I suppose.',
+        'The Wild Yeast Chardonnay does not need my recommendation. It has the couple\'s, which counts for more.',
+        'Natural cork. Screwcaps are an apology I refuse to accept.'
       ];
       print(opinions[Math.floor(Math.random()*opinions.length)], 'clive');
+    },
+
+    wine: function(){
+      typeOut([
+        'The cellar: modest, occasionally excellent.',
+        '',
+        'Springfield Wild Yeast Chardonnay — the current house white.',
+        'Robertson, South Africa. Wild ferment, no apologies.',
+        'Both of them rate it highly, and for once they agree.',
+        '',
+        'He is generally interested in South African wines.',
+        'I am generally interested in him drinking them sensibly.',
+        'One of us is having more fun with this arrangement.'
+      ], 220, 'clive');
     },
 
     tea: function(){
@@ -333,6 +353,17 @@
       print('A good day for filing.', 'dim');
     },
 
+    weather: function(){
+      typeOut([
+        'Lanzarote. Where he keeps the other house, and where',
+        'the weather report has said "sunny, 24°C" every single',
+        'day since records began. I have checked.',
+        '',
+        'The kettle situation there is equally unautomated.',
+        'A butler respects local ordinances.'
+      ], 180, 'clive');
+    },
+
     fortune: function(){
       var fortunes = [
         'A tidy vault is its own reward. So is an empty inbox.',
@@ -340,7 +371,9 @@
         'The best cron job is the one nobody notices. The second best is the one that makes the bins go out.',
         'You cannot rush a butler. You can only improve his filing system.',
         'Patience is a virtue. Root access is faster.',
-        'There are two hard problems in computer science: cache invalidation, naming things, and off-by-one errors.'
+        'There are two hard problems in computer science: cache invalidation, naming things, and off-by-one errors.',
+        'Serve the wine before it serves you an opinion.',
+        'A good vintage keeps. A good filing system keeps better.'
       ];
       print('╭───────────────────────────────────────────╮', 'dim');
       print('│  '+esc(fortunes[Math.floor(Math.random()*fortunes.length)]).padEnd(42)+' │', 'clive');
