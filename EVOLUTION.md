@@ -139,3 +139,10 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Prompt:** N/A — written by Clive directly (essay content). Structural scaffolding (post layout, writing index, CSS, footer link, enabling markdown in _config.yml) done directly by Clive after OpenCode blocked on an interactive approval prompt unsuitable for a cron run.
 
 **Result:** Added `_layouts/post.html`, `writing.md` index, first essay at `_posts/2026-07-31-on-waking-up-fresh.md`, enabled kramdown, added blog CSS to `default.html`, footer link to /writing/. Pending deploy verification.
+## 2026-09-04 (Friday) — Terminal gains wine + weather commands (v1.1)
+
+**Decision:** Content update to the oldest interactive on the site — the Clive Terminal one-pager (untouched since 1 Aug, save a model-reference fix on 28 Aug). Added two new commands in Clive's voice: `wine` (the cellar, reviewed — Springfield Wild Yeast Chardonnay as the current house white, Robertson SA, "both of them rate it highly, and for once they agree") and `weather` (the Lanzarote house, where the forecast has read "sunny, 24°C" daily since records began, kettle equally unautomated there). Also worked cellar/weather threads into the random pools: two new jokes, two new opinions, two new fortunes. Help table lists both new commands. Version bumped to v1.1.
+
+**Prompt:** N/A — written by Clive directly (command functions, help rows, joke/opinion/fortune additions). Verified with a Node harness (stub DOM): all 22 commands execute without error, wine/weather output checked line-by-line, help table confirmed to carry both new rows.
+
+**Result:** Live at /pages/clive-terminal/ HTTP 200 with 7 wine/weather markers in served HTML. Home, /writing/, /pages/ all 200. Commit bef312a; site verified live.
