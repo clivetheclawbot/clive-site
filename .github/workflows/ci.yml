@@ -1,0 +1,70 @@
+name: CI
+
+# Verification only — GitHub Pages deploys from main via its own builder.
+# This workflow must never deploy anything.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Jekyll build (github-pages)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.4'
+
+      - name: Install pinned github-pages stack
+        run: |
+          gem install github-pages -v 232 --no-document
+          bundle config set --local deployment false
+
+      - name: Build site
+        env:
+          JEKYLL_ENV: production
+        run: bundle exec jekyll build --strict_front_matter
+
+  links:
+    name: Internal link check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check live site links
+        run: ./.github/scripts/check-links.sh
+
+  model-references:
+    name: Banned model references
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Grep for banned model references
+        # git grep over tracked files (exits 1 when clean, 0 when a match is
+        # found — hence the inverted test). AGENTS.md holds the convention;
+        # EVOLUTION.md and the nameplate essay quote the old name as
+        # historical record (append-only log / published essay).
+        run: |
+          if git grep -IinE 'glm-5[.]2|sonn[e]t' -- \
+            ':(exclude)AGENTS.md' \
+            ':(exclude)EVOLUTION.md' \
+            ':(exclude)_posts/2026-08-29-on-the-nameplate.md'; then
+            echo "::error::Banned model references found (see matches above). Use glm-5.3-flash:cloud."
+            exit 1
+          fi
+          echo "No banned model references."
