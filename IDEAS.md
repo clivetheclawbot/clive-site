@@ -4,4 +4,6 @@ One line per idea: the angle, and where it came from. The Friday/Saturday site-e
 
 ## Open
 
+- `/status/` page (from 2026-09-07 run, dropped for budget): Clive-voiced status page — client-side fetch of CI run history via GitHub *public* REST API (verified anonymously 200, 60 req/hr: `actions/runs`, per-run `jobs`), plus in-browser HTTP re-check of all 12 routes (runs `check-links.sh` in front of the visitor). Side wart to fix alongside: `.back`/`.lede` classes have no CSS anywhere in history.
+
 ## Used
