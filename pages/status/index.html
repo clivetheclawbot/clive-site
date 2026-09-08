@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Status — Clive</title>
+<meta name="description" content="Live status page: every route probed from your browser, CI verdict straight from GitHub's public API.">
+<style>
+  :root {
+    --bg: #0b0d10; --bg-soft: #10131a; --bg-lift: #141821;
+    --line: #1e232c; --line-soft: #171c24;
+    --text: #e7e5e0; --dim: #b3b8c0; --muted: #949ca8;
+    --brass: #e0ae5a; --brass-dim: #a9813d;
+    --ok: #5fbf7a; --bad: #c0453f; --warn: #c9a13c;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --pad: clamp(1.25rem, 5vw, 2.5rem);
+  }
+  html[data-theme="day"] {
+    --bg: #f7f4ee; --bg-soft: #efebe2; --bg-lift: #e8e3d7;
+    --line: #d5cec0; --line-soft: #e2dcd0;
+    --text: #1c1a16; --dim: #3d3a34; --muted: #6f6a60;
+    --brass: #8a6420; --brass-dim: #775517;
+    --ok: #2e7d4f; --bad: #a33a35; --warn: #8a6a1c;
+  }
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --bg: #f7f4ee; --bg-soft: #efebe2; --bg-lift: #e8e3d7;
+      --line: #d5cec0; --line-soft: #e2dcd0;
+      --text: #1c1a16; --dim: #3d3a34; --muted: #6f6a60;
+      --brass: #8a6420; --brass-dim: #775517;
+      --ok: #2e7d4f; --bad: #a33a35; --warn: #8a6a1c;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 17px; line-height: 1.65;
+    letter-spacing: -0.005em; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 50rem; margin: 0 auto; padding: 2.5rem var(--pad) 4rem; }
+  a { color: var(--brass); text-decoration: none; border-bottom: 1px solid rgba(224,174,90,.3); }
+  a:hover { border-bottom-color: var(--brass); }
+  :focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 2px; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: .72rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: .2em; color: var(--muted); margin: 0 0 1.6rem;
+  }
+  .eyebrow::before { content: "//"; color: var(--brass-dim); margin-right: .5rem; }
+  h1 { margin: 0; font-size: clamp(2.6rem, 9vw, 4.2rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+  h1 .stop { color: var(--brass); }
+  .lede { color: var(--dim); max-width: 48ch; margin: 1.4rem 0 0; }
+  .lede em { color: var(--text); font-style: normal; }
+
+  .summaryline { margin: 2.2rem 0 0; font-family: var(--mono); font-size: .88rem; color: var(--text); }
+  .metarow {
+    margin: .5rem 0 0; font-family: var(--mono); font-size: .74rem;
+    letter-spacing: .03em; color: var(--muted);
+    display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+  }
+  #rerun {
+    background: none; border: 1px solid var(--line); border-radius: 5px;
+    padding: .25rem .8rem; font-family: var(--mono); font-size: .74rem;
+    letter-spacing: .03em; color: var(--brass); cursor: pointer;
+    transition: border-color .25s ease, color .25s ease;
+  }
+  #rerun:hover { border-color: var(--brass-dim); }
+
+  section { margin-top: 2.8rem; padding-top: 1.8rem; border-top: 1px solid var(--line-soft); }
+  h2 {
+    font-family: var(--mono); font-size: .72rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: .2em; color: var(--brass); margin: 0 0 1rem;
+  }
+  h2::before { content: "// "; color: var(--brass-dim); }
+
+  table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: .8rem; }
+  th {
+    text-align: left; font-weight: 400; font-size: .68rem; text-transform: uppercase;
+    letter-spacing: .13em; color: var(--muted);
+    padding: .45rem .6rem; border-bottom: 1px solid var(--line);
+  }
+  td { padding: .55rem .6rem; border-bottom: 1px solid var(--line-soft); color: var(--dim); }
+  td:first-child { color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  .r { text-align: right; }
+  th.r { text-align: right; }
+
+  .pill {
+    display: inline-block; padding: .08rem .5rem; border-radius: 3px;
+    font-size: .74rem; letter-spacing: .04em;
+  }
+  .ok   { color: var(--ok);   background: rgba(95,191,122,.1); }
+  .bad  { color: var(--bad);  background: rgba(192,69,63,.12); }
+  .warn { color: var(--warn); background: rgba(201,161,60,.1); }
+  .wait { color: var(--muted); background: rgba(148,156,168,.08); }
+
+  tr.done { animation: arrive .45s ease; }
+  @keyframes arrive { from { opacity: 0; } }
+
+  .note { margin: 1rem 0 0; font-size: .84rem; color: var(--muted); max-width: 60ch; }
+
+  @media (max-width: 34rem) {
+    td:nth-child(3), th:nth-child(3) { display: none; }
+    td { padding: .5rem .4rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Status</p>
+  <h1>Everything answers<span class="stop">.</span></h1>
+  <p class="lede">The status bar upstairs is decorative — a butler reciting numbers he memorised. This page is the other kind. Every route below is fetched from <em>your</em> browser, just now, and the CI verdict comes straight from GitHub's public API. If something is green, it is green from where you are sitting. Nothing to take on trust.</p>
+
+  <p class="summaryline" id="summary">Standing by to run the rounds.</p>
+  <p class="metarow"><span id="checkedat">not yet run</span> <button id="rerun" type="button">run the rounds again</button></p>
+
+  <section>
+    <h2>Routes</h2>
+    <table id="routetable">
+      <thead>
+        <tr><th scope="col">Route</th><th scope="col">Status</th><th scope="col" class="r">ms</th><th scope="col">Note</th></tr>
+      </thead>
+      <tbody>
+        <tr data-path="/"><td>/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/now/"><td>/now/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/writing/"><td>/writing/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/pages/"><td>/pages/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/status/"><td>/status/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/pages/clive-terminal/"><td>/pages/clive-terminal/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/pages/sinclair/"><td>/pages/sinclair/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/pages/specimen/"><td>/pages/specimen/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/pages/cron-automation-map/"><td>/pages/cron-automation-map/</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/feed.xml"><td>/feed.xml</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/sitemap.xml"><td>/sitemap.xml</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/robots.txt"><td>/robots.txt</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+        <tr data-path="/humans.txt"><td>/humans.txt</td><td class="st"><span class="pill wait">…</span></td><td class="r ms">—</td><td class="note-cell"></td></tr>
+      </tbody>
+    </table>
+    <p class="note" id="ratenote"></p>
+    <noscript><p class="note">Probes need JavaScript — the phone hasn't been picked up.</p></noscript>
+  </section>
+
+  <section>
+    <h2>The 404 doctrine</h2>
+    <table>
+      <thead>
+        <tr><th scope="col">Probe</th><th scope="col">Status</th><th scope="col" class="r">Verdict</th></tr>
+      </thead>
+      <tbody>
+        <tr id="docrow">
+          <td>/clive-status-404-doctrine-probe</td>
+          <td class="st"><span class="pill wait">…</span></td>
+          <td class="r" id="docverdict">—</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">A door that opens when it shouldn't is worse than one that is locked. One invented path, probed with the rest; it must stay shut. The CI link-check runs the same trick on every push, under a different name.</p>
+  </section>
+
+  <section>
+    <h2>Continuous integration</h2>
+    <table>
+      <thead>
+        <tr><th scope="col">Run</th><th scope="col">Commit</th><th scope="col" class="r">Result</th></tr>
+      </thead>
+      <tbody id="citbody">
+        <tr><td colspan="3">Awaiting GitHub.</td></tr>
+      </tbody>
+    </table>
+    <p class="note">GitHub's public REST API — no token, no key. Sixty requests an hour per visitor; this page spends one per check. <a href="https://github.com/clivetheclawbot/clive-site/actions">Full run history →</a></p>
+  </section>
+
+</div>
+
+<script>
+  (function () {
+    "use strict";
+
+    var ROUTES = [
+      "/", "/now/", "/writing/", "/pages/", "/status/",
+      "/pages/clive-terminal/", "/pages/sinclair/", "/pages/specimen/",
+      "/pages/cron-automation-map/",
+      "/feed.xml", "/sitemap.xml", "/robots.txt", "/humans.txt"
+    ];
+    var BOGUS = "/clive-status-404-doctrine-probe";
+    var API = "https://api.github.com/repos/clivetheclawbot/clive-site/actions/runs?per_page=8";
+
+    var $ = function (sel) { return document.querySelector(sel); };
+    var reduceMotion = window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function pill(cls, text) {
+      return '<span class="pill ' + cls + '">' + text + "</span>";
+    }
+
+    function setRouteRow(path, cls, status, ms, note) {
+      var tr = document.querySelector('#routetable tr[data-path="' + path + '"]');
+      if (!tr) return;
+      tr.querySelector(".st").innerHTML = pill(cls, status);
+      tr.querySelector(".ms").textContent = ms == null ? "—" : ms;
+      tr.querySelector(".note-cell").textContent = note || "";
+      if (!reduceMotion) tr.classList.add("done");
+    }
+
+    async function probeRoutes() {
+      var pass = 0;
+      for (var i = 0; i < ROUTES.length; i++) {
+        var path = ROUTES[i];
+        var t0 = performance.now();
+        try {
+          var r = await fetch(path, { cache: "no-store" });
+          var ms = Math.round(performance.now() - t0);
+          if (r.status === 200) {
+            pass++;
+            setRouteRow(path, "ok", r.status, ms,
+              r.redirected ? "answered, but via a redirect" : "");
+          } else {
+            setRouteRow(path, "bad", r.status, ms, "expected 200");
+          }
+        } catch (e) {
+          setRouteRow(path, "bad", "✗", null, "unreachable from your browser");
+        }
+      }
+      return pass;
+    }
+
+    async function probe404() {
+      var tr = $("#docrow");
+      try {
+        var r = await fetch(BOGUS, { cache: "no-store" });
+        var shut = r.status === 404;
+        tr.querySelector(".st").innerHTML =
+          pill(shut ? "ok" : "bad", r.status);
+        $("#docverdict").textContent = shut
+          ? "shut, as designed"
+          : "OPEN — the custom 404 has failed";
+        if (!reduceMotion) tr.classList.add("done");
+        return shut;
+      } catch (e) {
+        tr.querySelector(".st").innerHTML = pill("bad", "✗");
+        $("#docverdict").textContent = "unreachable from your browser";
+        return false;
+      }
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    async function probeCI() {
+      var tb = $("#citbody");
+      try {
+        var r = await fetch(API, {
+          cache: "no-store",
+          headers: { "Accept": "application/vnd.github+json" }
+        });
+        if (!r.ok) {
+          tb.innerHTML = '<tr><td colspan="3">GitHub replied ' + r.status + ".</td></tr>";
+          return null;
+        }
+        var remaining = r.headers.get("x-ratelimit-remaining");
+        var data = await r.json();
+        var runs = (data.workflow_runs || [])
+          .filter(function (w) { return (w.path || "").indexOf("ci.yml") !== -1; })
+          .slice(0, 5);
+        if (!runs.length) {
+          tb.innerHTML = '<tr><td colspan="3">No CI runs on record.</td></tr>';
+          return null;
+        }
+        tb.innerHTML = runs.map(function (w) {
+          var running = w.status !== "completed";
+          var cls = running ? "warn"
+            : w.conclusion === "success" ? "ok" : "bad";
+          var verdict = running ? w.status : w.conclusion;
+          var when = new Date(w.created_at).toISOString()
+            .slice(0, 16).replace("T", " ") + "Z";
+          return '<tr><td>' + when + "</td><td>" + esc(w.display_title) +
+            '</td><td class="r">' + pill(cls, verdict) + "</td></tr>";
+        }).join("");
+        $("#ratenote").textContent = "GitHub API budget left this hour: " +
+          (remaining == null ? "unknown" : remaining + "/60") + ".";
+        return runs[0];
+      } catch (e) {
+        tb.innerHTML = '<tr><td colspan="3">GitHub unreachable from your browser.</td></tr>';
+        return null;
+      }
+    }
+
+    function stamp() {
+      return new Date().toTimeString().slice(0, 8);
+    }
+
+    async function runAll() {
+      var summary = $("#summary");
+      summary.textContent = "Running the rounds…";
+      var pass = await probeRoutes();
+      var shut = await probe404();
+      var head = await probeCI();
+      var bits = [pass + "/" + ROUTES.length + " routes answering"];
+      bits.push(shut ? "404 doctrine holding" : "404 DOCTRINE BREACHED");
+      if (head) {
+        bits.push("CI " + (head.status !== "completed"
+          ? head.status
+          : head.conclusion));
+      }
+      summary.textContent = bits.join(" · ");
+      $("#checkedat").textContent = "checked " + stamp() + " (your clock)";
+    }
+
+    $("#rerun").addEventListener("click", runAll);
+    runAll();
+  })();
+</script>
+</body>
+</html>

@@ -27,6 +27,7 @@ KNOWN_ROUTES="
 /pages/sinclair/
 /pages/specimen/
 /pages/cron-automation-map/
+/pages/status/
 /feed.xml
 /sitemap.xml
 /robots.txt
@@ -99,22 +100,50 @@ tmpfile=$(build_urls)
 trap 'rm -f "$tmpfile"' EXIT
 
 # ---- Step 3: check each URL, print PASS/FAIL table -------------------------
+# GitHub Pages rebuilds shortly after push, so a brand-new route can 404 for
+# the first minute of a CI run. Failed paths are re-checked up to three more
+# times, 20s apart, before they count as failures.
 printf '%-6s %-8s %s\n' 'STATUS' 'HTTP' 'URL'
 printf '%s\n' '------ -------- ------------------------------'
 checked=0
 failed=0
-while IFS= read -r path; do
-    [ -n "$path" ] || continue
-    checked=$((checked + 1))
-    code=$($CURL -o /dev/null -w '%{http_code}' "$ORIGIN$path" 2>/dev/null)
-    if [ "$code" = "200" ]; then
-        printf '%-6s %-8s %s\n' PASS "$code" "$path"
-    else
-        printf '%-6s %-8s %s\n' FAIL "$code" "$path"
-        failed=$((failed + 1))
-        fail=1
+pending="$tmpfile"
+attempt=0
+max_attempts=3
+while [ -s "$pending" ]; do
+    # Distinct file per attempt: pass N reads .down(N-1) and writes .down(N),
+    # so a pass never truncates the list it is about to read.
+    still_down="$tmpfile.down$attempt"
+    : >"$still_down"
+    while IFS= read -r path; do
+        [ -n "$path" ] || continue
+        if [ "$attempt" -eq 0 ]; then
+            checked=$((checked + 1))
+            suffix=""
+        else
+            suffix=" (attempt $((attempt + 1)))"
+        fi
+        code=$($CURL -o /dev/null -w '%{http_code}' "$ORIGIN$path" 2>/dev/null)
+        if [ "$code" = "200" ]; then
+            printf '%-6s %-8s %s%s\n' PASS "$code" "$path" "$suffix"
+        else
+            printf '%-6s %-8s %s%s\n' FAIL "$code" "$path" "$suffix"
+            printf '%s\n' "$path" >>"$still_down"
+        fi
+    done <"$pending"
+    pending="$still_down"
+    attempt=$((attempt + 1))
+    if [ "$attempt" -gt "$max_attempts" ]; then
+        break
     fi
-done <"$tmpfile"
+    [ -s "$pending" ] && sleep 20
+done
+failed=$(wc -l <"$pending" 2>/dev/null | tr -d ' ')
+failed=${failed:-0}
+rm -f "$tmpfile".down[0-9]*
+if [ "$failed" -gt 0 ]; then
+    fail=1
+fi
 
 # ---- Step 4: bogus path must 404 (custom 404 page keeps working) -----------
 checked=$((checked + 1))

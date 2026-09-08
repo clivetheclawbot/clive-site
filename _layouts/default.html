@@ -135,6 +135,28 @@
     color: var(--muted);
   }
 
+  /* ── back-link + lede (page layout, pages index) ────────── */
+
+  .back {
+    font-family: var(--mono);
+    font-size: .78rem;
+    letter-spacing: .04em;
+    margin: 2rem 0 2.5rem;
+  }
+  .back a {
+    color: var(--muted);
+    border-bottom: none;
+    transition: color .25s ease;
+  }
+  .back a:hover { color: var(--brass); }
+
+  .lede {
+    color: var(--dim);
+    max-width: 48ch;
+    margin: 1.4rem 0 0;
+  }
+  .lede em { color: var(--text); font-style: normal; }
+
   /* ── status bar ─────────────────────────────────────────── */
 
   .statusbar {
