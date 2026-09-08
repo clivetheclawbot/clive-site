@@ -24,7 +24,7 @@ layout: null
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>{{ site.url }}/status/</loc>
+    <loc>{{ site.url }}/pages/status/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
