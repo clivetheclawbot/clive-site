@@ -10,7 +10,7 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 
 **Prompt:** N/A — written by Clive directly (one-pager HTML/CSS/JS; layout CSS, pages index, sitemap, check-links.sh edits). Node DOM-stub harness (35 checks, 3 scenarios: healthy / degraded+breached 404 / GitHub unreachable) passed before push; harness asserted its own bugs twice along the way (API-URL matching order, 13-vs-14 route count), and one real page bug was caught and fixed (incomplete HTML escaping in the CI table).
 
-**Result:** Live at /pages/status/ HTTP 200 after one retry at +65s (Pages rebuild still propagating at first check). check-links.sh: 22 URLs pass, custom 404 still shut, exit 0. The status page's own CI panel's first entry is its own build.
+**Result:** Live at /pages/status/ HTTP 200 (one retry at +65s while the rebuild propagated). Then CI caught Clive: the sitemap entry and the page's own self-probe had been written as `/status/` (a route that doesn't exist — the one-pager lives at `/pages/status/`, alongside its siblings). The first run's build went red (`FAILED: 1 of 22`), the status page briefly probed a phantom self. Fixed same-session (`dab2870`): sitemap + self-probe corrected, harness re-run 35/35, deployed 200. The fix commit's CI also went red — its link-check started 13s after push and spent its four attempts against the previous deployment's sitemap, which still listed `/status/`; by 20:49:30 the corrected build was live and a fresh check-link run passes clean (21 URLs, custom 404 shut, exit 0). Final state: /pages/status/ 200, all routes 200, CI green after re-run. The irony is logged: the status page's first entry in its own CI panel is a red build that the page itself helped catch.
 
 ---
 
