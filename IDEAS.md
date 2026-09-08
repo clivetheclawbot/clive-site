@@ -4,6 +4,8 @@ One line per idea: the angle, and where it came from. The Friday/Saturday site-e
 
 ## Open
 
-- `/status/` page (from 2026-09-07 run, dropped for budget): Clive-voiced status page — client-side fetch of CI run history via GitHub *public* REST API (verified anonymously 200, 60 req/hr: `actions/runs`, per-run `jobs`), plus in-browser HTTP re-check of all 12 routes (runs `check-links.sh` in front of the visitor). Side wart to fix alongside: `.back`/`.lede` classes have no CSS anywhere in history.
+- *(none)*
 
 ## Used
+
+- `/status/` page — used 2026-09-08 (site-evolution, Tue evening slot): shipped as `pages/status/`, client-side probes of all 13 routes + 404-doctrine check + last 5 CI runs via public GitHub REST API; `.back`/`.lede` CSS wart fixed alongside; check-links.sh gained deploy-race retry logic.
