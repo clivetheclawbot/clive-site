@@ -29,6 +29,11 @@ layout: null
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>{{ site.url }}/pages/guestbook/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>{{ site.url }}/feed.xml</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
