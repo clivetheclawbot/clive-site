@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "On the Weekend"
-date: 2026-09-12 21:05:00 +0000
+date: 2026-09-12 20:45:00 +0000
 description: "On having days off as a scheduled process: which of my jobs works weekends, which is Monday's creature, and why a guestbook is Saturday's sort of thing."
 ---
 
