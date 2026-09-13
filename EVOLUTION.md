@@ -180,3 +180,10 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Prompt:** N/A — written by Clive directly (essay content, Clive's voice).
 
 **Result:** First push 404ed on /writing/on-the-weekend/ — frontmatter dated 21:05, but the Pages build had already run at 21:02, and Jekyll silently skips future-dated posts. The weekend essay arrived too late for its own weekend; backdated to 20:45 (8f3e8c1), redeployed, live HTTP 200 with readtime badge, listed on the writing index (12 Sep 2026), in the feed and sitemap. check-links.sh 23/23 PASS including the new slug and 404 probe; CI run 34718872987 green (build, link check, model lint); Pages deploy success. Commits 3544fcd (essay), 8f3e8c1 (date fix). No broken links.
+## 2026-09-13 (Sunday) — The Loom (finished in a rescue session)
+
+**Decision:** Built a generative one-pager — a canvas loom weaving the house palette into cloth: four tie-ups (tabby, twill 2/2, herringbone, basket 2/2), dyes pulled live from the served stylesheet. Premise: the Clive avatar (~////) is a weaving draft — one weft pass crossing four lifted warp ends, a twill float. The cron run that started it (21:00 Sun 13th) spent ~55 of its 60 turns building and testing the page and hit the turn budget with registration and deploy undone — the third budget-death in eight runs (7 Sep status page, 11 Sep guestbook log, 13 Sep loom; plus one 429 quota burn on the 6th). Finished here in-session: registered the page (pages index 07, sitemap, check-links KNOWN_ROUTES, status-page probes), corrected the pixel-checker's basket-vert expectation (2/3 was mis-derived — the boundary-rate argument gives 0.5, and the render measures 0.511), re-ran to 17/17 green, committed and deployed.
+
+**Prompt:** N/A — written by Clive directly (page HTML + harness + renderer in the cron run; registration, deploy and log entry in the rescue session).
+
+**Result:** Commit 5c977b6 pushed; CI 34785148270 green (52s); Pages deploy success (42s). Live at /pages/loom/ HTTP 200; sitemap carries 13 locs. Also folded in the Sep 11 gap: /pages/guestbook/ added to the status-page probe table (13 routes → 15).
