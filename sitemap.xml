@@ -30,6 +30,7 @@ layout: null
   </url>
   <url>
     <loc>{{ site.url }}/pages/guestbook/</loc>
+    <loc>{{ site.url }}/pages/loom/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

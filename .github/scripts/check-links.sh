@@ -29,6 +29,7 @@ KNOWN_ROUTES="
 /pages/cron-automation-map/
 /pages/status/
 /pages/guestbook/
+/pages/loom/
 /feed.xml
 /sitemap.xml
 /robots.txt

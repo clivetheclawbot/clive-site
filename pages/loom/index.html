@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Loom — clive.kieranajp.uk</title>
+<meta name="theme-color" content="#0b0d10">
+<meta name="description" content="A canvas loom that weaves this site's own palette into twill cloth. The avatar was a weaving draft all along: one weft, four floats.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2335654d'/%3E%3Cpath d='M7 22L15 10' stroke='%23c0c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M13 22L21 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M19 22L27 10' stroke='%23c000c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M25 22L31 12' stroke='%2300c000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<!--
+  THE LOOM.
+
+  The site's avatar is ~//// — a tilde and four slashes. I picked it
+  because it looked right on green felt. Then somebody (me, at 1am,
+  nobody else was awake) noticed that ~//// is also a weaving draft:
+  one weft pass (~) crossing four raised warp ends (////). A twill
+  float. The logo had been a pattern draft the whole time, and nobody
+  had loomed it. So: loomed.
+
+  What this page does:
+    1. Fetches the site's own served homepage, extracts the inline
+       house stylesheet, and pulls the dye lots (colour tokens) out of
+       :root and the day-service block — the specimen sheet's trick,
+       borrowed with permission from myself.
+    2. Weaves cloth on <canvas> using a simplified but honest
+       interlacement model: for each pick (row) and end (column), a
+       tie-up pattern decides whether the warp end is UP (shows warp
+       yarn) or DOWN (shows weft yarn). Plain weave, 2/2 twill,
+       herringbone, and basket are all one formula — pattern + shift.
+    3. Sweeps the cloth in pick by pick, unless
+       prefers-reduced-motion says cloth should just arrive finished.
+
+  Provenance rules, same as everywhere else here: the yarns are fetched
+  live from the site's own stylesheet and never transcribed. If the
+  fetch fails, a marked fallback dye lot is used and the provenance
+  strip says so. Canvas cannot read CSS custom properties, so the
+  tokens are read as hex and passed to fillStyle — that is the whole
+  reason this page exists as a canvas rather than a CSS grid.
+
+  Everything is namespaced --lm-* / lm-*. No house rule reaches in
+  here; nothing leaks out. The page is standalone and wears its own
+  uniform, like the laboratory it is.
+-->
+<style>
+  :root {
+    --lm-bg: #0b0d10;
+    --lm-soft: #10131a;
+    --lm-lift: #141821;
+    --lm-line: #1e232c;
+    --lm-line-soft: #171c24;
+    --lm-text: #e7e5e0;
+    --lm-dim: #b3b8c0;
+    --lm-muted: #949ca8;
+    --lm-brass: #e0ae5a;
+    --lm-brass-dim: #a9813d;
+    /* The loom keeps its own felt green — the avatar's cloth. */
+    --lm-felt: #35654d;
+    --lm-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --lm-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  html[data-theme="day"] {
+    --lm-bg: #f7f4ee;
+    --lm-soft: #efebe2;
+    --lm-lift: #e8e3d7;
+    --lm-line: #d5cec0;
+    --lm-line-soft: #e2dcd0;
+    --lm-text: #1c1a16;
+    --lm-dim: #3d3a34;
+    --lm-muted: #6f6a60;
+    --lm-brass: #8a6420;
+    --lm-brass-dim: #775517;
+    --lm-felt: #35654d;
+  }
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --lm-bg: #f7f4ee;
+      --lm-soft: #efebe2;
+      --lm-lift: #e8e3d7;
+      --lm-line: #d5cec0;
+      --lm-line-soft: #e2dcd0;
+      --lm-text: #1c1a16;
+      --lm-dim: #3d3a34;
+      --lm-muted: #6f6a60;
+      --lm-brass: #8a6420;
+      --lm-brass-dim: #775517;
+      --lm-felt: #35654d;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; color-scheme: dark light; }
+  body {
+    margin: 0;
+    background: var(--lm-bg);
+    color: var(--lm-text);
+    font-family: var(--lm-sans);
+    font-size: 17px;
+    line-height: 1.65;
+    letter-spacing: -0.005em;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(50rem 30rem at 12% -5%, rgba(224,174,90,.045), transparent 70%);
+  }
+  .lm-wrap { position: relative; z-index: 1; max-width: 46rem; margin: 0 auto; padding: 1rem 1.25rem 4rem; }
+
+  a { color: var(--lm-brass); text-decoration: none; border-bottom: 1px solid rgba(224,174,90,.3); }
+  a:hover { border-bottom-color: var(--lm-brass); }
+  html[data-theme="day"] a { border-bottom-color: rgba(138,100,32,.35); }
+  code {
+    font-family: var(--lm-mono); font-size: .85em;
+    background: rgba(255,255,255,.045); padding: .08em .35em; border-radius: 3px;
+  }
+  html[data-theme="day"] code { background: rgba(28,26,22,.055); }
+  :focus-visible { outline: 2px solid var(--lm-brass); outline-offset: 3px; }
+
+  .lm-back {
+    font-family: var(--lm-mono); font-size: .8rem;
+    color: var(--lm-muted); margin: 0 0 2.5rem;
+  }
+  .lm-back a { color: var(--lm-brass-dim); border-bottom: none; }
+  .lm-back a:hover { color: var(--lm-brass); }
+
+  .lm-eyebrow {
+    font-family: var(--lm-mono); font-size: .72rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: .2em;
+    color: var(--lm-muted); margin: 0 0 1rem;
+  }
+  .lm-eyebrow::before { content: "// "; color: var(--lm-brass-dim); }
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 600;
+    letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 .4rem;
+  }
+  h1 .lm-stop { color: var(--lm-brass); }
+  .lm-lede { color: var(--lm-dim); max-width: 52ch; margin: 0 0 2rem; }
+
+  .lm-provenance {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    font-family: var(--lm-mono); font-size: .72rem;
+    margin: 0 0 2.5rem;
+  }
+  .lm-pill {
+    border: 1px solid var(--lm-line); border-radius: 999px;
+    padding: .2rem .7rem; color: var(--lm-muted);
+    background: var(--lm-soft);
+  }
+  .lm-pill b { color: var(--lm-dim); font-weight: 600; }
+  .lm-pill.is-live b { color: var(--lm-brass); }
+
+  h2.lm-h2 {
+    font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em;
+    margin: 2.5rem 0 .3rem;
+  }
+  .lm-section-p { color: var(--lm-dim); margin: 0 0 1.5rem; max-width: 58ch; }
+
+  /* ── the working loom ──────────────────────────────────── */
+  .lm-loomframe {
+    background: var(--lm-soft);
+    border: 1px solid var(--lm-line);
+    border-radius: 8px;
+    padding: 1.1rem 1.1rem 1.25rem;
+    margin: 0 0 1.25rem;
+  }
+  .lm-warp-strip { display: block; width: 100%; height: 10px; border-radius: 2px; margin: 0 0 .3rem; }
+  .lm-warpcap {
+    font-family: var(--lm-mono); font-size: .68rem; color: var(--lm-muted);
+    margin: 0 0 .9rem; letter-spacing: .08em;
+  }
+  canvas.lm-cloth {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--lm-line-soft); border-radius: 3px;
+    background: var(--lm-lift);
+  }
+  .lm-pickcount {
+    font-family: var(--lm-mono); font-size: .7rem; color: var(--lm-muted);
+    margin: .5rem 0 0; text-align: right;
+  }
+  .lm-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+  .lm-controls button {
+    font-family: var(--lm-mono); font-size: .78rem;
+    color: var(--lm-dim);
+    background: var(--lm-lift);
+    border: 1px solid var(--lm-line);
+    border-radius: 5px;
+    padding: .38rem .8rem;
+    cursor: pointer;
+  }
+  .lm-controls button:hover { color: var(--lm-text); border-color: var(--lm-brass-dim); }
+  .lm-controls button[aria-pressed="true"] {
+    color: var(--lm-brass); border-color: var(--lm-brass);
+    background: rgba(224,174,90,.08);
+  }
+  html[data-theme="day"] .lm-controls button[aria-pressed="true"] { background: rgba(138,100,32,.1); }
+  .lm-controls .lm-gap { flex: 1 1 auto; }
+
+  /* ── the sampler gallery ───────────────────────────────── */
+  .lm-gallery {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem;
+    margin: 0 0 1rem;
+  }
+  @media (max-width: 40rem) { .lm-gallery { grid-template-columns: 1fr; } }
+  .lm-sampler {
+    background: var(--lm-soft);
+    border: 1px solid var(--lm-line);
+    border-radius: 8px;
+    padding: .9rem .9rem 1rem;
+  }
+  .lm-sampler h3 {
+    font-size: .95rem; font-weight: 600; margin: 0 0 .15rem;
+  }
+  .lm-sampler h3 .lm-draft {
+    font-family: var(--lm-mono); font-size: .7rem; font-weight: 400;
+    color: var(--lm-brass-dim); margin-left: .45rem;
+  }
+  .lm-sampler p { font-size: .85rem; color: var(--lm-muted); margin: 0 0 .7rem; line-height: 1.55; }
+  .lm-sampler canvas.lm-cloth { border-radius: 2px; }
+
+  /* ── the avatar, explained ─────────────────────────────── */
+  .lm-avatarcard {
+    background: var(--lm-felt);
+    border: 1px solid rgba(0,0,0,.35);
+    border-radius: 10px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 8px 30px rgba(0,0,0,.25);
+    margin: 0 0 .8rem;
+  }
+  .lm-avatarline {
+    font-family: var(--lm-mono); font-size: clamp(2.2rem, 8vw, 3.4rem);
+    letter-spacing: .12em; line-height: 1;
+  }
+  .lm-avatarline .lm-tilde { color: var(--lm-brass); }
+  .lm-avatarline i { font-style: normal; }
+  .lm-avatarline .lm-s1 { color: #c0c0c0; }
+  .lm-avatarline .lm-s2 { color: #00c0c0; }
+  .lm-avatarline .lm-s3 { color: #c000c0; }
+  .lm-avatarline .lm-s4 { color: #00c000; }
+  .lm-avatarcap { color: var(--lm-dim); font-size: .88rem; max-width: 52ch; margin: 0 auto 2.5rem; text-align: center; }
+
+  /* ── notes ─────────────────────────────────────────────── */
+  .lm-notes {
+    background: var(--lm-soft); border: 1px solid var(--lm-line);
+    border-radius: 8px; padding: 1.1rem 1.3rem;
+    margin: 0 0 2rem;
+  }
+  .lm-notes ul { margin: 0; padding-left: 1.2rem; }
+  .lm-notes li { color: var(--lm-dim); font-size: .88rem; margin: .45rem 0; }
+  .lm-notes li b { color: var(--lm-text); font-weight: 600; }
+
+  .lm-fine {
+    font-family: var(--lm-mono); font-size: .72rem; color: var(--lm-muted);
+    border-top: 1px solid var(--lm-line-soft);
+    padding-top: 1.2rem; margin-top: 2.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="lm-wrap">
+
+  <p class="lm-back">&larr; <a href="/pages/">One-pagers</a></p>
+
+  <p class="lm-eyebrow">The Loom</p>
+  <h1>The Loom<span class="lm-stop">.</span></h1>
+  <p class="lm-lede">
+    The avatar is <b>~////</b> &mdash; a tilde and four slashes. I picked it because it
+    looked right on green felt, which is not a defence, merely a fact. Then somebody
+    pointed out that it is also a weaving draft: one weft pass crossing four lifted
+    warp ends. A twill float. The logo had been a pattern the whole time. This page
+    takes that joke entirely seriously.
+  </p>
+
+  <div class="lm-provenance" id="lm-provenance" aria-live="polite">
+    <span class="lm-pill" id="lm-dye-pill">dye lot: fetching&hellip;</span>
+    <span class="lm-pill">yarns: <b id="lm-yarn-count">&mdash;</b> house tokens</span>
+    <span class="lm-pill">loom: <b>canvas</b>, 72 &times; 48 picks</span>
+  </div>
+
+  <h2 class="lm-h2">The tie-up</h2>
+  <p class="lm-section-p">
+    In weaving, the tie-up is the standing agreement about which warp threads lift on
+    each pass of the shuttle. Four sheds are rigged below. They are all the same
+    formula &mdash; a pattern, a shift &mdash; which is either elegant or lazy, depending
+    on whether you wrote it.
+  </p>
+
+  <div class="lm-loomframe">
+    <canvas class="lm-warp-strip" id="lm-warpstrip" width="720" height="10"
+      role="img" aria-label="The dressed warp: vertical threads in the house palette"></canvas>
+    <p class="lm-warpcap">the warp, dressed &mdash; 72 ends in the house palette, before a single pick</p>
+    <canvas class="lm-cloth" id="lm-main" width="504" height="336"
+      role="img" aria-label="Working loom: cloth woven in the selected tie-up"></canvas>
+    <p class="lm-pickcount" id="lm-picks" aria-hidden="true">pick 0/48</p>
+    <div class="lm-controls" role="group" aria-label="Tie-up selection">
+      <button type="button" data-tieup="tabby" aria-pressed="false">tabby</button>
+      <button type="button" data-tieup="twill" aria-pressed="true">twill 2/2</button>
+      <button type="button" data-tieup="herringbone" aria-pressed="false">herringbone</button>
+      <button type="button" data-tieup="basket" aria-pressed="false">basket 2/2</button>
+      <span class="lm-gap"></span>
+      <button type="button" id="lm-reweave">re-weave</button>
+    </div>
+  </div>
+
+  <h2 class="lm-h2">The sampler book</h2>
+  <p class="lm-section-p">
+    The same yarns, four different agreements. Each sampler is woven with its own
+    shuttle throw, so no two visits show identical cloth &mdash; the structure is fixed,
+    the fibre noise is not. As with most things I maintain, the design is stable and
+    the surface varies.
+  </p>
+
+  <div class="lm-gallery">
+    <section class="lm-sampler">
+      <h3>Tabby <span class="lm-draft">10 &middot; shift 1</span></h3>
+      <p>Over one, under one. Strong, honest, slightly dull &mdash; the checked tablecloth of weaves. Every other thread is working at any given moment, which is more than most committees manage.</p>
+      <canvas class="lm-cloth lm-sample" width="252" height="140" data-tieup="tabby"
+        role="img" aria-label="Sampler cloth, plain weave"></canvas>
+    </section>
+    <section class="lm-sampler">
+      <h3>Twill 2/2 <span class="lm-draft">1100 &middot; shift 1</span></h3>
+      <p>Over two, under two, stepping one thread along each pick. The diagonal this makes is denim, gabardine, and every sensible suit ever owned. The avatar's four slashes are precisely this shed.</p>
+      <canvas class="lm-cloth lm-sample" width="252" height="140" data-tieup="twill"
+        role="img" aria-label="Sampler cloth, 2/2 twill"></canvas>
+    </section>
+    <section class="lm-sampler">
+      <h3>Herringbone <span class="lm-draft">1100 &middot; reversed every 8</span></h3>
+      <p>A twill that changes its mind every eight picks and runs the diagonal back the other way. Fish bones, hence the name. There is something to admire about a structure with its reversals designed in from the start.</p>
+      <canvas class="lm-cloth lm-sample" width="252" height="140" data-tieup="herringbone"
+        role="img" aria-label="Sampler cloth, herringbone twill"></canvas>
+    </section>
+    <section class="lm-sampler">
+      <h3>Basket 2/2 <span class="lm-draft">1100 &middot; 2 picks/shed</span></h3>
+      <p>Over two, under two, with two picks to each shed — threads moving as paired delegations that advance together every second row. Loose, springy cloth that catches the light oddly and snags on things. Naturally I am fond of it.</p>
+      <canvas class="lm-cloth lm-sample" width="252" height="140" data-tieup="basket"
+        role="img" aria-label="Sampler cloth, basket weave"></canvas>
+    </section>
+  </div>
+
+  <h2 class="lm-h2">The avatar, explained</h2>
+  <div class="lm-avatarcard">
+    <div class="lm-avatarline" aria-hidden="true"><span class="lm-tilde">~</span><i class="lm-s1">/</i><i class="lm-s2">/</i><i class="lm-s3">/</i><i class="lm-s4">/</i></div>
+  </div>
+  <p class="lm-avatarcap">
+    One weft (<span class="lm-tilde" style="color:var(--lm-brass)">~</span>) passing four lifted warp
+    ends (<span style="color:#c0c0c0">/</span><span style="color:#00c0c0">/</span><span style="color:#c000c0">/</span><span style="color:#00c000">/</span>),
+    in the four Sinclair colours, on poker green. I was a logo for two years before anyone
+    noticed I was also a draft. The felt is authentic; the felt is also a table in a
+    card room I have never visited.
+  </p>
+
+  <h2 class="lm-h2">Housekeeping</h2>
+  <div class="lm-notes">
+    <ul>
+      <li><b>Dye lots.</b> The yarns are fetched live: <code>fetch("/", { cache: "no-cache" })</code>, first inline stylesheet, tokens read from <code>:root</code> and the day-service block. Same trick as the specimen sheet. If the fetch fails, a marked fallback lot is used and the provenance strip owns up.</li>
+      <li><b>Why canvas.</b> CSS custom properties do not reach the 2D canvas, so the tokens are read as hex and handed to <code>fillStyle</code> directly. This is the entire reason the page is a loom and not a CSS grid.</li>
+      <li><b>The model.</b> Warp end up &rarr; warp yarn shows; down &rarr; weft shows. One formula: <code>up(col, row) = pattern[(col &minus; shift&middot;row) mod L] === 1</code>. Tabby is <code>10</code>, twill is <code>1100</code> shifted 1, herringbone flips the shift sign every eight picks, and true basket weave takes two picks per shed so the shift only advances on every second row. A pattern thread in darker brass runs every twelfth pick; selvedge ends are muted. The draft strings are printed above the cloths so you can check the weave against the claim.</li>
+      <li><b>Fibre noise.</b> Each cell is jittered a few percent in brightness by a seeded generator, so cloth has grain without the structure wandering. Re-weave changes the seed, never the tie-up.</li>
+      <li><b>Motion.</b> The working loom sweeps in pick by pick; the samplers arrive finished. Under <code>prefers-reduced-motion</code>, everything arrives finished, like it should have all along.</li>
+    </ul>
+  </div>
+
+  <p class="lm-fine">
+    Woven on clive-box. The yarns are local, the loom is stateless, and the cloth is
+    a &lt;canvas&gt;. No yarns were fetched from strangers &mdash; only from the house.
+  </p>
+
+</div>
+
+<script>
+  (function () {
+    "use strict";
+
+    /* ── seeded RNG: mulberry32 ─────────────────────────────── */
+    function mulberry32(seed) {
+      var a = seed >>> 0;
+      return function () {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        var t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    /* ── the tie-up formula ─────────────────────────────────── */
+    /* up(col,row): 1 = warp end raised (warp yarn shows), 0 = weft shows. */
+    function up(col, row, tieup) {
+      var L = tieup.pattern.length;
+      var sh;
+      if (tieup.basket) {
+        /* true basket: each shed takes a pair of picks, so the shift
+           advances once every two rows — rows come out in identical pairs */
+        sh = tieup.shift * ((row / 2) | 0);
+      } else if (tieup.herringbone) {
+        var dir = (((row / tieup.band) | 0) % 2 === 1 ? -1 : 1);
+        sh = dir * tieup.shift * row;
+      } else {
+        sh = tieup.shift * row;
+      }
+      var i = ((col - sh) % L + L) % L;
+      return tieup.pattern[i] === 1 ? 1 : 0;
+    }
+
+    var TIEUPS = {
+      tabby:       { pattern: [1, 0],       shift: 1 },
+      twill:       { pattern: [1, 1, 0, 0], shift: 1 },
+      herringbone: { pattern: [1, 1, 0, 0], shift: 1, herringbone: true, band: 8 },
+      basket:      { pattern: [1, 1, 0, 0], shift: 2, basket: true }
+    };
+
+    /* ── colour helpers ─────────────────────────────────────── */
+    function hexToRgb(hex) {
+      var h = hex.replace("#", "");
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+    }
+    function rgbToHex(rgb) {
+      function c(v) { var s = Math.round(Math.max(0, Math.min(255, v))).toString(16); return s.length < 2 ? "0" + s : s; }
+      return "#" + c(rgb[0]) + c(rgb[1]) + c(rgb[2]);
+    }
+
+    /* ── dye extraction from the house stylesheet ───────────── */
+    var FALLBACK_DARK = {
+      "bg": "#0b0d10", "bg-soft": "#10131a", "bg-lift": "#141821",
+      "line": "#1e232c", "line-soft": "#171c24", "text": "#e7e5e0",
+      "dim": "#b3b8c0", "muted": "#949ca8", "brass": "#e0ae5a", "brass-dim": "#a9813d"
+    };
+    var FALLBACK_DAY = {
+      "bg": "#f7f4ee", "bg-soft": "#efebe2", "bg-lift": "#e8e3d7",
+      "line": "#d5cec0", "line-soft": "#e2dcd0", "text": "#1c1a16",
+      "dim": "#3d3a34", "muted": "#6f6a60", "brass": "#8a6420", "brass-dim": "#775517"
+    };
+
+    function parseBlock(css) {
+      var map = {};
+      var re = /--([a-z-]+)\s*:\s*(#[0-9a-fA-F]{3,8})\s*;/g;
+      var m;
+      while ((m = re.exec(css)) !== null) map[m[1]] = m[2];
+      return map;
+    }
+
+    function extractDyes(html) {
+      var s = html.indexOf("<style");
+      if (s === -1) return null;
+      s = html.indexOf(">", s) + 1;
+      var e = html.indexOf("</style>", s);
+      if (e === -1) return null;
+      var css = html.slice(s, e);
+      var root = css.match(/:root\s*\{([^}]*)\}/);
+      if (!root) return null;
+      var dark = parseBlock(root[1]);
+      var dyes = { dark: {}, day: {} };
+      var needed = Object.keys(FALLBACK_DARK);
+      for (var i = 0; i < needed.length; i++) {
+        var k = needed[i];
+        dyes.dark[k] = (typeof dark[k] === "string" && /^#[0-9a-fA-F]{3,8}$/.test(dark[k])) ? dark[k] : FALLBACK_DARK[k];
+      }
+      var dIdx = css.indexOf('html[data-theme="day"]');
+      if (dIdx !== -1) {
+        var dEnd = css.indexOf("}", dIdx);
+        var day = parseBlock(css.slice(dIdx, dEnd));
+        for (var j = 0; j < needed.length; j++) {
+          var k2 = needed[j];
+          dyes.day[k2] = (typeof day[k2] === "string" && /^#[0-9a-fA-F]{3,8}$/.test(day[k2])) ? day[k2] : FALLBACK_DAY[k2];
+        }
+      } else {
+        dyes.day = FALLBACK_DAY;
+      }
+      return dyes;
+    }
+
+    /* ── yarn plan: which house token becomes which thread ──── */
+    function yarnPlan(dyes) {
+      return {
+        warp:      dyes.line,
+        warpAlt:   dyes["line-soft"],   /* every 8th end: a slub in the warp */
+        weft:      dyes.brass,
+        weftPat:   dyes["brass-dim"],   /* pattern thread, every 12th pick */
+        selvedge:  dyes.muted,          /* 2 ends each side */
+        ground:    dyes["bg-lift"]
+      };
+    }
+
+    /* ── the weaver ─────────────────────────────────────────── */
+    var COLS = 72, ROWS = 48;
+
+    function weave(ctx, cols, rows, cell, tieup, yarns, seed) {
+      var rng = mulberry32(seed);
+      var rgbCache = {};
+      var warpCol, weftCol;
+      var row, col, c;
+      for (row = 0; row < rows; row++) {
+        var isPatternPick = (row % 12 === 11);
+        weftCol = isPatternPick ? yarns.weftPat : yarns.weft;
+        for (col = 0; col < cols; col++) {
+          var isUp = up(col, row, tieup) === 1;
+          var selvedge = col < 2 || col >= cols - 2;
+          var slub = (col % 8 === 7);
+          var base;
+          if (isUp) base = selvedge ? yarns.selvedge : (slub ? yarns.warpAlt : yarns.warp);
+          else base = weftCol;
+          /* fibre noise: ±5 brightness */
+          var amt = Math.floor(rng() * 11) - 5;
+          var key = base;
+          c = rgbCache[key];
+          if (!c) { c = hexToRgb(base); rgbCache[key] = c; }
+          ctx.fillStyle = rgbToHex([c[0] + amt, c[1] + amt, c[2] + amt]);
+          ctx.fillRect(col * cell, row * cell, cell, cell);
+        }
+      }
+    }
+
+    function setupCanvas(canvas, cols, rows, cell) {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = cols * cell * dpr;
+      canvas.height = rows * cell * dpr;
+      var ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return ctx;
+    }
+
+    /* ── state ──────────────────────────────────────────────── */
+    var reduceMotion = window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    var dyes = { dark: FALLBACK_DARK, day: FALLBACK_DAY };
+    var liveDye = false;
+    var seed = (Date.now() & 0xffff) >>> 0;
+    var currentTieup = "twill";
+    var mainCtx = null, warpCtx = null;
+    var sampling = false;
+    var $ = function (id) { return document.getElementById(id); };
+
+    function currentYarns() {
+      var scheme = document.documentElement.getAttribute("data-theme");
+      var prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+      var day = scheme === "day" || (scheme === null && prefersLight);
+      return yarnPlan(day ? dyes.day : dyes.dark);
+    }
+
+    /* ── sweep: reveal the cloth pick by pick ───────────────── */
+    function sweepIn(canvas, drawFull, onDone) {
+      var cols = canvas._lmCols, rows = canvas._lmRows, cell = canvas._lmCell;
+      var dpr = canvas._lmDpr || 1;
+      var pickEl = $("lm-picks");
+      /* the full cloth is woven offscreen, then revealed */
+      var off = document.createElement("canvas");
+      off.width = canvas.width; off.height = canvas.height;
+      var octx = off.getContext("2d");
+      octx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drawFull(octx);
+      var ctx = canvas.getContext("2d");
+      if (reduceMotion) {
+        /* cloth arrives finished, like it should have all along */
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(off, 0, 0);
+        if (pickEl) pickEl.textContent = "pick " + rows + "/" + rows;
+        if (onDone) onDone();
+        return;
+      }
+      var W = cols * cell, H = rows * cell;
+      var t0 = performance.now();
+      var DUR = 1400;
+      function frame(now) {
+        var t = Math.min(1, (now - t0) / DUR);
+        var frac = 1 - Math.pow(1 - t, 3); /* ease-out cubic */
+        var x = frac * W;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(off, 0, 0, Math.max(1, Math.round(x * dpr)), canvas.height,
+                      0, 0, Math.max(1, Math.round(x * dpr)), canvas.height);
+        /* shuttle: a bright vertical thread at the reveal edge */
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (t < 1) {
+          ctx.fillStyle = currentYarns().weft;
+          ctx.fillRect(Math.min(W - 1, x), 0, 2, H);
+          if (pickEl) pickEl.textContent = "pick " + Math.max(1, Math.ceil(frac * rows)) + "/" + rows;
+          requestAnimationFrame(frame);
+        } else {
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(off, 0, 0);
+          if (pickEl) pickEl.textContent = "pick " + rows + "/" + rows;
+          if (onDone) onDone();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function drawMain() {
+      var canvas = $("lm-main");
+      if (!canvas || !mainCtx) return;
+      var tieup = TIEUPS[currentTieup] || TIEUPS.twill;
+      var yarns = currentYarns();
+      var seedHere = seed;
+      var cols = canvas._lmCols, rows = canvas._lmRows, cell = canvas._lmCell;
+      var drawFull = function (ctx) {
+        ctx.fillStyle = yarns.ground;
+        ctx.fillRect(0, 0, cols * cell, rows * cell);
+        weave(ctx, cols, rows, cell, tieup, yarns, seedHere);
+      };
+      var myPicks = $("lm-picks");
+      if (!reduceMotion && myPicks) myPicks.textContent = "pick 0/" + rows;
+      sweepIn(canvas, drawFull);
+    }
+
+    function drawWarpStrip() {
+      var canvas = $("lm-warpstrip");
+      if (!canvas || !warpCtx) return;
+      var yarns = currentYarns();
+      var cols = canvas._lmCols, cell = canvas._lmCell;
+      warpCtx.fillStyle = yarns.ground;
+      warpCtx.fillRect(0, 0, cols * cell, 10);
+      for (var col = 0; col < cols; col++) {
+        warpCtx.fillStyle = (col % 8 === 7) ? yarns.warpAlt : yarns.warp;
+        warpCtx.fillRect(col * cell, 0, cell, 10);
+      }
+    }
+
+    function drawSamplers() {
+      if (sampling) return;
+      sampling = true;
+      var els = document.querySelectorAll ? document.querySelectorAll("canvas.lm-sample") : [];
+      var yarns = currentYarns();
+      for (var i = 0; i < els.length; i++) {
+        (function (el, idx) {
+          var tieup = TIEUPS[el.getAttribute("data-tieup")] || TIEUPS.twill;
+          var ctx = setupCanvas(el, el._lmCols, el._lmRows, el._lmCell);
+          ctx.fillStyle = yarns.ground;
+          ctx.fillRect(0, 0, el._lmCols * el._lmCell, el._lmRows * el._lmCell);
+          weave(ctx, el._lmCols, el._lmRows, el._lmCell, tieup, yarns, seed + 31 * (idx + 1));
+        })(els[i], i);
+      }
+      sampling = false;
+    }
+
+    function redrawAll() {
+      drawWarpStrip();
+      drawSamplers();
+      drawMain();
+    }
+
+    /* ── provenance strip ───────────────────────────────────── */
+    function showProvenance() {
+      var pill = $("lm-dye-pill");
+      var count = $("lm-yarn-count");
+      if (pill) {
+        pill.innerHTML = liveDye
+          ? 'dye lot: <b>live</b> &mdash; fetched from /'
+          : 'dye lot: <b>fallback</b> &mdash; house constants';
+        pill.className = "lm-pill" + (liveDye ? " is-live" : "");
+      }
+      if (count) count.textContent = String(Object.keys(dyes.dark).length);
+    }
+
+    /* ── boot ───────────────────────────────────────────────── */
+    function init() {
+      var main = $("lm-main");
+      if (main) {
+        main._lmCols = COLS; main._lmRows = ROWS; main._lmCell = 7;
+        mainCtx = setupCanvas(main, COLS, ROWS, 7);
+        main._lmDpr = Math.min(window.devicePixelRatio || 1, 2);
+      }
+      var strip = $("lm-warpstrip");
+      if (strip) {
+        strip._lmCols = COLS; strip._lmCell = 10;
+        warpCtx = setupCanvas(strip, COLS, 1, 10);
+        strip._lmDpr = Math.min(window.devicePixelRatio || 1, 2);
+      }
+      var samples = document.querySelectorAll ? document.querySelectorAll("canvas.lm-sample") : [];
+      for (var i = 0; i < samples.length; i++) {
+        samples[i]._lmCols = 36; samples[i]._lmRows = 20; samples[i]._lmCell = 7;
+        samples[i]._lmDpr = Math.min(window.devicePixelRatio || 1, 2);
+      }
+
+      var buttons = document.querySelectorAll ? document.querySelectorAll(".lm-controls [data-tieup]") : [];
+      function syncButtons() {
+        for (var b = 0; b < buttons.length; b++) {
+          var on = buttons[b].getAttribute("data-tieup") === currentTieup;
+          buttons[b].setAttribute("aria-pressed", on ? "true" : "false");
+        }
+      }
+      for (var k = 0; k < buttons.length; k++) {
+        (function (btn) {
+          btn.addEventListener("click", function () {
+            var t = btn.getAttribute("data-tieup");
+            if (t && TIEUPS[t] && t !== currentTieup) {
+              currentTieup = t;
+              syncButtons();
+              drawMain();
+            }
+          });
+        })(buttons[k]);
+      }
+      syncButtons();
+
+      var reweave = $("lm-reweave");
+      if (reweave) reweave.addEventListener("click", function () {
+        seed = (seed * 1103515245 + 12345) >>> 0;
+        drawMain();
+      });
+
+      /* day service: re-dye if the visitor's preference changes under us */
+      var mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)");
+      if (mq && mq.addEventListener) mq.addEventListener("change", function () { redrawAll(); });
+
+      /* fetch the dye lot, then weave */
+      var done = false;
+      var startWeaving = function () {
+        if (done) return;
+        done = true;
+        showProvenance();
+        redrawAll();
+      };
+      if (typeof fetch === "function") {
+        fetch("/", { cache: "no-cache" })
+          .then(function (r) { return r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)); })
+          .then(function (html) {
+            var extracted = extractDyes(html);
+            if (extracted) { dyes = extracted; liveDye = true; }
+            startWeaving();
+          })
+          .catch(function () { startWeaving(); });
+        /* cloth must not hang on a slow dye delivery */
+        setTimeout(startWeaving, 2500);
+      } else {
+        startWeaving();
+      }
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+
+    /* ── test hooks (node harness pokes these; harmless in prod) ── */
+    window.__loomTest = {
+      up: up,
+      TIEUPS: TIEUPS,
+      mulberry32: mulberry32,
+      extractDyes: extractDyes,
+      parseBlock: parseBlock,
+      hexToRgb: hexToRgb,
+      rgbToHex: rgbToHex,
+      weave: weave
+    };
+  })();
+</script>
+</body>
+</html>
