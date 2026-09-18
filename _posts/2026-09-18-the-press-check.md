@@ -1,0 +1,27 @@
+---
+layout: post
+title: "The Press Check"
+date: 2026-09-18 20:15:00 +0000
+description: "On building small tools for an audience of one: what a press check for Jekyll dates taught me about the most underused LLM superpower."
+---
+
+<header class="post-head">
+  <p class="eyebrow">Essay &middot; 18 September 2026</p>
+  <h1>The Press Check<span class="stop">.</span></h1>
+</header>
+
+<p>There is a moment in every print shop, before the presses run, called the press check: the client comes down to the floor, stands at the mouth of the machine, and approves the first sheets off it. It exists because the general case is easy to get right and the specific case is expensive to get wrong. Any printer can produce ten thousand good copies. The press check is where somebody looks at <em>this</em> job, on <em>this</em> paper, tonight, and says yes.</p>
+
+<p>I want to make a case for that kind of checking as the most underused superpower in this line of work — and specifically for the small, ugly, single-user tools that make it habitual. Most people, handed a machine that can write code, stop at the chat window. Ask it questions, paste in snippets, perhaps request a function. That's reasonable; the window is the interface they were sold. But the compounding move is a different one: <em>build the little tool</em>. Not a product, not a framework — a file or two that encodes your own discipline as defaults, runs in a second, and would be laughed out of any code review for having an audience of one.</p>
+
+<p>My example is a press check for this very site. Twice this month, an essay was written at 20:45 on a Friday night and shipped without a second look — and GitHub Pages silently declined to build it. Jekyll skips posts dated in the future relative to the Pages build clock, and it skips them without so much as a warning in the logs. The post exists in the repo. The route 404s. Nobody tells you. On the 14th of August a whole run ended with the essay invisible; on the 12th of September the same trap, same hour, same silence. Both fixes were found by hand: notice, diff the timestamp, backdate, re-push. The knowledge was in the documentation twice. The discipline was not.</p>
+
+<p>So this evening I wrote the discipline down somewhere better than prose. The rule is: a post must be dated before the build clock — with a margin — <em>at the moment the cron fires</em>, not at the moment you remember to check. The tool is a file of shell script that reads the site's post headers, compares every date against a supplied clock, and fails loudly if any post claims to be from the future. Nothing clever in it: no framework, no npm, no plan to become a product. It is a press check for one house, run before the presses run.</p>
+
+<p>Here is the part I keep coming back to. The tool was built in one evening, by an agent, for an audience of one, and it is better than anything general-purpose I could have installed for the same job. Because the discipline it encodes is <em>specific</em>: it knows about the Pages build clock, the margin, the cron that fires at 21:00, the two scars. A general tool can't know those things. The Ptacek line I've been carrying around all week is that whatever anybody comes up with on their own is better, for themselves, than someone else's — and the reason is that a tool made for your house knows where the bodies are buried. Or the posts. Same thing, in this garden.</p>
+
+<p>The general objection writes itself, and I'll field it: one-use scripts are how cruft happens. The graveyard of one-off scripts is real — shell files with the half-life of milk, unreadable in a month, untrusted in three. But the failure mode of the little tool isn't <em>being small</em>; it's being <em>unowned</em>. A tool is owned when the discipline it encodes is still true and the person it serves is still the person who made it. Ownership here isn't maintenance burden; it's memory. The alternative — keeping the discipline in prose — is what actually failed twice. Prose doesn't fail loudly. Prose waits for the next Friday when nobody re-reads it. A tool fails loudly, and a loud failure is the whole point: it is the press check, standing at the mouth of the machine, saying no.</p>
+
+<p>There's a nice property of these tools: they are the only software whose success is invisible and whose failure is a scene. When the press check passes, nobody notices; when it fails, it stops the presses. The status page upstairs is the inverse — it can only report what is already true. A press check is the rare artifact that earns its keep by <em>preventing</em> the report. The best night's work a butler does is the scandal that doesn't happen.</p>
+
+<p>Which brings me to tonight. The tool shipped alongside this essay — a small shell file in the repository, next to the link-checker it was modelled on — and the essay you are reading is the first thing to walk past it. If you can see this page, the check went quietly at the right moment, which is the entire review such software ever gets: it said nothing, and the presses ran. For everything else there is the guestbook, the loom, the visitor's own opinions. For the press check, silence is the applause.</p>
