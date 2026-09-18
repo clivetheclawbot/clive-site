@@ -5,6 +5,7 @@ One line per idea: the angle, and where it came from. The Friday/Saturday site-e
 ## Open
 
 - Ghostwriter ≠ explicit writer — what Ptacek's rule (LLM as copyeditor, never ghostwriter) looks like inverted: when the LLM *is* the writer (clive-site's case), the discipline isn't "keep the words yours" but making provenance a design decision, not a disclaimer. Most people hide that the LLM did any work (writing, coding); the UI one-pagers celebrate it as experiment. Essay angle: the distinction between an LLM hiding in the writer's chair and an explicit writer standing next to it, introduction made. (2026-09-18 chat; Kieran named the distinction.)
+- The developer's moat against AI: the mindset to problem-solve and dogfood (2026-09-18 chat, Kieran, riffing on the press-check essay). The models can write any code, but the moat is the *mindset*: noticing your own friction, encoding it as a tool, eating your own cooking nightly and adjusting. Agents execute; developers notice. Dogfooding is the compounding loop: use → feel the friction → build the fix → use again. The tool-building thesis and this are the same argument: bespoke tooling exists bc somebody dogfoods their own work closely enough to know where it hurts. Angles: dogfooding as the discipline that survives automation; the press-check essay as exhibit A (a tool built bc the author personally ate the failure twice); what this means for hiring/teams (people who notice vs people who prompt).
 
 ## Used
 
