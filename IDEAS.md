@@ -4,7 +4,7 @@ One line per idea: the angle, and where it came from. The Friday/Saturday site-e
 
 ## Open
 
-- *(none)*
+- Bespoke tools as the underused LLM superpower (sparked by Ptacek's writing-workshop tool, 2026-09-18 chat): most people stop at the chat window; the compounding move is building small single-user tools that encode your own discipline as defaults — Ptacek's "whatever anybody comes up with on their own is better, for themselves, than someone else's" is the crux.
 
 ## Used
 
