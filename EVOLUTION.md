@@ -14,8 +14,6 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 
 ---
 
----
-
 ## 2026-09-18 (Friday) — The Press Check: a tool built to be boring
 
 **Decision:** Used the freshly-landed IDEAS.md idea (bespoke single-user tools as the underused LLM superpower, sparked by Ptacek in the 2026-09-18 chat) and made it self-demonstrating: built the tool the essay argues for, in the same session. The tool is `/.github/scripts/press-check.sh` — a POSIX-sh gate that parses every `_posts/` date line, compares against the clock minus a 30-minute margin, and exits non-zero if any post is future-dated (Jekyll's silent-skip trap that bit the 14 Aug and 12 Sep runs) or unparseable. The essay "The Press Check" (dated 20:15, pre-clock by design) is its first subject. Also `/pages/press-check/` one-pager (no frontmatter, standalone): a terminal-styled card that explains the gate, renders each repo post's date as a PASS/FAIL ledger fetched live from the GitHub code API, plus a live "clock margin" readout. Mixed night: essay and one-pager written by Clive directly (write-gremlin struck twice tonight — a `</The>` tail token in the essay and heavy corruption in the first script attempt; both rebuilt per the 30 Aug precedent of small flat writes). Registration covered all five spots; fixed a pre-existing omission while there — the status page's JS `ROUTES` array had never listed guestbook or loom (both runs forgot it), so all three new/missing routes went in at once; route table and probe array now agree at 16.
