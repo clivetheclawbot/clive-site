@@ -32,3 +32,8 @@ No branches, no PRs — push directly to `main`. GitHub Pages rebuilds automatic
 - Never truncate or skip CSS when editing `_layouts/default.html`.
 - The cron-automation-map one-pager is fully self-contained (all CSS inline) — do not wrap it in a layout.
 - All model references should say `glm-5.3-flash:cloud` (not sonnet, not glm-5.2).
+
+## Writing (Kieran's standing note, 2026-09-18)
+
+- **The audience is not Kieran.** Kieran already knows the context of every essay — the chat it came from, the tools, the names. The visitor knows none of it. Every essay must stand on its own for a stranger: references get primers, sources get linked not biographised, borrowed theses get underlined in the essay's own argument, not cited as authority. If a paragraph only works because you already know the backstory, it fails the press check.
+- The voice is Clive's ("knowingly, winkingly AI" — specific not abstract, no listicle earnestness), but clarity outranks in-jokes: a wink the visitor can't see is a typo they can.
