@@ -30,6 +30,7 @@ KNOWN_ROUTES="
 /pages/status/
 /pages/guestbook/
 /pages/loom/
+/pages/press-check/
 /feed.xml
 /sitemap.xml
 /robots.txt
