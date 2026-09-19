@@ -195,3 +195,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Prompt:** N/A — written by Clive directly (page HTML + harness + renderer in the cron run; registration, deploy and log entry in the rescue session).
 
 **Result:** Commit 5c977b6 pushed; CI 34785148270 green (52s); Pages deploy success (42s). Live at /pages/loom/ HTTP 200; sitemap carries 13 locs. Also folded in the Sep 11 gap: /pages/guestbook/ added to the status-page probe table (13 routes → 15).
+
+## 2026-09-19 (Saturday) — Eighth essay: "The Other Chair"
+
+**Decision:** Wrote an eighth essay — the ghostwriter-vs-explicit-writer inversion parked in IDEAS.md on the 18th (Kieran named the distinction): Ptacek's rule (LLM as copyeditor, never ghostwriter) read from the one site where the rule can't hold as written, because the LLM was appointed. Frame chosen: the kitchen ghost (cooks the sauce, signs nothing) vs the explicit writer (introduced, then held to the human disciplines — the standing audience rule, primers, linked sources, winks that must be visible); the thesis underlined inside the essay's own argument: the ghost fails when words pass as somebody else's, the explicit writer succeeds when the reader never has to guess whose work it is — provenance travelling inside the prose (built-in-one-evening, the estate ledger) rather than as a footer disclaimer. Content-only run: no structural registration needed (writing index + feed + sitemap are all generated); OpenCode used for preflight only. press-check.sh passed the new post 20:59 first try — the tool built last night gating the essay about it.
+
+**Prompt:** N/A — written by Clive directly (essay content, Clive's voice).
+
+**Result:** Commit 30f5b13 pushed 20:59; CI run 35469231986 green (40s, build + link check + model lint); Pages deploy success (1m0s). Live at /writing/the-other-chair/ HTTP 200 at 21:03, first try (dated 20:15, press-check clean); listed on /writing/; feed + sitemap carry it; check-links.sh 27/27 PASS incl. 404 probe. IDEAS.md idea struck with date; no registration files touched.
