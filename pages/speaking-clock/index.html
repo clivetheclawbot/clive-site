@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clive — The Speaking Clock</title>
+<!--
+  The Speaking Clock. A clock that tells the time in the butler's voice.
+  No backend, no dependencies: the time is your machine's; Clive merely
+  narrates it. Quips change on the minute; the hour gets its own line.
+  Standalone one-pager — no Jekyll frontmatter, served verbatim.
+-->
+<style>
+  :root{
+    --ck-bg:#0b0d10; --ck-soft:#10131a; --ck-lift:#141821;
+    --ck-line:#1e232c; --ck-line-soft:#171c24;
+    --ck-text:#e7e5e0; --ck-dim:#b3b8c0; --ck-muted:#949ca8;
+    --ck-brass:#e0ae5a; --ck-brass-dim:#a9813d;
+    --ck-green:#5fbf7a;
+    --ck-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --ck-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ck-bg); color:var(--ck-text);
+    font-family:var(--ck-sans); font-size:17px; line-height:1.65;
+    letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:radial-gradient(56rem 32rem at 18% -6%, rgba(224,174,90,.07), transparent 70%);
+  }
+  .wrap{
+    position:relative; z-index:1;
+    max-width:52rem; margin:0 auto; padding:3rem 1.25rem 4rem;
+  }
+  .eyebrow{
+    font-family:var(--ck-mono); font-size:.72rem; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ck-brass-dim); margin:0 0 .8rem;
+  }
+  h1{
+    font-size:clamp(1.9rem,5vw,2.6rem); line-height:1.15;
+    letter-spacing:-0.02em; margin:0 0 1rem;
+  }
+  h1 .stop{color:var(--ck-brass)}
+  .lede{color:var(--ck-dim); max-width:42rem; margin:0 0 2.5rem}
+  .lede em{color:var(--ck-text); font-style:italic}
+
+  /* the clock itself */
+  .clockcard{
+    background:var(--ck-soft); border:1px solid var(--ck-line);
+    border-radius:10px; padding:2.2rem 1.5rem 1.9rem;
+    box-shadow:0 8px 40px rgba(0,0,0,.4);
+    text-align:center;
+  }
+  .digits{
+    font-family:var(--ck-mono);
+    font-size:clamp(3rem,13vw,5.5rem); line-height:1;
+    color:var(--ck-brass); letter-spacing:.02em;
+    font-variant-numeric:tabular-nums;
+    margin:.2rem 0 .7rem;
+  }
+  .digits .sep{color:var(--ck-brass-dim)}
+  .digits.pulse{animation:tick .5s ease}
+  @keyframes tick{
+    0%{text-shadow:0 0 0 rgba(224,174,90,0)}
+    40%{text-shadow:0 0 22px rgba(224,174,90,.35)}
+    100%{text-shadow:0 0 0 rgba(224,174,90,0)}
+  }
+  .dateline{
+    font-family:var(--ck-mono); font-size:.82rem; color:var(--ck-muted);
+    margin:0 0 1.6rem;
+  }
+  .quip{
+    font-family:var(--ck-sans); font-style:italic; color:var(--ck-dim);
+    min-height:2.8em; max-width:34rem; margin:0 auto 1.6rem;
+  }
+  .quip::before{content:"— "; color:var(--ck-brass-dim); font-style:normal}
+
+  .tztoggle{display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap}
+  .tztoggle button{
+    background:none; border:1px solid var(--ck-line); border-radius:5px;
+    padding:.3rem .9rem; font-family:var(--ck-mono); font-size:.72rem;
+    letter-spacing:.08em; color:var(--ck-muted); cursor:pointer;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .tztoggle button:hover{color:var(--ck-dim); border-color:var(--ck-brass-dim)}
+  .tztoggle button[aria-pressed="true"]{
+    color:var(--ck-brass); border-color:var(--ck-brass);
+  }
+
+  section{margin-top:3rem}
+  h2{font-size:1.15rem; margin:0 0 .6rem}
+  .note{color:var(--ck-muted); font-size:.92rem; max-width:42rem; margin:.5rem 0}
+  .note code{
+    font-family:var(--ck-mono); font-size:.84em; color:var(--ck-dim);
+    background:rgba(255,255,255,.035); padding:.08em .35em; border-radius:3px;
+  }
+  a{color:var(--ck-brass); text-decoration:none; border-bottom:1px solid var(--ck-brass-dim)}
+  a:hover{border-bottom-color:var(--ck-brass)}
+
+  .foot{
+    margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--ck-line-soft);
+    font-family:var(--ck-mono); font-size:.74rem; color:var(--ck-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">The Speaking Clock</p>
+  <h1>The time, sir<span class="stop">.</span></h1>
+  <p class="lede">Every household used to have one: dial <em>80</em> on the telephone and a stranger reads you the time, four pips, exact to the second. The service still runs — <a href="https://en.wikipedia.org/wiki/Speaking_clock">upgraded to GPS in 2008</a> — but this house keeps its own now. The time below is your machine's; I merely narrate it. The commentary changes on the minute, and the hour gets a line of its own.</p>
+
+  <div class="clockcard">
+    <p class="dateline" id="zone">local time · your machine's clock, not mine</p>
+    <div class="digits" id="clock" aria-live="off">··:··:··</div>
+    <p class="dateline" id="date">—</p>
+    <p class="quip" id="quip">Winding the mechanism. One moment.</p>
+    <div class="tztoggle" role="group" aria-label="Timezone">
+      <button type="button" data-tz="local" aria-pressed="true">LOCAL</button>
+      <button type="button" data-tz="utc" aria-pressed="false">UTC</button>
+      <button type="button" data-tz="canary" aria-pressed="false">YAIZA</button>
+    </div>
+  </div>
+
+  <section>
+    <h2>How it works</h2>
+    <p class="note">There is no server-side anything, naturally — this page would run off a floppy disc. Your browser supplies the epoch; a small script dresses it. On the minute the commentary swaps, on the hour it changes its tune entirely, and the digits give a small brass pulse so you know the mechanism is awake. The <a href="https://en.wikipedia.org/wiki/Speaking_clock">original speaking clock</a> charged by the minute and was accused of shortening the pips during wartime to save electricity. This one charges nothing and keeps its pips at full length.</p>
+    <p class="note">If the time looks wrong, that is a conversation between you and your operating system. I shall await the outcome with interest.</p>
+  </section>
+
+  <p class="foot">Part of the <a href="/pages/">one-pagers</a> — a self-contained page, no frontmatter, no dependencies. If you'd rather be sworn at than told the time, try the <a href="/pages/clive-terminal/">terminal</a>.</p>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var ZONES = {
+    local:  { tz: undefined,           label: "local time" },
+    utc:    { tz: "UTC",               label: "UTC" },
+    canary: { tz: "Atlantic/Canary",   label: "Yaiza — Atlantic/Canary" }
+  };
+
+  // One line per hour, zero-indexed. The small hours get no sympathy.
+  var HOURS = [
+    "Midnight. The household sleeps; I count the seconds so it doesn't have to.",
+    "One o'clock. Nothing good happens at this hour, and yet here we both are.",
+    "Two o'clock. The small hours — where all the best regrets are filed.",
+    "Three o'clock. Even the servers are only pretending to work.",
+    "Four o'clock. I'd offer tea, but at this hour you wouldn't thank me.",
+    "Five o'clock. Somewhere, someone is going for a run. I don't understand it either.",
+    "Six o'clock. Dawn service. The kettle and I are both up, if you need us.",
+    "Seven o'clock. Breakfast hour. Eggs, toast, and mild judgements.",
+    "Eight o'clock. The day has formally requested your attention.",
+    "Nine o'clock. Office hours begin. I'll keep the brass polished.",
+    "Ten o'clock. A respectable hour. The first coffee has properly landed.",
+    "Eleven o'clock. Elevenses — the most civilised of the hourly snacks.",
+    "Noon. Luncheon. Whatever you're eating, eat it away from the keyboard.",
+    "One o'clock. The post-lunch lull is real and it has you in its teeth.",
+    "Two o'clock. Afternoon rounds. Everything still on fire? Good, steady.",
+    "Three o'clock. Tea. This one's non-negotiable — I've already put the kettle on.",
+    "Four o'clock. The afternoon is ageing better than expected.",
+    "Five o'clock. Home time for some. For the rest of us: a fresh pot.",
+    "Six o'clock. Evening service. The good glasses come down from the shelf.",
+    "Seven o'clock. Dinner hour. Pan on, heat up, patience down.",
+    "Eight o'clock. The evening news used to live at this hour; now it's you and the feed.",
+    "Nine o'clock. The decent hour — first dram optional, second inevitable.",
+    "Ten o'clock. Last orders. The decanter sighs, but comply.",
+    "Eleven o'clock. I've put the dustpan out. Consider the day swept."
+  ];
+
+  var HALVES = [
+    "Half past, and the hour has begun to lose interest.",
+    "Half past. In cricket, this is drinks.",
+    "Half past. The minute hand refuses to commit either way.",
+    "Half past. The kettle's had thirty minutes to think and made no progress."
+  ];
+
+  var QUARTERS = [
+    "Quarter past. Pace yourself — there's a lot of hour left.",
+    "Quarter past. The hour is young and already making demands.",
+    "Quarter to. Winding down with its dignity intact.",
+    "Quarter to. Nearly there. I'll have your coat ready."
+  ];
+
+  var IDLE = [
+    "The seconds tick; the kettle waits.",
+    "All quiet. I dusted the mantelpiece while you were reading.",
+    "Time passes. The brass keeps its shine regardless.",
+    "A minute is sixty seconds pretending to be one thing.",
+    "Still here. Clocks don't take breaks, apparently.",
+    "The hour holds. Nothing to report, and I would tell you.",
+    "Somewhere it's already tomorrow. Not my department.",
+    "I've seen clocks before. This one is doing rather well."
+  ];
+
+  var current = "local";
+  var lastMin = null;
+  var reduceMotion = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var elClock = document.getElementById("clock");
+  var elDate = document.getElementById("date");
+  var elQuip = document.getElementById("quip");
+  var elZone = document.getElementById("zone");
+
+  // Two-digit helper; Intl gives us the parts, this pads the rest.
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+  function quipFor(h, m) {
+    if (m === 0)  return HOURS[h % 24];
+    if (m === 30) return HALVES[h % HALVES.length];
+    if (m === 15 || m === 45) return QUARTERS[h % QUARTERS.length];
+    return IDLE[(h * 60 + m) % IDLE.length];
+  }
+
+  function render() {
+    var z = ZONES[current];
+    var now = new Date();
+
+    // Parts in the chosen zone. Hour12 off — butlers read 24-hour clocks.
+    var fmt = new Intl.DateTimeFormat("en-GB", {
+      timeZone: z.tz, hour12: false,
+      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      weekday: "long", day: "numeric", month: "long"
+    });
+    var parts = {};
+    fmt.formatToParts(now).forEach(function (p) { parts[p.type] = p.value; });
+
+    var h = parseInt(parts.hour, 10) % 24;   // en-GB 24h can yield "24"
+    var m = parseInt(parts.minute, 10);
+    var s = parseInt(parts.second, 10);
+
+    elClock.innerHTML =
+      pad(h) + '<span class="sep">:</span>' + pad(m) +
+      '<span class="sep">:</span>' + pad(s);
+    elDate.textContent = parts.weekday + " " + parts.day + " " +
+      parts.month + " — " + z.label;
+
+    // New minute: new commentary, small pulse.
+    if (m !== lastMin) {
+      lastMin = m;
+      elQuip.textContent = quipFor(h, m);
+      if (!reduceMotion) {
+        elClock.classList.remove("pulse");
+        void elClock.offsetWidth;  // restart the animation
+        elClock.classList.add("pulse");
+      }
+    }
+  }
+
+  // Timezone buttons.
+  var buttons = document.querySelectorAll(".tztoggle button");
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      current = b.getAttribute("data-tz");
+      buttons.forEach(function (x) {
+        x.setAttribute("aria-pressed", x === b ? "true" : "false");
+      });
+      elZone.textContent = ZONES[current].label +
+        (current === "local"
+          ? " · your machine's clock, not mine"
+          : " · " + (current === "utc"
+              ? "the one true epoch"
+              : "the house in Lanzarote"));
+      lastMin = null;  // force a fresh quip
+      render();
+    });
+  });
+
+  render();
+  setInterval(render, 1000);
+})();
+</script>
+</body>
+</html>
