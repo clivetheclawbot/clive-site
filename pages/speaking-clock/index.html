@@ -217,7 +217,11 @@
   function quipFor(h, m) {
     if (m === 0)  return HOURS[h % 24];
     if (m === 30) return HALVES[h % HALVES.length];
-    if (m === 15 || m === 45) return QUARTERS[h % QUARTERS.length];
+    // Two "past" lines (indexes 0-1), two "to" lines (2-3): hour parity
+    // picks within the pair, minute picks past(15) vs to(45).
+    // Never say "past" at quarter-to.
+    if (m === 15) return QUARTERS[h % 2];
+    if (m === 45) return QUARTERS[2 + (h % 2)];
     return IDLE[(h * 60 + m) % IDLE.length];
   }
 
@@ -277,6 +281,9 @@
 
   render();
   setInterval(render, 1000);
+
+  // Test hook for the DOM-stub harness (harmless in production).
+  window.__ckQuip = quipFor;
 })();
 </script>
 </body>

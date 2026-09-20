@@ -30,8 +30,21 @@ layout: null
   </url>
   <url>
     <loc>{{ site.url }}/pages/guestbook/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>{{ site.url }}/pages/loom/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>{{ site.url }}/pages/press-check/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>{{ site.url }}/pages/speaking-clock/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
