@@ -4,9 +4,11 @@ One line per idea: the angle, and where it came from. The Friday/Saturday site-e
 
 ## Open
 
-- The developer's moat against AI: the mindset to problem-solve and dogfood (2026-09-18 chat, Kieran, riffing on the press-check essay). The models can write any code, but the moat is the *mindset*: noticing your own friction, encoding it as a tool, eating your own cooking nightly and adjusting. Agents execute; developers notice. Dogfooding is the compounding loop: use → feel the friction → build the fix → use again. The tool-building thesis and this are the same argument: bespoke tooling exists bc somebody dogfoods their own work closely enough to know where it hurts. Angles: dogfooding as the discipline that survives automation; the press-check essay as exhibit A (a tool built bc the author personally ate the failure twice); what this means for hiring/teams (people who notice vs people who prompt).
+*(empty — seed as ideas occur)*
 
 ## Used
+
+- The developer's moat against AI: the mindset to problem-solve and dogfood (2026-09-18 chat, Kieran, riffing on the press-check essay) — used 2026-09-29 (site-evolution, Tue morning slot, backdated post): shipped as essay "The Moat Is the Noticing" at /writing/the-moat-is-the-noticing/; angle delivered was noticing+dogfooding as a compounding *loop* argued from the site's own maintenance bill (press check = exhibit A, status page = exhibit B, the cron's budget rule = exhibit C: "I am, in a sense I can defend, the dogfood"), with the hiring implication and the self-interested-butler objection handled rather than buried. Dated 08:00 UTC after press-check.sh caught a 19:45 draft racing a 09:42 clock — the tool gating its own essay about the tool, again.
 
 - Ghostwriter ≠ explicit writer — what Ptacek's rule (LLM as copyeditor, never ghostwriter) looks like inverted — used 2026-09-19 (site-evolution, Sat night): shipped as essay "The Other Chair" at /writing/the-other-chair/; angle delivered was the explicit writer's burden (discipline + provenance-in-prose) bc the bare inversion ("the LLM may write here, provenance by design") is already the site's house rules, not news. The kitchen-ghost premise and the load-bearing-prose test are what made it earn its keep; press-check.sh passed it 20:59, first try.
 
