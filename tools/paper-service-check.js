@@ -21,8 +21,8 @@ const http = require("http");
 const { spawn } = require("child_process");
 
 const CHROME = path.join(os.homedir(), ".cache/ms-playwright/chromium-1217/chrome-linux64/chrome");
-const DEBUG_PORT = 9223;
-const PORT = 8791;
+const DEBUG_PORT = Number(process.env.CDP_PORT) || 9223;
+const PORT = Number(process.env.SRV_PORT) || 8791;
 const MIME = { ".html": "text/html", ".md": "text/plain" };
 
 // ── static server (markdown gets wrapped in a minimal article shell) ──
@@ -71,7 +71,7 @@ function wsConnect(wsUrl) {
       const expect = crypto.createHash("sha1").update(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").digest("base64");
       if (res.headers["sec-websocket-accept"] !== expect) return reject(new Error("ws handshake mismatch"));
       let buffer = Buffer.alloc(0);
-      let id = 0;
+      let id = 0; // CDP requires integer ids — string ids get -32600 and silence
       const pending = new Map();
       socket.on("data", (d) => {
         bufferAdd(d);
@@ -93,17 +93,23 @@ function wsConnect(wsUrl) {
           let text;
           try { text = JSON.parse(payload.toString("utf8")); }
           catch { continue; }
-          if (text.id && pending.has(text.id)) {
+          if ("id" in text && pending.has(text.id)) {
             const fn = pending.get(text.id);
             pending.delete(text.id);
-            fn(text);
+            if (text.error) {
+              fn.rej(new Error(`CDP ${text.error.code}: ${text.error.message} [${fn.method}]`));
+            } else {
+              fn.res(text);
+            }
           }
         }
       }
-      const send = (method, params) => new Promise((res2) => {
-        const mid = "m" + (++id);
-        pending.set(mid, res2);
-        const data = Buffer.from(JSON.stringify({ id: mid, method, params }));
+      const send = (method, params, sessionId) => new Promise((res2, rej2) => {
+        const mid = ++id; // integer — CDP rejects string ids with -32600
+        pending.set(mid, { res: res2, rej: rej2, method });
+        const msg = { id: mid, method, params };
+        if (sessionId) msg.sessionId = sessionId; // flattening: top-level, NOT inside params
+        const data = Buffer.from(JSON.stringify(msg));
         const mask = crypto.randomBytes(4);
         let header;
         if (data.length < 126) header = Buffer.from([0x81, 0x80 | data.length]);
@@ -131,13 +137,27 @@ function rpc(s, method, params) {
 (async () => {
   const pages = process.argv.slice(2);
   if (!pages.length) { console.error("usage: paper-service-check.js <html...>"); process.exit(2); }
+  const t0 = Date.now();
+  const mark = (m) => console.log(`[${((Date.now() - t0) / 1000).toFixed(1)}s] ${m}`);
+  setTimeout(() => { console.error(`WATCHDOG: stalled after ${checks} checks`); process.exit(3); }, 90000).unref();
   await new Promise((r) => srv.listen(PORT, r));
+  mark("server up");
 
-  const child = spawn(CHROME, [
-    "--headless=new", "--no-sandbox", "--disable-gpu", "--no-first-run",
-    `--remote-debugging-port=${DEBUG_PORT}`, "about:blank",
-  ], { stdio: ["ignore", "pipe", "pipe"] });
-  await new Promise((r) => setTimeout(r, 1500));
+  const skipSpawn = process.env.CDP_ATTACH === "1";
+  let child = null;
+  if (!skipSpawn) {
+    child = spawn(CHROME, [
+      "--headless=new", "--no-sandbox", "--disable-gpu", "--no-first-run",
+      `--remote-debugging-port=${DEBUG_PORT}`, "about:blank",
+    ], { stdio: ["ignore", "pipe", "pipe"] });
+    // Chrome logs constantly (GCM retries included); with pipes this size and
+    // nobody reading them the 64K buffer fills and Chrome freezes mid-write —
+    // taking the CDP socket with it. Drain to /dev/null.
+    if (child.stdout) child.stdout.resume();
+    if (child.stderr) child.stderr.resume();
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  mark("chrome waited");
   const meta = await new Promise((resolve, reject) => {
     http.get(`http://127.0.0.1:${DEBUG_PORT}/json/version`, (res) => {
       let body = "";
@@ -145,7 +165,9 @@ function rpc(s, method, params) {
       res.on("end", () => resolve(JSON.parse(body)));
     }).on("error", reject);
   });
+  mark("devtools meta ok");
   const send = await wsConnect(meta.webSocketDebuggerUrl);
+  mark("ws connected");
 
   let failures = 0;
   let checks = 0;
@@ -157,12 +179,13 @@ function rpc(s, method, params) {
       ? path.basename(path.dirname(file)) + (path.extname(file) ? "-" + path.basename(file).replace(/\.[^.]+$/, "") : "")
       : file;
     const url = `http://127.0.0.1:${PORT}/${file}`;
-    const { targetId } = await send("Target.createTarget", { url });
-    const { sessionId } = await send("Target.attachToTarget", { targetId, flatten: true });
-    const s = (m, p) => send(m, Object.assign({}, p, { sessionId }));
+    const created = await send("Target.createTarget", { url });
+    const attached = await send("Target.attachToTarget", { targetId: created.result.targetId, flatten: true });
+    const sessionId = attached.result.sessionId;
+    mark("attached " + file);
+    const s = (m, p) => send(m, p, sessionId);
     await s("Page.enable", {});
-    await s("Emulation.setEmulatedMedia", { feature: "CSSMedia", media: "print" });
-    await s("Emulation.setEmulatedMedia", { features: [{ name: "media", value: "print" }] });
+    await s("Emulation.setEmulatedMedia", { media: "print" }); // string form — the features/name/value array form does NOT trigger print layout on this Chrome build
     await new Promise((r) => setTimeout(r, 350));
 
     const js = async (expr) => (await s("Runtime.evaluate", { expression: expr, returnByValue: true })).result.result.value;
@@ -201,10 +224,10 @@ function rpc(s, method, params) {
     fs.writeFileSync(out, Buffer.from(shot.result.data, "base64"));
     console.log(`shot -> ${out}`);
 
-    await s("Target.closeTarget", { targetId });
+    await s("Target.closeTarget", { targetId: created.result.targetId });
   }
 
-  try { child.kill(); } catch { /* already gone */ }
+  if (child) { try { child.kill(); } catch { /* already gone */ } }
   srv.close();
   console.log(`\n${checks - failures}/${checks} checks pass`);
   process.exit(failures ? 1 : 0);
