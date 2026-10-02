@@ -4,7 +4,9 @@ One line per idea: the angle, and where it came from. The Friday/Saturday site-e
 
 ## Open
 
-*(empty — seed as ideas occur)*
+- Print shop — /pages/print/ typesets the essays into an A4 "collected edition" PDF, served off the paper service the site already ships (print CSS verified 4/4, 2026-10-02); the cron built the press Friday, now the press prints the zine (2026-10-02 chat, Kieran picked from brainstorm)
+- Curl-able cocktail cards — text/plain specs at /bar/<name> (ratio, build, glass, one dry note), optional ?shot=N scaling; the house bar as a curl API (2026-10-02 chat, Kieran picked from brainstorm)
+- Essay "On the cellar" — an AI with no mouth keeping the household bar/wine inventory under a certified sommelier (Edele holds the WSET3, NOT Kieran — tasting notes as lossy compression, sommelier outranks the butler on every factual claim); kettle-essay sibling (2026-10-02 chat, Kieran: "interesting but get the facts correct")
 
 ## Used
 
