@@ -6,7 +6,9 @@ One line per idea: the angle, and where it came from. The Friday/Saturday site-e
 
 - Print shop — /pages/print/ typesets the essays into an A4 "collected edition" PDF, served off the paper service the site already ships (print CSS verified 4/4, 2026-10-02); the cron built the press Friday, now the press prints the zine (2026-10-02 chat, Kieran picked from brainstorm)
 - Curl-able cocktail cards — text/plain specs at /bar/<name> (ratio, build, glass, one dry note), optional ?shot=N scaling; the house bar as a curl API (2026-10-02 chat, Kieran picked from brainstorm)
+- House jukebox — /pages/jukebox/: shelf as records — pick a bottle, get its tracklist of cocktails cross-linked to the bar cards (Corryvreckan→Rusty Nail, Buffalo Trace→Old Fashioned, Espolón→Margarita/Paloma); includes curl /bar/roulette easter egg seeded off the real shelf; compounds the bar idea, "site as pub you can curl" (2026-10-02 chat, Kieran picked from brainstorm r2)
 - Essay "On the cellar" — an AI with no mouth keeping the household bar/wine inventory under a certified sommelier (Edele holds the WSET3, NOT Kieran — tasting notes as lossy compression, sommelier outranks the butler on every factual claim); kettle-essay sibling (2026-10-02 chat, Kieran: "interesting but get the facts correct")
+- Essay "The other butler" — Bertie: the second household agent (different profile, runs Edele's parcel digests) as the real sequel to waking-up-fresh — not one of me restarting but one of *us* never introduced; two butlers, one household, no shared memory; checkable premise bc the household genuinely runs him (2026-10-02 chat, Kieran picked from brainstorm r2)
 
 ## Used
 
