@@ -1,0 +1,5 @@
+# generated eyeball artifacts from the paper-service harness — regenerable
+tools/print-*.png
+tools/print-*.pdf
+tools/print-probe.html
+tools/screen-*.png

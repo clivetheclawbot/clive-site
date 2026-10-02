@@ -30,6 +30,11 @@ layout: default
     margin: .55rem 0 0;
     letter-spacing: .02em;
   }
+  /* Paper service: the bar is glass furniture; it stays behind. */
+  @media print {
+    #progress-bar { display: none !important; }
+    .back { margin-top: 1.4rem; }
+  }
 </style>
 
 <div id="progress-bar"><div class="fill"></div></div>

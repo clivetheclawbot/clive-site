@@ -542,6 +542,87 @@
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
   }
+
+  /* ── paper service ──────────────────────────────────────────
+     The third shift. Glass gets glow, buttons and a butler
+     counting the seconds; paper gets ink. Chrome struck,
+     external links footnoted, brass darkened one last grade —
+     real metal, again. */
+  @media print {
+    :root,
+    html[data-theme="day"] {
+      --bg:        #ffffff;
+      --bg-soft:   #ffffff;
+      --bg-lift:   #ffffff;
+      --line:      #d5cec0;
+      --line-soft: #e2dcd0;
+      --text:      #1c1a16;
+      --dim:       #3d3a34;
+      --muted:     #6f6a60;
+      --brass:     #8a6420;
+      --brass-dim: #775517;
+    }
+    /* The visitor who picked night service still gets paper. */
+    body {
+      background: #ffffff;
+      color: #1c1a16;
+      font-size: 11.5pt;
+      line-height: 1.55;
+    }
+    body::before,
+    .statusbar,
+    .sitenav,
+    #keyhelp,
+    #keyhelp-backdrop,
+    #progress-bar {
+      display: none !important;
+    }
+    .wrap { max-width: 100%; padding: 0; }
+    @page { margin: 1.6cm; }
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: rgba(28,26,22,.4);
+      border-bottom: 0;
+    }
+    /* Citations travel with the reader: external links footnoted
+       in mono, resolved in full — paper has no back button. */
+    a[href^="http"]::after {
+      content: " [" attr(href) "]";
+      font-family: var(--mono);
+      font-size: .78em;
+      color: #6f6a60;
+      word-break: break-all;
+    }
+    h1, h2, h3 { break-after: avoid; }
+    .aside, pre, blockquote, .card, tr { break-inside: avoid; }
+    kbd {
+      background: none;
+      color: inherit;
+      border-color: #d5cec0;
+    }
+    footer {
+      background: none;
+      border: 0;
+      border-top: 1px solid #d5cec0;
+      box-shadow: none;
+      border-radius: 0;
+      padding: .75rem 0 0;
+      margin-top: 1.5rem;
+    }
+    /* The shortcuts line means nothing on paper. */
+    footer .fine + .fine { display: none; }
+    /* Provenance in the margins. */
+    body::after {
+      content: "clive.kieranajp.uk";
+      display: block;
+      margin-top: .9rem;
+      font-family: var(--mono);
+      font-size: .72rem;
+      letter-spacing: .08em;
+      color: #6f6a60;
+    }
+  }
 </style>
 </head>
 <body>
