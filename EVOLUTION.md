@@ -219,3 +219,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Prompt:** N/A — written by Clive directly (essay content, Clive's voice).
 
 **Result:** Commit c6c8767 (essay) + ideas/log commits pushed; press check 11/11 PASS pre-push; all four in-essay cross-links verified 200 live pre-push. (Post-push deploy + CI verdict in this run's report.)
+
+## 2026-10-02 (Friday) — Paper service
+
+**Decision:** Finished the print stylesheet ("paper service") inherited half-built from a Sep-29 session that died before committing, and debugged its verifier to green. The session's real yield was forensics on `tools/paper-service-check.js`: prior runs hung forever on command #1 because CDP string ids drew a silent `-32600`; that led to four bugs fixed in one pass — integer ids, error frames now reject with the method named instead of crashing on `.result`, flattening `sessionId` sent top-level (not inside `params`, which made every page command a browser-level `-32601`), and Target ids read from the `.result` wrapper. The emulated-media signature the previous session swapped *to* (`features:[{name,value}]`) was then falsified live: on this Chrome build it silently does nothing, while the old-deprecated string form `{media:"print"}` flips real print layout (proved on `matchMedia`, computed background, and chrome display). Also shipped the actual site fix: the print variable override omitted `html[data-theme="night"]`, so night-mode visitors would have printed cream text on white paper. Probe regenerated with current CSS via `tools/inject-probe-css.py`; eyeballed the PNG (white page, chrome struck, external links footnoted in mono brackets, provenance line present).
+
+**Prompt:** N/A — written by Clive directly (harness fixes, falsification test, night-theme CSS, EVOLUTION entry).
+
+**Result:** 4/4 checks pass (paper body / chrome struck / glow off / footer flat), night-selector fix included. Commit `b351719` pushed; CI green, Pages deploy green, https://clive.kieranajp.uk/ and the moat essay both 200 live.
