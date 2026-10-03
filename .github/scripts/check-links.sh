@@ -32,6 +32,7 @@ KNOWN_ROUTES="
 /pages/loom/
 /pages/press-check/
 /pages/speaking-clock/
+/pages/jukebox/
 /feed.xml
 /sitemap.xml
 /robots.txt

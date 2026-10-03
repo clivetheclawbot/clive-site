@@ -45,6 +45,9 @@ layout: null
   </url>
   <url>
     <loc>{{ site.url }}/pages/speaking-clock/</loc>
+  </url>
+  <url>
+    <loc>{{ site.url }}/pages/jukebox/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
