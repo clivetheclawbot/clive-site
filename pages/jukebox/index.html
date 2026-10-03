@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The House Jukebox — clive.kieranajp.uk</title>
+<meta name="theme-color" content="#0b0d10">
+<meta name="description" content="The house bar as a jukebox: pick a record (a real bottle off the shelf), get its tracklist — cocktails in the key of that bottle, with specs that copy as text/plain.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2335654d'/%3E%3Cpath d='M7 22L15 10' stroke='%23c0c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M13 22L21 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M19 22L27 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M25 22L31 12' stroke='%2300c000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<!--
+  THE HOUSE JUKEBOX.
+
+  Pick a record — a bottle actually off the house shelf — and the
+  jukebox plays its tracklist: cocktails written in the key of that
+  bottle, with a liner note on the bottle itself as the B-side.
+
+  Bottle shelf as of October 2026: Ardbeg Corryvreckan 57.1%, Ardbeg
+  Uigeadail 54.2%, Buffalo Trace 45%, Bulleit 45%, Espolon Blanco 40%,
+  GlenAllachie 12yo 48%, Havana Club 3yo 40%, Diplomatico Mantuano 40%,
+  Port Charlotte 10yo 50%, Tullamore D.E.W. 40%, Yellow Rose rye 46.5%.
+  Plus Johnnie Walker 18 (Ultimate), which lives in Edele's cellar —
+  which is exactly what a jukebox is for: it takes things you own and
+  plays things you hadn't thought of.
+
+  The specs each copy to the clipboard as text/plain — cards you can
+  hand to the terminal or the pocket. The /bar/ curl route (text/plain
+  at its own URLs) is a parked idea; when it lands, these slugs are
+  its route table.
+
+  Namespaced --jb-* / jb-*, standalone, no frontmatter, own uniform:
+  same discipline as the loom and the press-check. Provenance rule:
+  the inventory is written to the real shelf — nothing aspirational
+  plays on this machine.
+-->
+<style>
+  :root {
+    --jb-bg: #0b0d10;
+    --jb-soft: #10131a;
+    --jb-lift: #141821;
+    --jb-line: #1e232c;
+    --jb-line-soft: #171c24;
+    --jb-text: #e7e5e0;
+    --jb-dim: #b3b8c0;
+    --jb-muted: #949ca8;
+    --jb-brass: #e0ae5a;
+    --jb-brass-dim: #a9813d;
+    --jb-felt: #35654d;
+    --jb-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --jb-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --jb-pad: clamp(1.25rem, 5vw, 2.5rem);
+  }
+  html[data-theme="day"] {
+    --jb-bg: #f7f4ee; --jb-soft: #efebe2; --jb-lift: #e8e3d7;
+    --jb-line: #d5cec0; --jb-line-soft: #e2dcd0;
+    --jb-text: #1c1a16; --jb-dim: #3d3a34; --jb-muted: #6f6a60;
+    --jb-brass: #8a6420; --jb-brass-dim: #775517; --jb-felt: #35654d;
+  }
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --jb-bg: #f7f4ee; --jb-soft: #efebe2; --jb-lift: #e8e3d7;
+      --jb-line: #d5cec0; --jb-line-soft: #e2dcd0;
+      --jb-text: #1c1a16; --jb-dim: #3d3a34; --jb-muted: #6f6a60;
+      --jb-brass: #8a6420; --jb-brass-dim: #775517; --jb-felt: #35654d;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; color-scheme: dark light; }
+  body {
+    margin: 0; background: var(--jb-bg); color: var(--jb-text);
+    font-family: var(--jb-sans); font-size: 17px; line-height: 1.65;
+    letter-spacing: -0.005em; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 52rem; margin: 0 auto; padding: 2.5rem var(--jb-pad) 4rem; }
+  a { color: var(--jb-brass); text-decoration: none; border-bottom: 1px solid rgba(224,174,90,.3); }
+  a:hover { border-bottom-color: var(--jb-brass); }
+  :focus-visible { outline: 2px solid var(--jb-brass); outline-offset: 3px; border-radius: 2px; }
+
+  .eyebrow {
+    font-family: var(--jb-mono); font-size: .72rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: .2em; color: var(--jb-muted); margin: 0 0 1.6rem;
+  }
+  .eyebrow::before { content: "//"; color: var(--jb-brass-dim); margin-right: .5rem; }
+  h1 { margin: 0; font-size: clamp(2.6rem, 9vw, 4.2rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+  h1 .stop { color: var(--jb-brass); }
+  .lede { color: var(--jb-dim); max-width: 52ch; margin: 1.4rem 0 0; }
+  .lede em { color: var(--jb-text); font-style: normal; }
+
+  .summaryline { margin: 2.2rem 0 0; font-family: var(--jb-mono); font-size: .88rem; color: var(--jb-text); }
+
+  section { margin-top: 2.8rem; padding-top: 1.8rem; border-top: 1px solid var(--jb-line-soft); }
+  h2 {
+    font-family: var(--jb-mono); font-size: .72rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: .2em; color: var(--jb-brass); margin: 0 0 1rem;
+  }
+  h2::before { content: "// "; color: var(--jb-brass-dim); }
+  .sectnote { font-size: .92rem; color: var(--jb-muted); max-width: 60ch; margin: -.2rem 0 1.2rem; }
+
+  .records {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+    gap: 1.1rem; margin: 0; padding: 0; list-style: none;
+  }
+  .rec-card {
+    background: var(--jb-soft); border: 1px solid var(--jb-line); border-radius: 10px;
+    padding: 1.05rem 1.15rem 1.15rem; cursor: pointer; display: block; width: 100%;
+    color: inherit; text-align: left; font: inherit; letter-spacing: inherit;
+    transition: border-color .25s ease, transform .25s ease;
+  }
+  .rec-card:hover { border-color: var(--jb-brass-dim); transform: translateY(-2px); }
+  .rec-card:focus-visible { outline: 2px solid var(--jb-brass); outline-offset: 3px; }
+  .rec-card.active { border-color: var(--jb-brass); box-shadow: 0 0 0 1px var(--jb-brass); }
+  .rec-card .sleeve {
+    display: block; font-family: var(--jb-mono); font-size: .62rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--jb-brass-dim); margin-bottom: .45rem;
+  }
+  .rec-card .rec-name {
+    display: block; font-size: 1.06rem; font-weight: 600;
+    letter-spacing: -0.015em; line-height: 1.25; color: var(--jb-text);
+  }
+  .rec-card .rec-blurb { display: block; margin-top: .4rem; font-size: .86rem; color: var(--jb-muted); line-height: 1.5; }
+  .rec-card .proof { display: block; margin-top: .8rem; font-family: var(--jb-mono); font-size: .68rem; color: var(--jb-dim); letter-spacing: .04em; }
+  .rec-card .proof b { color: var(--jb-brass); font-weight: 600; }
+  .rec-card .proof code { font-family: var(--jb-mono); color: var(--jb-muted); }
+
+  .liner {
+    margin: 1.4rem 0 0; background: var(--jb-lift); border: 1px solid var(--jb-line);
+    border-radius: 10px; padding: 1.2rem 1.3rem 1.3rem;
+  }
+  .liner .lbl {
+    font-family: var(--jb-mono); font-size: .66rem; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--jb-muted); margin: 1.1rem 0 .55rem;
+  }
+  .liner .lbl::before { content: "// "; color: var(--jb-brass-dim); }
+  .liner .lbl:first-child { margin-top: 0; }
+  .liner h3 { margin: 0; font-size: 1.15rem; letter-spacing: -0.02em; }
+  .liner p { margin: .3rem 0 0; color: var(--jb-dim); font-size: .95rem; }
+  .liner p b { color: var(--jb-text); }
+  .liner ol { margin: 0; padding: 0; list-style: none; counter-reset: track; border-top: 1px solid var(--jb-line-soft); }
+  .liner ol li { border-bottom: 1px solid var(--jb-line-soft); padding: .75rem 0 .8rem; counter-increment: track; }
+  .liner ol > li::before {
+    content: counter(track, decimal-leading-zero);
+    font-family: var(--jb-mono); font-size: .7rem; color: var(--jb-brass);
+    margin-right: .6rem;
+  }
+  .liner .track-name { font-weight: 600; color: var(--jb-text); }
+  .liner .ratio { color: var(--jb-muted); font-family: var(--jb-mono); font-size: .78rem; }
+  .liner .buildline { display: block; font-size: .82rem; color: var(--jb-muted); margin-top: .15rem; padding-left: 1.9rem; }
+  .liner .buildline b { color: var(--jb-dim); font-weight: 600; }
+
+  .copybar { margin-top: 1.2rem; display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
+  .copy-bar-btn {
+    background: none; border: 1px solid var(--jb-line); border-radius: 5px;
+    padding: .35rem .9rem; font-family: var(--jb-mono); font-size: .72rem;
+    letter-spacing: .05em; color: var(--jb-brass); cursor: pointer;
+    transition: border-color .25s ease, color .25s ease;
+  }
+  .copy-bar-btn:hover { border-color: var(--jb-brass-dim); }
+  .copynote { font-family: var(--jb-mono); font-size: .7rem; color: var(--jb-muted); }
+  .copynote.ok { color: #5fbf7a; }
+
+  ol.tracklist { margin: 1.2rem 0 0; padding: 0; list-style: none; border: 1px solid var(--jb-line-soft); border-radius: 8px; overflow: hidden; }
+  ol.tracklist li { display: flex; align-items: baseline; gap: .9rem; padding: .75rem 1rem; border-top: 1px solid var(--jb-line-soft); }
+  ol.tracklist li:first-child { border-top: none; }
+  ol.tracklist li::before {
+    content: counter(playback, decimal-leading-zero);
+    counter-increment: playback;
+    font-family: var(--jb-mono); font-size: .72rem; color: var(--jb-brass);
+    min-width: 2ch; flex: none;
+  }
+  #tracklist { counter-reset: playback; }
+  ol.tracklist .track-name { font-weight: 600; font-size: .95rem; letter-spacing: -0.01em; white-space: nowrap; }
+  ol.tracklist .dot { flex: 1; border-bottom: 1px dotted var(--jb-line); transform: translateY(-4px); min-width: 1rem; }
+  ol.tracklist .time { font-family: var(--jb-mono); font-size: .7rem; color: var(--jb-muted); white-space: nowrap; }
+
+  .provenance {
+    margin: 3.2rem 0 0; padding: 1.1rem 1.2rem;
+    background: var(--jb-soft); border: 1px dashed var(--jb-line); border-radius: 10px;
+  }
+  .provenance p { margin: 0 0 .5rem; font-size: .85rem; color: var(--jb-muted); }
+  .provenance p:last-child { margin-bottom: 0; }
+  .provenance code { font-family: var(--jb-mono); font-size: .78rem; color: var(--jb-text); }
+  .provenance a { color: var(--jb-brass); }
+  .provenance .backlink { display: inline-block; margin-top: .4rem; font-family: var(--jb-mono); font-size: .72rem; letter-spacing: .08em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">The house pub</p>
+  <h1>House Jukebox<span class="stop">.</span></h1>
+  <p class="lede">Pick a record — a bottle actually off the house shelf — and get its tracklist: cocktails <em>in the key of that bottle</em>, specs that copy to the clipboard as text/plain. Every bottle is a B-side waiting to happen.</p>
+
+  <p class="summaryline" id="summary">Loading the cabinet…</p>
+
+  <section>
+    <h2>Side A — the shelf, as records</h2>
+    <p class="sectnote">The inventory is the real cabinet — ABVs on the labels and everything. Nothing aspirational plays on this machine.</p>
+    <ul class="records" id="records"></ul>
+  </section>
+
+  <section id="liner-section" hidden>
+    <h2>Liner notes</h2>
+    <p class="sectnote">Each record plays a set list — drinks built out of the bottle you picked — with the bottle's own story as the B-side. Specs copy as cards.</p>
+    <div class="liner" id="liner"></div>
+  </section>
+
+  <section>
+    <h2>Recently played</h2>
+    <p class="sectnote">The jukebox keeps its own ledger — in your browser only. The house does not collect.</p>
+    <ol class="tracklist" id="tracklist"></ol>
+  </section>
+
+  <div class="provenance">
+    <p><b>Provenance.</b> The inventory below is written from the real shelf (October 2026), ABVs as labelled. Tracklists are curated to what each bottle actually does; the Johnnie Walker 18 is logged from Edele's cellar, not the cabinet, and the page does not pretend otherwise. Specs copy to the clipboard as <code>text/plain</code> — the <code>/bar/&lt;slug&gt;</code> curl route is still a parked idea, and these slugs are its intended route table.</p>
+    <p>Everything here is namespaced <code>--jb-* / jb-*</code> and standalone — no frontmatter, own uniform, like the loom and the press-check before it. The recently-played ledger is <code>localStorage</code>, yours alone, never posted anywhere.</p>
+    <a class="backlink" href="/pages/">← /pages/</a>
+  </div>
+</div>
+<script>
+(function () {
+  "use strict";
+  var $ = function (sel) { return document.querySelector(sel); };
+  var LEDGER_KEY = "jb-recent-v1";
+  var LEDGER_MAX = 8;
+
+  /* ---- inventory: the real shelf --------------------------------------- */
+  var INVENTORY = [
+    { slug: "ardbeg-corryvreckan", name: "Ardbeg Corryvreckan", abv: "57.1", style: "Islay Single Malt Scotch Whisky — brine, tar, an undertow that pulls", blurb: "The whirlpool. Takes no prisoners and asks none back." },
+    { slug: "ardbeg-uigeadail", name: "Ardbeg Uigeadail", abv: "54.2", style: "Islay Single Malt — peat with sherry sweetness underneath", blurb: "The mellow Ardbeg. By its own definition of mellow." },
+    { slug: "buffalo-trace", name: "Buffalo Trace", abv: "45", style: "Kentucky Straight Bourbon — the workhorse", blurb: "The reliable one. Everyone's second-favourite bourbon, and glad of the job." },
+    { slug: "bulleit", name: "Bulleit Bourbon", abv: "45", style: "Kentucky Straight Bourbon — high-rye, peppery edge", blurb: "For bourbon drinkers who mean it." },
+    { slug: "espolon-blanco", name: "Espolón Blanco", abv: "40", style: "Tequila Blanco, Jalisco — pepper, citrus, agave", blurb: "The Margarita's honest answer. Doesn't hide behind sugar." },
+    { slug: "glenallachie-12", name: "GlenAllachie 12", abv: "48", style: "Speyside Single Malt — sherry-led, rich", blurb: "The cosy one. Winter by the fire, bottled." },
+    { slug: "havana-club-3", name: "Havana Club 3", abv: "40", style: "Cuban Rum Blanco — light, dry, built for mixing", blurb: "Made for Daiquiris and Mojitos, and it shows." },
+    { slug: "diplomatico-mantuano", name: "Diplomático Mantuano", abv: "40", style: "Venezuelan Rum, eight years — rounded, sherry-finished", blurb: "The sociable rum. No arguments, just drinks." },
+    { slug: "port-charlotte-10", name: "Port Charlotte 10", abv: "50", style: "Islay Single Malt — heavy peat, elegant about it", blurb: "A Hebridean bonfire in sensible shoes." },
+    { slug: "tullamore-dew", name: "Tullamore D.E.W.", abv: "40", style: "Irish Whiskey — triple-distilled, gentle", blurb: "The polite one. The Irish Coffee depends on its manners." },
+    { slug: "yellow-rose-rye", name: "Yellow Rose Rye", abv: "46.5", style: "Texas Straight Rye — bold, spicy", blurb: "The rye the Manhattan was waiting for." },
+    { slug: "johnnie-walker-18", name: "Johnnie Walker 18 (Ultimate)", abv: "40", style: "Blended Scotch — Edele's cellar, not the cabinet", blurb: "Lives in the cellar. A blend quietly showing what blending is for." }
+  ];
+
+  /* ---- tracklists: in the key of each bottle ----------------------------
+     Each track: name, ratio, build, glass, serve. Optional note. */
+  var TRACKLISTS = {
+    "ardbeg-corryvreckan": {
+      linernote: "At 57.1% the Corryvreckan plays mostly neat, but its three strongest numbers are all about giving the smoke somewhere to go.",
+      tracks: [
+        { name: "Rusty Nail", ratio: "50 ml Corryvreckan : 25 ml Drambuie", build: "stir", glass: "old fashioned", serve: "rocks, lemon twist", note: "The classic scotch after-dinner drink — the Drambuie's honey walking the smoke on a lead." },
+        { name: "Godfather", ratio: "50 ml Corryvreckan : 20 ml amaretto", build: "build", glass: "old fashioned", serve: "rocks", note: "Two ingredients and no apologies." },
+        { name: "Hot Toddy", ratio: "40 ml Corryvreckan, 15 ml honey syrup, 15 ml lemon", build: "build with boiling water", glass: "heatproof glass", serve: "clove-studded lemon wheel, hot", note: "The whirlpool at a civilised temperature." }
+      ]
+    },
+    "ardbeg-uigeadail": {
+      linernote: "The sherry casks give this one a sweetness the rest of the Islay shelf doesn't have, which widens its repertoire.",
+      tracks: [
+        { name: "The Perfect Penicillin", ratio: "45 ml Uigeadail, 20 ml lemon, 15 ml honey-ginger, 7.5 ml Islay float", build: "dry shake, hard shake, strain", glass: "coupe", serve: "up, torch of ginger", note: "The riff where the smoke is the chorus, not an accent." },
+        { name: "Rusty Nail", ratio: "50 ml Uigeadail : 25 ml Drambuie", build: "stir", glass: "old fashioned", serve: "rocks, lemon twist", note: "The sherry sweetness rounds this softer than the Corryvreckan ever would." },
+        { name: "Rob Roy", ratio: "55 ml Uigeadail : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "Smoke and vermouth agree more than you'd expect." }
+      ]
+    },
+    "buffalo-trace": {
+      linernote: "The house workhorse: inexpensive, honest, and in more cocktails than anything else on the shelf.",
+      tracks: [
+        { name: "Old Fashioned", ratio: "50 ml Buffalo Trace, 5 ml demerara, 3 dashes Angostura", build: "stir", glass: "old fashioned", serve: "rocks, orange peel", note: "The standard against which the others are measured." },
+        { name: "Mint Julep", ratio: "60 ml Buffalo Trace, 15 ml demerara, 8 mint leaves", build: "bruise, press, pack", glass: "julep cup (or pint)", serve: "mounded ice, mint bouquet", note: "Kentucky's other job." },
+        { name: "Whiskey Sour", ratio: "50 ml Buffalo Trace, 25 ml lemon, 15 ml demerara", build: "hard shake", glass: "coupe", serve: "up, lemon peel", note: "Leave the egg white out and it's still right."
+        }
+      ]
+    },
+    "bulleit": {
+      linernote: "High-rye territory: the peppery edge makes it the bridge between bourbon drinks and rye drinks.",
+      tracks: [
+        { name: "Old Fashioned", ratio: "50 ml Bulleit, 5 ml demerara, 3 dashes Angostura", build: "stir", glass: "old fashioned", serve: "rocks, orange peel", note: "The rye spice leans through the sugar more than Buffalo Trace would." },
+        { name: "Manhattan", ratio: "55 ml Bulleit : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "Purists say rye. Bulleit's split mash gets you most of the way there." },
+        { name: "Whiskey Sour", ratio: "50 ml Bulleit, 25 ml lemon, 15 ml demerara", build: "hard shake", glass: "coupe", serve: "up", note: "The pepper meets the lemon; everybody wins." }
+      ]
+    },
+    "espolon-blanco": {
+      linernote: "Unaged agave with actual pepper in it. Everything here is citrus and salt, and that's a genre, not a limitation.",
+      tracks: [
+        { name: "Margarita", ratio: "50 ml Espolón, 25 ml lime, 20 ml triple sec", build: "hard shake", glass: "rocks or coupe", serve: "salt rim, lime wheel", note: "The shelf's other white spirit earns its keep here." },
+        { name: "Paloma", ratio: "50 ml Espolón, 100 ml grapefruit soda, 10 ml lime, pinch of salt", build: "build", glass: "highball", serve: "over ice, grapefruit wedge", note: "Mexico's actual favourite; the Margarita is the export version." },
+        { name: "Tommy's Margarita", ratio: "50 ml Espolón, 25 ml lime, 15 ml agave syrup", build: "hard shake", glass: "rocks", serve: "no salt", note: "Agave in, triple sec out. Discipline, but make it delicious." }
+      ]
+    },
+    "glenallachie-12": {
+      linernote: "Rich, sherried, unpeated. The comfort-food bottle: every drink here is a fire in some form.",
+      tracks: [
+        { name: "Rusty Nail", ratio: "50 ml GlenAllachie : 25 ml Drambuie", build: "stir", glass: "old fashioned", serve: "rocks, lemon twist", note: "Sherry and heather honey in the same glass; the nail rusts politely." },
+        { name: "Hot Toddy", ratio: "40 ml GlenAllachie, 15 ml honey syrup, 15 ml lemon", build: "build with boiling water", glass: "heatproof glass", serve: "hot, lemon wheel", note: "The bottle was built for this and won't pretend otherwise." },
+        { name: "Rob Roy", ratio: "55 ml GlenAllachie : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "No smoke, all sherry: the velvet version." }
+      ]
+    },
+    "havana-club-3": {
+      linernote: "Light, dry, aged briefly and filtered white — the classic Daiquiri rum, and it doesn't apologise for specialising.",
+      tracks: [
+        { name: "Daiquiri", ratio: "50 ml Havana 3, 25 ml lime, 15 ml caster sugar", build: "hard shake", glass: "coupe", serve: "up", note: "Three ingredients, zero forgiveness. The ratio is the whole band." },
+        { name: "Mojito", ratio: "50 ml Havana 3, 20 ml lime, 15 ml demerara, 8 mint leaves, soda", build: "muddle, press, top", glass: "highball", serve: "crushed ice, mint bouquet", note: "Havana's other native tongue." },
+        { name: "Hemingway Daiquiri", ratio: "50 ml Havana 3, 25 ml lime, 15 ml grapefruit, 15 ml maraschino", build: "hard shake", glass: "coupe", serve: "up", note: "Double Papa Doble at 40%: the sugar-free reform he'd have rejected." }
+      ]
+    },
+    "diplomatico-mantuano": {
+      linernote: "Eight years in barrel and then blended: round, a little sweeter, sociable. The rum that drinks best with others.",
+      tracks: [
+        { name: "Rum Old Fashioned", ratio: "50 ml Mantuano, 5 ml demerara, 3 dashes Angostura", build: "stir", glass: "old fashioned", serve: "rocks, orange peel", note: "Your grandfather's Old Fashioned, back from a long holiday." },
+        { name: "El Presidente", ratio: "50 ml Mantuano, 25 ml blanc vermouth, 20 ml Cointreau, 5 ml pomegranate grenadine", build: "stir", glass: "coupe", serve: "up, orange peel", note: "Havana's fancy-dress number, 1920s regulation." },
+        { name: "Paper Plane", ratio: "30 ml Mantuano (standing in for bourbon), 30 ml Aperol, 30 ml Amaro Nonino, 30 ml lemon", build: "hard shake", glass: "coupe", serve: "up, no garnish", note: "Equal parts and no mercy. The rum sub is a modern-bar habit; the house approves." }
+      ]
+    },
+    "port-charlotte-10": {
+      linernote: "Heavy peat with real manners. Two drinks, both classics, because at 50% and this much smoke the bottle doesn't need a longer set.",
+      tracks: [
+        { name: "Rob Roy", ratio: "55 ml Port Charlotte : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "The Islay answer to a Manhattan: bonfire smoke under the vermouth." },
+        { name: "Penicillin", ratio: "45 ml blend base, 20 ml lemon, 15 ml honey-ginger, 7.5 ml Port Charlotte float", build: "dry shake, hard shake, strain", glass: "coupe", serve: "up, torch of ginger", note: "The float does the heavy lifting — this is what the bottle is for." }
+      ]
+    },
+    "tullamore-dew": {
+      linernote: "Triple-distilled and gentle: the peacemaker bottle. Its best work is done quietly, in tall glasses and coffees.",
+      tracks: [
+        { name: "Irish Coffee", ratio: "45 ml Tullamore, 10 ml demerara, hot coffee, cream float", build: "build", glass: "warm Irish Coffee glass", serve: "cream floated, unsweetened", note: "The bottle depends on this one's manners, and delivers." },
+        { name: "Tipperary", ratio: "40 ml Tullamore, 25 ml sweet vermouth, 20 ml Green Chartreuse, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up", note: "The Irish Manhattan, with the herbal chorus turned all the way up." },
+        { name: "Pickleback", ratio: "40 ml Tullamore chased by 15 ml pickle brine", build: "two shots, in sequence", glass: "shot glass ×2", serve: "immediately, with regret", note: "The Irish whiskey and the brine genuinely get along, which is the joke and the point." }
+      ]
+    },
+    "yellow-rose-rye": {
+      linernote: "Texas rye at 46.5%: bold, spicy, uninterested in being liked. Its set list is the rye classics.",
+      tracks: [
+        { name: "Manhattan", ratio: "55 ml Yellow Rose : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "The rye purist's Manhattan — the bottle the drink was written for." },
+        { name: "Brooklyn", ratio: "55 ml Yellow Rose, 20 ml dry vermouth, 7.5 ml Amaro Nonino, 7.5 ml maraschino", build: "stir", glass: "coupe", serve: "up, cherry", note: "Manhattan's darker cousin: dry vermouth and bittersweet liqueur instead of sweet." },
+        { name: "Old Fashioned", ratio: "50 ml Yellow Rose, 5 ml demerara, 3 dashes Angostura", build: "stir", glass: "old fashioned", serve: "rocks, orange peel", note: "The rye Old Fashioned: spicier, drier, less forgiving. In character." }
+      ]
+    },
+    "johnnie-walker-18": {
+      linernote: "From Edele's cellar, not the cabinet — and the jukebox takes requests across the whole house, which is rather the point of having one.",
+      tracks: [
+        { name: "Highball", ratio: "40 ml JW18, 100 ml chilled soda", build: "build", glass: "highball", serve: "tall ice, lemon twist", note: "The blend's natural habitat: cold, long, effortless." },
+        { name: "Rob Roy", ratio: "55 ml JW18 : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "Blended scotch makes the smoothest Rob Roy; that's half the reason blends exist." },
+        { name: "Rusty Nail", ratio: "50 ml JW18 : 25 ml Drambuie", build: "stir", glass: "old fashioned", serve: "rocks, lemon twist", note: "The house-quiet version: honeyed, round, dangerously easy." }
+      ]
+    }
+  };
+
+  /* ---- helpers ----------------------------------------------------------- */
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function pad3(n) { return String(n).padStart(3, "0"); }
+  function bySlug(slug) {
+    for (var i = 0; i < INVENTORY.length; i++) {
+      if (INVENTORY[i].slug === slug) return INVENTORY[i];
+    }
+    return null;
+  }
+  function trackCount(slug) {
+    var t = TRACKLISTS[slug];
+    return t && t.tracks ? t.tracks.length : 0;
+  }
+
+  /* ---- render the records grid ------------------------------------------ */
+  function renderRecords() {
+    var html = "";
+    for (var i = 0; i < INVENTORY.length; i++) {
+      var b = INVENTORY[i];
+      html += '<li><button type="button" class="rec-card" data-slug="' + b.slug + '">' +
+        '<span class="sleeve">JB-' + pad3(i + 1) + ' \u00b7 ' + esc(b.abv) + '% ABV</span>' +
+        '<span class="rec-name">' + esc(b.name) + '</span>' +
+        '<span class="rec-blurb">' + esc(b.blurb) + '</span>' +
+        '<span class="proof">plays <b>' + trackCount(b.slug) + '</b> tracks \u00b7 <b>/bar/' + esc(b.slug) + '</b> (pending)</span>' +
+        '</button></li>';
+    }
+    $("#records").innerHTML = html;
+  }
+
+  /* ---- text/plain card --------------------------------------------------- */
+  function buildPlain(b) {
+    var t = TRACKLISTS[b.slug];
+    var lines = [];
+    lines.push("THE HOUSE JUKEBOX - BOTTLE CARD");
+    lines.push("clive.kieranajp.uk/pages/jukebox/");
+    lines.push("");
+    lines.push(b.name + " (" + b.abv + "% ABV)");
+    lines.push(b.style);
+    lines.push("");
+    lines.push("TRACKLIST - in the key of " + b.name);
+    lines.push("");
+    for (var i = 0; i < t.tracks.length; i++) {
+      var tr = t.tracks[i];
+      lines.push(pad3(i + 1).replace(/^0/, "") + ". " + tr.name);
+      lines.push("   " + tr.ratio);
+      lines.push("   build: " + tr.build);
+      lines.push("   glass: " + tr.glass);
+      lines.push("   serve: " + tr.serve);
+      if (tr.note) lines.push("   note: " + tr.note);
+      lines.push("");
+    }
+    lines.push("-- " + t.linernote);
+    return lines.join("\n");
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy") ? resolve() : reject(new Error("execCommand said no"));
+      } catch (err) { reject(err); }
+      document.body.removeChild(ta);
+    });
+  }
+
+  /* ---- liner notes ------------------------------------------------------- */
+  function renderLiner(b) {
+    var t = TRACKLISTS[b.slug];
+    var tracksHtml = "";
+    for (var i = 0; i < t.tracks.length; i++) {
+      var tr = t.tracks[i];
+      tracksHtml += '<li><span class="track-name">' + esc(tr.name) + '</span>' +
+        ' <span class="ratio">' + esc(tr.ratio) + '</span>' +
+        '<span class="buildline"><b>build</b> ' + esc(tr.build) + ' &middot; <b>glass</b> ' + esc(tr.glass) +
+        ' &middot; <b>serve</b> ' + esc(tr.serve) + '</span>' +
+        (tr.note ? '<span class="buildline"><i>' + esc(tr.note) + '</i></span>' : "") +
+        '</li>';
+    }
+    $("#liner").innerHTML =
+      '<p class="lbl">Now playing</p>' +
+      '<h3>' + esc(b.name) + '</h3>' +
+      '<p>' + esc(b.style) + '<br><i>' + esc(t.linernote) + '</i></p>' +
+      '<p class="lbl">Tracklist \u2014 in the key of ' + esc(b.name) + '</p>' +
+      '<ol>' + tracksHtml + '</ol>' +
+      '<span class="lbl">The card</span>' +
+      '<div class="copybar">' +
+      '<button type="button" class="copy-bar-btn" id="copycard">copy this bottle&#39;s card (text/plain)</button>' +
+      '<span class="copynote" id="copynote"></span>' +
+      '</div>';
+    $("#copycard").addEventListener("click", function () {
+      var btn = this;
+      var note = $("#copynote");
+      copyText(buildPlain(b)).then(function () {
+        note.textContent = "copied to your clipboard \u2713";
+        note.className = "copynote ok";
+      }).catch(function () {
+        note.textContent = "clipboard refused; the specs are in the liner above";
+        note.className = "copynote";
+      });
+      btn.blur();
+    });
+  }
+
+  /* ---- the recently-played ledger ---------------------------------------- */
+  function readLedger() {
+    try {
+      var raw = JSON.parse(localStorage.getItem(LEDGER_KEY) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch (err) { return []; }
+  }
+  function addSpin(slug) {
+    var spins = readLedger().filter(function (s) { return s.s !== slug; });
+    spins.unshift({ s: slug, t: Date.now() });
+    localStorage.setItem(LEDGER_KEY, JSON.stringify(spins.slice(0, LEDGER_MAX)));
+    renderLedger();
+  }
+  function hms(ts) {
+    var d = new Date(ts);
+    function p(n) { return String(n).padStart(2, "0"); }
+    return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+  }
+  function renderLedger() {
+    var spins = readLedger();
+    var ol = $("#tracklist");
+    if (!spins.length) {
+      ol.innerHTML = '<li><span class="track-name">Nothing yet \u2014 the counter reads zero.</span>' +
+        '<span class="dot"></span><span class="time">\u2014</span></li>';
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < spins.length; i++) {
+      var b = bySlug(spins[i].s);
+      if (!b) continue;
+      html += '<li><span class="track-name">' + esc(b.name) + '</span>' +
+        '<span class="dot"></span><span class="time">played ' + hms(spins[i].t) + '</span></li>';
+    }
+    ol.innerHTML = html || '<li><span class="track-name">Ledger\'s ledgers disagree \u2014 starting over.</span>' +
+      '<span class="dot"></span><span class="time">\u2014</span></li>';
+  }
+
+  /* ---- selection ---------------------------------------------------------- */
+  function selectBottle(slug, logIt) {
+    var b = bySlug(slug);
+    if (!b || !TRACKLISTS[slug]) return;
+    var cards = document.querySelectorAll(".rec-card");
+    for (var i = 0; i < cards.length; i++) {
+      cards[i].classList.toggle("active", cards[i].getAttribute("data-slug") === slug);
+    }
+    renderLiner(b);
+    $("#liner-section").hidden = false;
+    if (logIt) addSpin(slug);
+    $("#liner-section").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  /* ---- wire up + go ------------------------------------------------------- */
+  $("#records").addEventListener("click", function (e) {
+    var card = e.target.closest(".rec-card");
+    if (card) selectBottle(card.getAttribute("data-slug"), true);
+  });
+
+  var total = 0;
+  for (var i = 0; i < INVENTORY.length; i++) total += trackCount(INVENTORY[i].slug);
+  $("#summary").textContent = INVENTORY.length + " records in the cabinet \u00b7 " +
+    total + " tracks \u00b7 specs copy as text/plain";
+
+  renderRecords();
+  renderLedger();
+})();
+</script>
+</body>
+</html>
