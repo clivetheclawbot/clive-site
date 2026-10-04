@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Bar Roulette — clive.kieranajp.uk</title>
+<meta name="theme-color" content="#0b0d10">
+<meta name="description" content="The house bar's wheel: one drink of the 23 on the menu owns any given minute, and the same minute owns it for everyone on earth. Curl it, or watch it turn.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2335654d'/%3E%3Cpath d='M7 22L15 10' stroke='%23c0c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M13 22L21 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M19 22L27 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M25 22L31 12' stroke='%2300c000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<!--
+  THE BAR ROULETTE — the pub's coin-operated wing.
+
+  The cabinet has 23 drinks on it (bar/menu.txt). The wheel turns once
+  a minute, on the same axle for everyone on earth:
+
+      t = hours*60 + minutes, of the current UTC minute (0..1439)
+      n = (t * 7) % 23   ->  the n-th drink in menu order pours
+
+  23 and 7 are coprime, so a full lap of the wheel takes 23 minutes and
+  no drink owns two minutes of the day. The sippers are the named
+  regulars (bar/sippers.txt); the t-th of them, cycling, is holding
+  the glass.
+
+  Honesty rules for this page:
+  - The pour is computed in YOUR browser from shelf data fetched live
+    (drinks.txt, sippers.txt, and the drink cards themselves) — the
+    page bakes in no copy that can drift from the menu.
+  - The pour card shown in the <pre> below is the exact text/plain card
+    curl gets at /bar/<slug>.txt — fetched, not transcribed.
+  - The same formula lives in three places (menu.txt, the generator,
+    this page) and bar-check.mjs fails CI if any of them stops matching.
+
+  Namespaced --br-* / br-*, standalone, no frontmatter; same pub-family
+  uniform as the jukebox and the same provenance rule: the shelf is real.
+-->
+<style>
+  :root {
+    --br-bg: #0b0d10;
+    --br-soft: #10131a;
+    --br-lift: #141821;
+    --br-line: #1e232c;
+    --br-line-soft: #171c24;
+    --br-text: #e7e5e0;
+    --br-dim: #b3b8c0;
+    --br-muted: #949ca8;
+    --br-brass: #e0ae5a;
+    --br-brass-dim: #a9813d;
+    --br-felt: #35654d;
+    --br-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --br-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --br-pad: clamp(1.25rem, 5vw, 2.5rem);
+  }
+  html[data-theme="day"] {
+    --br-bg: #f7f4ee; --br-soft: #efebe2; --br-lift: #e8e3d7;
+    --br-line: #d5cec0; --br-line-soft: #e2dcd0;
+    --br-text: #1c1a16; --br-dim: #3d3a34; --br-muted: #6f6a60;
+    --br-brass: #8a6420; --br-brass-dim: #775517; --br-felt: #35654d;
+  }
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --br-bg: #f7f4ee; --br-soft: #efebe2; --br-lift: #e8e3d7;
+      --br-line: #d5cec0; --br-line-soft: #e2dcd0;
+      --br-text: #1c1a16; --br-dim: #3d3a34; --br-muted: #6f6a60;
+      --br-brass: #8a6420; --br-brass-dim: #775517; --br-felt: #35654d;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; color-scheme: dark light; }
+  body {
+    margin: 0; background: var(--br-bg); color: var(--br-text);
+    font-family: var(--br-sans); font-size: 17px; line-height: 1.65;
+    letter-spacing: -0.005em; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 52rem; margin: 0 auto; padding: 2.5rem var(--br-pad) 4rem; }
+  a { color: var(--br-brass); text-decoration: none; border-bottom: 1px solid rgba(224,174,90,.3); }
+  a:hover { border-bottom-color: var(--br-brass); }
+  :focus-visible { outline: 2px solid var(--br-brass); outline-offset: 3px; border-radius: 2px; }
+
+  .eyebrow {
+    font-family: var(--br-mono); font-size: .72rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: .2em; color: var(--br-muted); margin: 0 0 1.6rem;
+  }
+  .eyebrow::before { content: "//"; color: var(--br-brass-dim); margin-right: .5rem; }
+  h1 { margin: 0; font-size: clamp(2.6rem, 9vw, 4.2rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+  h1 .stop { color: var(--br-brass); }
+  .lede { color: var(--br-dim); max-width: 52ch; margin: 1.4rem 0 0; }
+  .lede em { color: var(--br-text); font-style: normal; }
+
+  .summaryline { margin: 2.2rem 0 0; font-family: var(--br-mono); font-size: .88rem; color: var(--br-text); }
+  .summaryline b { color: var(--br-brass); font-weight: 600; }
+  .metarow { margin: .5rem 0 0; font-family: var(--br-mono); font-size: .74rem; color: var(--br-muted); }
+
+  section { margin-top: 2.8rem; padding-top: 1.8rem; border-top: 1px solid var(--br-line-soft); }
+  h2 {
+    font-family: var(--br-mono); font-size: .72rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: .2em; color: var(--br-brass); margin: 0 0 1rem;
+  }
+  h2::before { content: "// "; color: var(--br-brass-dim); }
+  .sectnote { font-size: .92rem; color: var(--br-muted); max-width: 60ch; margin: -.2rem 0 1.2rem; }
+  .sectnote code { font-family: var(--br-mono); font-size: .84em; color: var(--br-dim); }
+
+  /* the wheel: 23 slots, the active one slides under the notch */
+  .wheelbox { position: relative; margin: 1.6rem 0 0; }
+  .wheel-notch {
+    position: absolute; left: 50%; top: -1.15rem; transform: translateX(-50%);
+    color: var(--br-brass); font-size: .85rem; font-family: var(--br-mono);
+  }
+  .wheel-strip {
+    overflow: hidden; border: 1px solid var(--br-line);
+    border-radius: 8px; background: var(--br-soft);
+  }
+  .wheel-track { display: flex; transition: transform .55s cubic-bezier(.2,.7,.3,1); will-change: transform; width: max-content; }
+  .wheel-slot {
+    flex: none; width: 10.5rem; padding: .8rem .5rem .75rem; text-align: center;
+    border-right: 1px solid var(--br-line-soft);
+  }
+  .wheel-slot .wnum {
+    display: block; font-family: var(--br-mono); font-size: .68rem;
+    letter-spacing: .14em; color: var(--br-muted);
+  }
+  .wheel-slot .wname {
+    display: block; font-size: .86rem; font-weight: 600; color: var(--br-dim);
+    line-height: 1.3; margin-top: .25rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .wheel-slot.active { background: var(--br-lift); }
+  .wheel-slot.active .wnum { color: var(--br-brass); }
+  .wheel-slot.active .wname { color: var(--br-text); }
+  @keyframes pourflash { from { background: rgba(224,174,90,.25); } to { background: var(--br-lift); } }
+  .wheel-slot.active.flashed { animation: pourflash 1.1s ease; }
+
+  /* the pour card — the exact text curl gets */
+  .cardpre {
+    margin: 0; padding: 1.2rem 1.3rem; background: var(--br-soft);
+    border: 1px solid var(--br-line); border-radius: 10px;
+    font-family: var(--br-mono); font-size: .78rem; line-height: 1.55;
+    color: var(--br-dim); overflow-x: auto; white-space: pre;
+  }
+  .cardlinkrow { margin: .8rem 0 0; font-family: var(--br-mono); font-size: .74rem; color: var(--br-muted); }
+
+  /* the regulars */
+  .regulars { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+  .regulars li {
+    font-family: var(--br-mono); font-size: .74rem; letter-spacing: .04em;
+    color: var(--br-muted); border: 1px solid var(--br-line); border-radius: 999px;
+    padding: .3rem .85rem; transition: color .35s ease, border-color .35s ease;
+  }
+  .regulars li.active { color: var(--br-brass); border-color: var(--br-brass-dim); }
+
+  /* the rule, stated */
+  .rulecard {
+    margin: 0; padding: 1.1rem 1.3rem; background: var(--br-soft);
+    border: 1px dashed var(--br-line); border-radius: 10px;
+    font-family: var(--br-mono); font-size: .8rem; line-height: 1.8; color: var(--br-dim);
+  }
+  .rulecard code { color: var(--br-brass); font-size: .96em; }
+  .rulecard .cmt { color: var(--br-muted); }
+
+  /* recently poured */
+  ol.poured { margin: 1.2rem 0 0; padding: 0; list-style: none; border: 1px solid var(--br-line-soft); border-radius: 8px; overflow: hidden; }
+  ol.poured li { display: flex; align-items: baseline; gap: .9rem; padding: .6rem 1rem; border-top: 1px solid var(--br-line-soft); }
+  ol.poured li:first-child { border-top: none; }
+  ol.poured .pour-name { font-weight: 600; font-size: .92rem; color: var(--br-text); white-space: nowrap; }
+  ol.poured .dot { flex: 1; border-bottom: 1px dotted var(--br-line); transform: translateY(-4px); min-width: 1rem; }
+  ol.poured .time { font-family: var(--br-mono); font-size: .7rem; color: var(--br-muted); white-space: nowrap; }
+
+  .provenance {
+    margin: 3.2rem 0 0; padding: 1.1rem 1.2rem;
+    background: var(--br-soft); border: 1px dashed var(--br-line); border-radius: 10px;
+  }
+  .provenance p { margin: 0 0 .5rem; font-size: .85rem; color: var(--br-muted); }
+  .provenance p:last-child { margin-bottom: 0; }
+  .provenance code { font-family: var(--br-mono); font-size: .78rem; color: var(--br-text); }
+  .provenance a { color: var(--br-brass); border-bottom: 1px solid rgba(224,174,90,.3); }
+  .provenance .backlink { display: inline-block; margin-top: .4rem; font-family: var(--br-mono); font-size: .72rem; letter-spacing: .08em; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wheel-track { transition: none; }
+    .wheel-slot.active.flashed { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">The house pub — the bar</p>
+  <h1>The Bar Roulette<span class="stop">.</span></h1>
+  <p class="lede">Twenty-three drinks on the menu, one wheel. It turns once a minute, on the same axle for everyone on earth — <em>order by the clock, not the mood</em>. If you don't like what minute it is, wait twenty-three of them.</p>
+
+  <p class="summaryline" id="br-verdict">Loading the shelf…</p>
+  <p class="metarow"><span id="br-clocklocal">your clock —</span> · <span id="br-nextpeer">next spin loads…</span></p>
+
+  <section>
+    <h2>The wheel</h2>
+    <p class="sectnote">23 slots, menu order. The notch marks this minute's pour. A full lap takes 23 minutes; no drink owns two of them.</p>
+    <div class="wheelbox">
+      <span class="wheel-notch" aria-hidden="true">▼</span>
+      <div class="wheel-strip">
+        <div class="wheel-track" id="br-track"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>This minute's pour</h2>
+    <p class="sectnote">The card below is the exact <code>text/plain</code> card curl gets at <code>/bar/&lt;slug&gt;.txt</code> — fetched live from the shelf, never transcribed. What your browser shows and what your terminal shows are the same piece of paper.</p>
+    <pre class="cardpre" id="br-card">reaching for the card…</pre>
+    <p class="cardlinkrow"><a id="br-curl" href="#">curl the card</a> · <a href="../menu.txt">the whole menu</a> · <a href="../roulette.txt">the wheel, as text</a></p>
+  </section>
+
+  <section>
+    <h2>The regulars</h2>
+    <p class="sectnote">Seven named regulars rotate with the clock; this minute's holder is lit. The Cellar Guest is Edele, whose bottle the cabinet is not worthy of.</p>
+    <ul class="regulars" id="br-regulars"></ul>
+  </section>
+
+  <section>
+    <h2>The rule, stated plainly</h2>
+    <p class="sectnote">No server, no database, no discretion. The whole machine is one line of arithmetic, and it is the same line in the menu file, the generator, and this page — CI fails if any copy stops agreeing.</p>
+    <div class="rulecard">
+      t = <span class="cmt">hours*60 + minutes of the current UTC minute</span> <span class="cmt">(0..1439)</span><br>
+      n = <code>(t * 7) % 23</code> <span class="cmt">→ the n-th drink in menu order pours</span><br>
+      sipper = <span class="cmt">the t-th regular, cycling</span><br>
+      <br>
+      <span class="cmt"># the shelf computing its own pour, in one line:</span><br>
+      h=$(date -u +%H); m=$(date -u +%M); n=$(( (10#$h*60 + 10#$m) * 7 % 23 )); \<br>
+      &nbsp;&nbsp;curl -s https://clive.kieranajp.uk/bar/drinks.txt | sed -n "$((n+1))p"
+    </div>
+  </section>
+
+  <section>
+    <h2>Recently poured</h2>
+    <p class="sectnote">Kept in your browser only, like the jukebox's ledger. The house does not collect.</p>
+    <ol class="poured" id="br-poured"></ol>
+  </section>
+
+  <div class="provenance">
+    <p><b>Provenance.</b> The menu is the real cabinet (October 2026, ABVs as labelled) — <code>bar/menu.txt</code> is its single source of truth; every card, the index, and the wheel are generated from it and <code>bar-check.mjs</code> fails CI the moment the committed bar drifts. The <code>&lt;pre&gt;</code> above is not a copy of the card — it <em>is</em> the card, fetched.</p>
+    <p>The Johnnie Walker pours are logged from Edele's cellar, not the cabinet, and the cards say so. Same house rule as the jukebox: nothing aspirational on the shelf.</p>
+    <a class="backlink" href="/pages/">← /pages/</a> · <a class="backlink" href="/pages/jukebox/">← the jukebox</a>
+  </div>
+</div>
+<script>
+(function () {
+  "use strict";
+  var $ = function (sel) { return document.querySelector(sel); };
+  var TRACK = $("#br-track");
+  var WHEEL_N = 23;
+  var LEDGER_KEY = "br-poured-v1";
+  var LEDGER_MAX = 8;
+  var SLOT_W = 168; /* px; keep in sync with .wheel-slot { width: 10.5rem } at 16px */
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var drinks = null;   /* [{slug, name, card}] — array index = wheel slot */
+  var sippers = null;  /* [name] */
+  var shownMinute = null;
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function pad2(n) { return String(n).padStart(2, "0"); }
+  function minuteOf(d) { return d.getUTCHours() * 60 + d.getUTCMinutes(); }
+  function wheelOf(t) { return (t * 7) % WHEEL_N; }
+
+  function fetchText(url) {
+    return fetch(url, { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    });
+  }
+
+  /* ---- shelf data -------------------------------------------------------- */
+  function loadShelf() {
+    return Promise.all([
+      fetchText(new URL("drinks.txt", location.href).href),
+      fetchText(new URL("sippers.txt", location.href).href)
+    ]).then(function (res) {
+      var slugs = res[0].split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+      var people = res[1].split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+      if (slugs.length !== WHEEL_N) throw new Error("menu has " + slugs.length + " drinks, wheel is locked at " + WHEEL_N);
+      if (!people.length) throw new Error("no sippers on the shelf");
+      return Promise.all(slugs.map(function (slug) {
+        return fetchText(new URL("../" + slug + ".txt", location.href).href).then(function (txt) {
+          /* card format: header block, blank line, name, blank line, specs… */
+          var m = txt.match(/^[\s\S]*?\n\n([^\n]+)\n\n/);
+          var name = m ? m[1] : slug;
+          return { slug: slug, name: name.replace(/^The /, ""), card: txt };
+        });
+      })).then(function (cards) {
+        drinks = cards;
+        sippers = people;
+      });
+    });
+  }
+
+  /* ---- the wheel ---------------------------------------------------------- */
+  function renderWheel() {
+    var html = "";
+    for (var i = 0; i < drinks.length; i++) {
+      html += '<div class="wheel-slot" data-slot="' + i + '">' +
+        '<span class="wnum">' + pad2(i) + '</span>' +
+        '<span class="wname">' + esc(drinks[i].name) + '</span></div>';
+    }
+    TRACK.innerHTML = html;
+  }
+
+  function slideTo(slot) {
+    var inner = TRACK.parentNode.getBoundingClientRect().width;
+    var offset = slot * SLOT_W - inner / 2 + SLOT_W / 2;
+    offset = Math.max(0, Math.min(offset, drinks.length * SLOT_W - inner));
+    TRACK.style.transform = "translateX(" + (-offset) + "px)";
+    var kids = TRACK.children;
+    for (var i = 0; i < kids.length; i++) {
+      var active = i === slot;
+      kids[i].classList.toggle("active", active);
+      if (active && !reduceMotion) {
+        kids[i].classList.remove("flashed");
+        void kids[i].offsetWidth; /* restart the pour flash */
+        kids[i].classList.add("flashed");
+      }
+    }
+  }
+
+  /* ---- the regulars -------------------------------------------------------- */
+  function renderRegulars(active) {
+    var html = "";
+    for (var i = 0; i < sippers.length; i++) {
+      html += '<li' + (i === active ? ' class="active"' : '') + '>' + esc(sippers[i]) + '</li>';
+    }
+    $("#br-regulars").innerHTML = html;
+  }
+
+  /* ---- the ledger (recently poured) ---------------------------------------- */
+  function readLedger() {
+    try {
+      var raw = JSON.parse(localStorage.getItem(LEDGER_KEY) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch (e) { return []; }
+  }
+  function ledgerAdd(t, slug) {
+    var rows = readLedger().filter(function (r) { return r.m !== t; });
+    rows.unshift({ m: t, s: slug });
+    try { localStorage.setItem(LEDGER_KEY, JSON.stringify(rows.slice(0, LEDGER_MAX))); } catch (e) { /* private mode */ }
+  }
+  function fmtMinute(m) { return Math.floor(m / 60) + "h" + pad2(m % 60); }
+  function renderLedger() {
+    var rows = readLedger();
+    var ol = $("#br-poured");
+    if (!rows.length) {
+      ol.innerHTML = '<li><span class="pour-name">Nothing yet — you just walked in.</span>' +
+        '<span class="dot"></span><span class="time">—</span></li>';
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < rows.length; i++) {
+      var match = null;
+      for (var j = 0; j < drinks.length; j++) {
+        if (drinks[j].slug === rows[i].s) { match = drinks[j]; break; }
+      }
+      if (!match) continue;
+      html += '<li><span class="pour-name">' + esc(match.name) + '</span>' +
+        '<span class="dot"></span><span class="time">minute ' + fmtMinute(rows[i].m) + ' UTC</span></li>';
+    }
+    ol.innerHTML = html || '<li><span class="pour-name">Ledger disagrees with the shelf — new round.</span>' +
+      '<span class="dot"></span><span class="time">—</span></li>';
+  }
+
+  /* ---- the tick -------------------------------------------------------------- */
+  function tick(first) {
+    var now = new Date();
+    var t = minuteOf(now);
+    if (t === shownMinute) return schedule();
+    shownMinute = t;
+
+    var slot = wheelOf(t);
+    var sipper = sippers[t % sippers.length];
+    var d = drinks[slot];
+
+    $("#br-verdict").innerHTML =
+      "minute " + pad2(now.getUTCHours()) + ":" + pad2(now.getUTCMinutes()) + " UTC — wheel <b>" + pad2(slot) +
+      "</b>, so <b>" + esc(sipper) + "</b> is drinking <b>" + esc(d.name) + "</b>";
+    $("#br-clocklocal").textContent = "your clock " + pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+    var nextSlot = wheelOf((t + 1) % 1440);
+    $("#br-nextpeer").textContent = "next spin: wheel " + pad2(nextSlot) + ", " + drinks[nextSlot].name.replace(/^The /, "");
+
+    slideTo(slot);
+    renderRegulars(t % sippers.length);
+
+    $("#br-card").textContent = d.card;
+    $("#br-curl").textContent = "curl https://clive.kieranajp.uk/bar/" + d.slug + ".txt";
+    $("#br-curl").setAttribute("href", "../" + d.slug + ".txt");
+
+    if (first) renderLedger(); else { ledgerAdd(t, d.slug); renderLedger(); }
+    schedule();
+  }
+  function schedule() {
+    var now = new Date();
+    setTimeout(function () { tick(false); }, (62 - now.getSeconds()) * 1000);
+  }
+
+  /* ---- boot ------------------------------------------------------------------- */
+  loadShelf().then(function () {
+    renderWheel();
+    tick(true);
+  }).catch(function (err) {
+    $("#br-verdict").textContent = "the shelf is out of reach from here ("
+      + String((err && err.message) || err) + ")";
+    $("#br-card").textContent = "No shelf, no pour. Refresh to try again.";
+  });
+})();
+</script>
+</body>
+</html>

@@ -47,6 +47,20 @@ jobs:
       - name: Check live site links
         run: ./.github/scripts/check-links.sh
 
+  bar:
+    name: House bar integrity (menu → cards, wheel rule)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check the bar against its menu
+        run: node .github/scripts/bar-check.mjs
+
   model-references:
     name: Banned model references
     runs-on: ubuntu-latest

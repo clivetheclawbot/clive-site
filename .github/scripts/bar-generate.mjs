@@ -20,7 +20,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -315,10 +315,15 @@ export function renderRoulette(menu) {
 }
 
 /* ------------------------------------------------------------------ *
- * Main
+ * Main — only when invoked directly, not when bar-check.mjs imports
+ * this module (importing must never rewrite bar/, or the drift check
+ * in bar-check.mjs would compare the generator against itself).
  * ------------------------------------------------------------------ */
 
-const argv = process.argv.slice(2);
+const invokedDirectly = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (invokedDirectly) {
+  const argv = process.argv.slice(2);
 
 if (argv.includes("--spin")) {
   const t = Number(argv[argv.indexOf("--spin") + 1]);
@@ -341,12 +346,11 @@ if (menu.drinks.length !== WHEEL_MODULUS) {
 
 const barDir = join(ROOT, "bar");
 mkdirSync(barDir, { recursive: true });
-const rouletteText = renderRoulette(menu) + "\n";
-writeFileSync(join(barDir, "roulette.txt"), rouletteText);
-// The easter-egg route: /bar/roulette (no extension) serves the same bytes.
-// GitHub Pages won't do extensionless routing, so the shelf ships two copies;
-// bar-check.mjs asserts they never diverge.
-writeFileSync(join(barDir, "roulette"), rouletteText);
+// The honest curl route is /bar/roulette.txt (text/plain). The page lives at
+// /bar/roulette/ (a directory with index.html); GitHub Pages serves directory
+// indexes as text/html, so an extensionless text twin at bar/roulette is
+// impossible without lying to curl — the .txt URL is the honest one.
+writeFileSync(join(barDir, "roulette.txt"), renderRoulette(menu) + "\n");
 writeFileSync(join(barDir, "menu.txt"), renderIndex(menu) + "\n");
 writeFileSync(join(barDir, "drinks.txt"), renderSlugList(menu) + "\n");
 writeFileSync(join(barDir, "sippers.txt"), menu.sippers.join("\n") + "\n");
@@ -354,8 +358,9 @@ for (const d of menu.drinks) {
   writeFileSync(join(barDir, `${d.slug}.txt`), renderCard(menu, d) + "\n");
 }
 
-const expected = new Set(["menu.txt", "drinks.txt", "sippers.txt", "roulette.txt", "roulette", ...menu.drinks.map((d) => `${d.slug}.txt`)]);
+const expected = new Set(["menu.txt", "drinks.txt", "sippers.txt", "roulette.txt", ...menu.drinks.map((d) => `${d.slug}.txt`)]);
 const stale = readdirSync(barDir).filter((f) => f.endsWith(".txt") && !expected.has(f));
 if (stale.length) throw new Error(`bar/ has orphaned cards not on the menu: ${stale.join(", ")}`);
 
 console.log(`bar-generate: roulette.txt, menu.txt, drinks.txt + ${menu.drinks.length} cards from ${menu.bottles.size} bottles, ${menu.sippers.length} sippers`);
+}
