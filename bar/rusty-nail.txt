@@ -1,0 +1,36 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Rusty Nail
+
+build: stir, old-fashioned.
+serve: rocks, lemon twist.
+
+House pour (Ardbeg Corryvreckan):
+  -- 50 ml Corryvreckan : 25 ml Drambuie
+  (The classic scotch after-dinner drink — the Drambuie's honey
+  walking the smoke on a lead.)
+
+Variants on the shelf:
+  -- 50 ml Uigeadail : 25 ml Drambuie
+  (The sherry sweetness rounds this softer than the Corryvreckan
+  ever would.)
+  -- 50 ml GlenAllachie : 25 ml Drambuie
+  (Sherry and heather honey in the same glass; the nail rusts
+  politely.)
+
+Also from Edele's cellar (Johnnie Walker 18 (Ultimate)):
+  -- 50 ml JW18 : 25 ml Drambuie
+  (The house-quiet version: honeyed, round, dangerously easy.)
+  (poured from Edele's cellar: Johnnie Walker 18 (Ultimate))
+
+  scotch + Drambuie — the honey walking the smoke on a lead
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

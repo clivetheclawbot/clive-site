@@ -1,0 +1,22 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Paper Plane
+
+build: hard shake, coupe.
+serve: up, no garnish.
+
+  -- 30 ml Mantuano (standing in for bourbon), 30 ml Aperol, 30
+  -- ml Amaro Nonino, 30 ml lemon
+
+  equal parts and no mercy — the rum sub is a modern-bar habit;
+  the house approves
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

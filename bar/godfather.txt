@@ -1,0 +1,20 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Godfather
+
+build: build in the glass, old-fashioned.
+serve: rocks.
+
+  -- 50 ml Corryvreckan : 20 ml amaretto
+
+  two ingredients and no apologies
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

@@ -1,0 +1,20 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Margarita
+
+build: hard shake, rocks or coupe.
+serve: salt rim, lime wheel.
+
+  -- 50 ml Espolón, 25 ml lime, 20 ml triple sec
+
+  the shelf's other white spirit earns its keep here
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

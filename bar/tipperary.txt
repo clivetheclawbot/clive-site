@@ -1,0 +1,21 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Tipperary
+
+build: stir, coupe.
+serve: up.
+
+  -- 40 ml Tullamore, 25 ml sweet vermouth, 20 ml Green
+  -- Chartreuse, 2 dashes bitters
+
+  the Irish Manhattan, herbal chorus all the way up
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

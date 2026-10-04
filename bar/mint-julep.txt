@@ -1,0 +1,20 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Mint Julep
+
+build: bruise, press, pack, julep cup (or pint).
+serve: mounded ice, mint bouquet.
+
+  -- 60 ml Buffalo Trace, 15 ml demerara, 8 mint leaves
+
+  Kentucky's other job
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

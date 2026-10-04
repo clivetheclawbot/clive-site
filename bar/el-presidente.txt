@@ -1,0 +1,21 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The El Presidente
+
+build: stir, coupe.
+serve: up, orange peel.
+
+  -- 50 ml Mantuano, 25 ml blanc vermouth, 20 ml Cointreau, 5 ml
+  -- pomegranate grenadine
+
+  Havana's fancy-dress number, 1920s regulation
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

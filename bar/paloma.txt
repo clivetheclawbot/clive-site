@@ -1,0 +1,21 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Paloma
+
+build: build in the glass, highball.
+serve: over ice, grapefruit wedge.
+
+  -- 50 ml Espolón, 100 ml grapefruit soda, 10 ml lime, pinch of
+  -- salt
+
+  Mexico's actual favourite; the Margarita is the export version
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

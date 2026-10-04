@@ -1,0 +1,21 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Mojito
+
+build: muddle, press, top, highball.
+serve: crushed ice, mint bouquet.
+
+  -- 50 ml Havana 3, 20 ml lime, 15 ml demerara, 8 mint leaves,
+  -- soda
+
+  Havana's other native tongue
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

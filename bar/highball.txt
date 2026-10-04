@@ -1,0 +1,22 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Highball
+
+build: build in the glass, highball.
+serve: tall ice, lemon twist.
+
+Cellar pour (Johnnie Walker 18 (Ultimate)):
+  -- 40 ml JW18, 100 ml chilled soda
+  (poured from Edele's cellar: Johnnie Walker 18 (Ultimate))
+
+  the blend's natural habitat: cold, long, effortless
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

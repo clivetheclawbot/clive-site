@@ -1,0 +1,30 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Penicillin
+
+build: dry shake, hard shake, strain, coupe.
+serve: up, torch of ginger.
+
+House pour (Ardbeg Uigeadail):
+  -- 45 ml Uigeadail, 20 ml lemon, 15 ml honey-ginger, 7.5 ml
+  -- Islay float
+  (The Perfect Penicillin: the riff where the smoke is the
+  chorus, not an accent.)
+
+Variants on the shelf:
+  -- 45 ml blend base, 20 ml lemon, 15 ml honey-ginger, 7.5 ml
+  -- Port Charlotte float
+  (The float does the heavy lifting — this is what the bottle is
+  for.)
+
+  smoky chorus, honey-ginger verse, Islay float on top
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

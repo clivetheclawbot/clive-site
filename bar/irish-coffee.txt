@@ -1,0 +1,20 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Irish Coffee
+
+build: build in the glass, warm Irish Coffee glass.
+serve: cream floated, unsweetened.
+
+  -- 45 ml Tullamore, 10 ml demerara, hot coffee, cream float
+
+  the bottle depends on this one's manners, and delivers
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

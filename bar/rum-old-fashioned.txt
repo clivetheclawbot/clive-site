@@ -1,0 +1,20 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Rum Old Fashioned
+
+build: stir, old-fashioned.
+serve: rocks, orange peel.
+
+  -- 50 ml Mantuano, 5 ml demerara, 3 dashes Angostura
+
+  your grandfather's Old Fashioned, back from a long holiday
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

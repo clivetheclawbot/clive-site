@@ -1,0 +1,26 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Hot Toddy
+
+build: build with boiling water, heatproof glass.
+serve: hot, lemon wheel.
+
+House pour (Ardbeg Corryvreckan):
+  -- 40 ml Corryvreckan, 15 ml honey syrup, 15 ml lemon
+  (The whirlpool at a civilised temperature.)
+
+Variants on the shelf:
+  -- 40 ml GlenAllachie, 15 ml honey syrup, 15 ml lemon
+  (The bottle was built for this and won't pretend otherwise.)
+
+  the whirlpool at a civilised temperature
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

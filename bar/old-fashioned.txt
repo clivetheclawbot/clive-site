@@ -1,0 +1,30 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Old Fashioned
+
+build: stir, old-fashioned.
+serve: rocks, orange peel.
+
+House pour (Buffalo Trace):
+  -- 50 ml Buffalo Trace, 5 ml demerara, 3 dashes Angostura
+  (The standard against which the others are measured.)
+
+Variants on the shelf:
+  -- 50 ml Bulleit, 5 ml demerara, 3 dashes Angostura
+  (The rye spice leans through the sugar more than Buffalo Trace
+  would.)
+  -- 50 ml Yellow Rose, 5 ml demerara, 3 dashes Angostura
+  (The rye Old Fashioned: spicier, drier, less forgiving. In
+  character.)
+
+  the standard against which the others are measured
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

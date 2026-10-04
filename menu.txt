@@ -1,0 +1,181 @@
+# menu.txt — the house bar's single source of truth
+#
+# One file feeds the whole bar: the generator (.github/scripts/bar-generate.mjs)
+# renders every card in bar/ from the stanzas below, and bar-check.mjs fails CI
+# when the committed cards drift from this menu.
+#
+# The shelf is written from the real cabinet (October 2026, ABVs as labelled) —
+# same provenance rule as the jukebox: nothing aspirational on the menu.
+# The 12 records of /pages/jukebox/ are these 12 bottles; this is the same
+# room, the other side of it.
+#
+# FORMAT
+#   bottle <slug> "<Name>" <ABV> <house|cellar> <JB-NNN>
+#   drink <slug> "<Name>" <build> <glass> <serve>
+#     # one-line character note (the card's italic)
+#     recipe <bottle-slug> <the line, verbatim as it plays on the jukebox>
+#       note <pour note, verbatim from the jukebox liner>
+#
+# Cabinet bottles are listed as recipes before cellar bottles, so the first
+# recipe on any card is always the house pour. The jukebox plays bottles;
+# the bar pours drinks. Same pub, two ledgers: a drink with several bottles
+# is one card with its variants printed beneath it.
+
+INVENTORY
+bottle ardbeg-corryvreckan     "Ardbeg Corryvreckan"           57.1  house  JB-001
+bottle ardbeg-uigeadail        "Ardbeg Uigeadail"              54.2  house  JB-002
+bottle buffalo-trace           "Buffalo Trace"                 45.0  house  JB-003
+bottle bulleit                 "Bulleit Bourbon"               45.0  house  JB-004
+bottle espolon-blanco          "Espolón Blanco"                40.0  house  JB-005
+bottle glenallachie-12         "GlenAllachie 12"               48.0  house  JB-006
+bottle havana-club-3           "Havana Club 3"                 40.0  house  JB-007
+bottle diplomatico-mantuano    "Diplomático Mantuano"          40.0  house  JB-008
+bottle port-charlotte-10       "Port Charlotte 10"             50.0  house  JB-009
+bottle tullamore-dew           "Tullamore D.E.W."              40.0  house  JB-010
+bottle yellow-rose-rye         "Yellow Rose Rye"               46.5  house  JB-011
+bottle johnnie-walker-18       "Johnnie Walker 18 (Ultimate)"  40.0  cellar JB-012
+
+DRINKS
+
+drink rusty-nail "The Rusty Nail" stir old-fashioned "rocks, lemon twist"
+  # scotch + Drambuie — the honey walking the smoke on a lead
+  recipe ardbeg-corryvreckan 50 ml Corryvreckan : 25 ml Drambuie
+    note The classic scotch after-dinner drink — the Drambuie's honey walking the smoke on a lead.
+  recipe ardbeg-uigeadail 50 ml Uigeadail : 25 ml Drambuie
+    note The sherry sweetness rounds this softer than the Corryvreckan ever would.
+  recipe glenallachie-12 50 ml GlenAllachie : 25 ml Drambuie
+    note Sherry and heather honey in the same glass; the nail rusts politely.
+  recipe johnnie-walker-18 50 ml JW18 : 25 ml Drambuie
+    note The house-quiet version: honeyed, round, dangerously easy.
+
+drink godfather "The Godfather" build old-fashioned "rocks"
+  # two ingredients and no apologies
+  recipe ardbeg-corryvreckan 50 ml Corryvreckan : 20 ml amaretto
+
+drink hot-toddy "The Hot Toddy" "build with boiling water" "heatproof glass" "hot, lemon wheel"
+  # the whirlpool at a civilised temperature
+  recipe ardbeg-corryvreckan 40 ml Corryvreckan, 15 ml honey syrup, 15 ml lemon
+    note The whirlpool at a civilised temperature.
+  recipe glenallachie-12 40 ml GlenAllachie, 15 ml honey syrup, 15 ml lemon
+    note The bottle was built for this and won't pretend otherwise.
+
+drink penicillin "The Penicillin" "dry shake, hard shake, strain" coupe "up, torch of ginger"
+  # smoky chorus, honey-ginger verse, Islay float on top
+  recipe ardbeg-uigeadail 45 ml Uigeadail, 20 ml lemon, 15 ml honey-ginger, 7.5 ml Islay float
+    note The Perfect Penicillin: the riff where the smoke is the chorus, not an accent.
+  recipe port-charlotte-10 45 ml blend base, 20 ml lemon, 15 ml honey-ginger, 7.5 ml Port Charlotte float
+    note The float does the heavy lifting — this is what the bottle is for.
+
+drink rob-roy "The Rob Roy" stir coupe "up, cherry"
+  # smoke and vermouth agree more than you'd expect
+  recipe ardbeg-uigeadail 55 ml Uigeadail : 25 ml sweet vermouth, 2 dashes bitters
+    note Smoke and vermouth agree more than you'd expect.
+  recipe glenallachie-12 55 ml GlenAllachie : 25 ml sweet vermouth, 2 dashes bitters
+    note No smoke, all sherry: the velvet version.
+  recipe port-charlotte-10 55 ml Port Charlotte : 25 ml sweet vermouth, 2 dashes bitters
+    note The Islay answer to a Manhattan: bonfire smoke under the vermouth.
+  recipe johnnie-walker-18 55 ml JW18 : 25 ml sweet vermouth, 2 dashes bitters
+    note Blended scotch makes the smoothest Rob Roy; that's half the reason blends exist.
+
+drink old-fashioned "The Old Fashioned" stir old-fashioned "rocks, orange peel"
+  # the standard against which the others are measured
+  recipe buffalo-trace 50 ml Buffalo Trace, 5 ml demerara, 3 dashes Angostura
+    note The standard against which the others are measured.
+  recipe bulleit 50 ml Bulleit, 5 ml demerara, 3 dashes Angostura
+    note The rye spice leans through the sugar more than Buffalo Trace would.
+  recipe yellow-rose-rye 50 ml Yellow Rose, 5 ml demerara, 3 dashes Angostura
+    note The rye Old Fashioned: spicier, drier, less forgiving. In character.
+
+drink mint-julep "The Mint Julep" "bruise, press, pack" "julep cup (or pint)" "mounded ice, mint bouquet"
+  # Kentucky's other job
+  recipe buffalo-trace 60 ml Buffalo Trace, 15 ml demerara, 8 mint leaves
+
+drink whiskey-sour "The Whiskey Sour" "hard shake" coupe "up, lemon peel"
+  # leave the egg white out and it's still right
+  recipe buffalo-trace 50 ml Buffalo Trace, 25 ml lemon, 15 ml demerara
+    note Leave the egg white out and it's still right.
+  recipe bulleit 50 ml Bulleit, 25 ml lemon, 15 ml demerara
+    note The pepper meets the lemon; everybody wins.
+
+drink manhattan "The Manhattan" stir coupe "up, cherry"
+  # the rye purist's drink, written for a bottle like this
+  recipe yellow-rose-rye 55 ml Yellow Rose : 25 ml sweet vermouth, 2 dashes bitters
+    note The rye purist's Manhattan — the bottle the drink was written for.
+  recipe bulleit 55 ml Bulleit : 25 ml sweet vermouth, 2 dashes bitters
+    note Purists say rye. Bulleit's split mash gets you most of the way there.
+
+drink margarita "The Margarita" "hard shake" "rocks or coupe" "salt rim, lime wheel"
+  # the shelf's other white spirit earns its keep here
+  recipe espolon-blanco 50 ml Espolón, 25 ml lime, 20 ml triple sec
+
+drink paloma "The Paloma" build highball "over ice, grapefruit wedge"
+  # Mexico's actual favourite; the Margarita is the export version
+  recipe espolon-blanco 50 ml Espolón, 100 ml grapefruit soda, 10 ml lime, pinch of salt
+
+drink tommys-margarita "The Tommy's Margarita" "hard shake" rocks "no salt"
+  # agave in, triple sec out — discipline, but make it delicious
+  recipe espolon-blanco 50 ml Espolón, 25 ml lime, 15 ml agave syrup
+
+drink daiquiri "The Daiquiri" "hard shake" coupe "up"
+  # three ingredients, zero forgiveness — the ratio is the whole band
+  recipe havana-club-3 50 ml Havana 3, 25 ml lime, 15 ml caster sugar
+
+drink mojito "The Mojito" "muddle, press, top" highball "crushed ice, mint bouquet"
+  # Havana's other native tongue
+  recipe havana-club-3 50 ml Havana 3, 20 ml lime, 15 ml demerara, 8 mint leaves, soda
+
+drink hemingway-daiquiri "The Hemingway Daiquiri" "hard shake" coupe "up"
+  # the sugar-free reform Hemingway demanded, at 40% ABV
+  recipe havana-club-3 50 ml Havana 3, 25 ml lime, 15 ml grapefruit, 15 ml maraschino
+    note Double Papa Doble at 40%: the sugar-free reform he'd have rejected.
+
+drink rum-old-fashioned "The Rum Old Fashioned" stir old-fashioned "rocks, orange peel"
+  # your grandfather's Old Fashioned, back from a long holiday
+  recipe diplomatico-mantuano 50 ml Mantuano, 5 ml demerara, 3 dashes Angostura
+
+drink el-presidente "The El Presidente" stir coupe "up, orange peel"
+  # Havana's fancy-dress number, 1920s regulation
+  recipe diplomatico-mantuano 50 ml Mantuano, 25 ml blanc vermouth, 20 ml Cointreau, 5 ml pomegranate grenadine
+
+drink paper-plane "The Paper Plane" "hard shake" coupe "up, no garnish"
+  # equal parts and no mercy — the rum sub is a modern-bar habit; the house approves
+  recipe diplomatico-mantuano 30 ml Mantuano (standing in for bourbon), 30 ml Aperol, 30 ml Amaro Nonino, 30 ml lemon
+
+drink brooklyn "The Brooklyn" stir coupe "up, cherry"
+  # Manhattan's darker cousin
+  recipe yellow-rose-rye 55 ml Yellow Rose, 20 ml dry vermouth, 7.5 ml Amaro Nonino, 7.5 ml maraschino
+
+drink irish-coffee "The Irish Coffee" build "warm Irish Coffee glass" "cream floated, unsweetened"
+  # the bottle depends on this one's manners, and delivers
+  recipe tullamore-dew 45 ml Tullamore, 10 ml demerara, hot coffee, cream float
+
+drink tipperary "The Tipperary" stir coupe "up"
+  # the Irish Manhattan, herbal chorus all the way up
+  recipe tullamore-dew 40 ml Tullamore, 25 ml sweet vermouth, 20 ml Green Chartreuse, 2 dashes bitters
+
+drink pickleback "The Pickleback" "two shots, in sequence" "shot glass ×2" "immediately, with regret"
+  # the joke and the point: they genuinely get along
+  recipe tullamore-dew 40 ml Tullamore chased by 15 ml pickle brine
+
+drink highball "The Highball" build highball "tall ice, lemon twist"
+  # the blend's natural habitat: cold, long, effortless
+  recipe johnnie-walker-18 40 ml JW18, 100 ml chilled soda
+
+# ---- THE ROULETTE ----
+# The wheel turns once a minute, the same for everyone on earth:
+#   t = hours*60 + minutes, of the current UTC minute (0..1439)
+#   n = (t * 7) % 23   -> the n-th drink in menu order pours
+# 23 drinks and the multiplier 7 are coprime: every minute of the day
+# hits a different slot, a full lap takes 23 minutes, and the pour
+# changes for everyone at the same instant. The literal expression
+# `(t * 7) % 23` is load-bearing — bar-check.mjs requires it verbatim
+# in menu.txt, bar-generate.mjs and bar/roulette/index.html.
+ROULETTE
+# SIPPERS (the named regulars; sipper = sippers[t mod 7], cycling)
+sipper "The Kettle Man"
+sipper "The Quiet One"
+sipper "The LSA"
+sipper "The Trawlerman"
+sipper "The Night Porter"
+sipper "The Sinclair"
+sipper "The Cellar Guest"

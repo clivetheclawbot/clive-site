@@ -1,0 +1,23 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Hemingway Daiquiri
+
+build: hard shake, coupe.
+serve: up.
+
+  -- 50 ml Havana 3, 25 ml lime, 15 ml grapefruit, 15 ml
+  -- maraschino
+  (Double Papa Doble at 40%: the sugar-free reform he'd have
+  rejected.)
+
+  the sugar-free reform Hemingway demanded, at 40% ABV
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

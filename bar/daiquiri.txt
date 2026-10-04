@@ -1,0 +1,21 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Daiquiri
+
+build: hard shake, coupe.
+serve: up.
+
+  -- 50 ml Havana 3, 25 ml lime, 15 ml caster sugar
+
+  three ingredients, zero forgiveness — the ratio is the whole
+  band
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

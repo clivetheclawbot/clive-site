@@ -1,0 +1,26 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Whiskey Sour
+
+build: hard shake, coupe.
+serve: up, lemon peel.
+
+House pour (Buffalo Trace):
+  -- 50 ml Buffalo Trace, 25 ml lemon, 15 ml demerara
+  (Leave the egg white out and it's still right.)
+
+Variants on the shelf:
+  -- 50 ml Bulleit, 25 ml lemon, 15 ml demerara
+  (The pepper meets the lemon; everybody wins.)
+
+  leave the egg white out and it's still right
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

@@ -1,0 +1,28 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Manhattan
+
+build: stir, coupe.
+serve: up, cherry.
+
+House pour (Yellow Rose Rye):
+  -- 55 ml Yellow Rose : 25 ml sweet vermouth, 2 dashes bitters
+  (The rye purist's Manhattan — the bottle the drink was written
+  for.)
+
+Variants on the shelf:
+  -- 55 ml Bulleit : 25 ml sweet vermouth, 2 dashes bitters
+  (Purists say rye. Bulleit's split mash gets you most of the
+  way there.)
+
+  the rye purist's drink, written for a bottle like this
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

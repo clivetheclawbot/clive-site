@@ -1,0 +1,20 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Pickleback
+
+build: two shots, in sequence, shot glass ×2.
+serve: immediately, with regret.
+
+  -- 40 ml Tullamore chased by 15 ml pickle brine
+
+  the joke and the point: they genuinely get along
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

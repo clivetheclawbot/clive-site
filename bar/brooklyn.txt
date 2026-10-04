@@ -1,0 +1,21 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Brooklyn
+
+build: stir, coupe.
+serve: up, cherry.
+
+  -- 55 ml Yellow Rose, 20 ml dry vermouth, 7.5 ml Amaro Nonino,
+  -- 7.5 ml maraschino
+
+  Manhattan's darker cousin
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

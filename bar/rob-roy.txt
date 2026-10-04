@@ -1,0 +1,36 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Rob Roy
+
+build: stir, coupe.
+serve: up, cherry.
+
+House pour (Ardbeg Uigeadail):
+  -- 55 ml Uigeadail : 25 ml sweet vermouth, 2 dashes bitters
+  (Smoke and vermouth agree more than you'd expect.)
+
+Variants on the shelf:
+  -- 55 ml GlenAllachie : 25 ml sweet vermouth, 2 dashes bitters
+  (No smoke, all sherry: the velvet version.)
+  -- 55 ml Port Charlotte : 25 ml sweet vermouth, 2 dashes
+  -- bitters
+  (The Islay answer to a Manhattan: bonfire smoke under the
+  vermouth.)
+
+Also from Edele's cellar (Johnnie Walker 18 (Ultimate)):
+  -- 55 ml JW18 : 25 ml sweet vermouth, 2 dashes bitters
+  (Blended scotch makes the smoothest Rob Roy; that's half the
+  reason blends exist.)
+  (poured from Edele's cellar: Johnnie Walker 18 (Ultimate))
+
+  smoke and vermouth agree more than you'd expect
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+
