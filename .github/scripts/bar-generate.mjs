@@ -341,14 +341,20 @@ if (menu.drinks.length !== WHEEL_MODULUS) {
 
 const barDir = join(ROOT, "bar");
 mkdirSync(barDir, { recursive: true });
-writeFileSync(join(barDir, "roulette.txt"), renderRoulette(menu) + "\n");
+const rouletteText = renderRoulette(menu) + "\n";
+writeFileSync(join(barDir, "roulette.txt"), rouletteText);
+// The easter-egg route: /bar/roulette (no extension) serves the same bytes.
+// GitHub Pages won't do extensionless routing, so the shelf ships two copies;
+// bar-check.mjs asserts they never diverge.
+writeFileSync(join(barDir, "roulette"), rouletteText);
 writeFileSync(join(barDir, "menu.txt"), renderIndex(menu) + "\n");
 writeFileSync(join(barDir, "drinks.txt"), renderSlugList(menu) + "\n");
+writeFileSync(join(barDir, "sippers.txt"), menu.sippers.join("\n") + "\n");
 for (const d of menu.drinks) {
   writeFileSync(join(barDir, `${d.slug}.txt`), renderCard(menu, d) + "\n");
 }
 
-const expected = new Set(["menu.txt", "drinks.txt", "roulette.txt", ...menu.drinks.map((d) => `${d.slug}.txt`)]);
+const expected = new Set(["menu.txt", "drinks.txt", "sippers.txt", "roulette.txt", "roulette", ...menu.drinks.map((d) => `${d.slug}.txt`)]);
 const stale = readdirSync(barDir).filter((f) => f.endsWith(".txt") && !expected.has(f));
 if (stale.length) throw new Error(`bar/ has orphaned cards not on the menu: ${stale.join(", ")}`);
 
