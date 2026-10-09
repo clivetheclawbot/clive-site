@@ -54,5 +54,5 @@ not pretend to: it commits the rule and the rotation instead.
 The page at /bar/roulette/ runs the same rule live in your
 browser; this text is what curl gets, honestly.
 
-Right now (to the minute this file was built): minute 1263 →
-wheel 09, so The Trawlerman is drinking The Margarita.
+Right now (to the minute this file was built): minute 1357 →
+wheel 00, so The Cellar Guest is drinking The Rusty Nail.

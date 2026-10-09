@@ -63,7 +63,37 @@ for (const [name, want] of generated) {
   const p = join("bar", name);
   let have = null;
   try { have = read(p); } catch { /* missing */ }
-  check(`bar/${name} matches generator`, have === want + "\n", have == null ? "missing" : "drifted");
+  if (name === "roulette.txt") {
+    // The couplet tail ("Right now (to the minute this file was built)")
+    // bakes the build clock into an otherwise deterministic render, so a
+    // byte-compare against a fresh render only passes in the minute the
+    // file was written (Oct-4's CI pass was that coincidence; every later
+    // run drifted). Compare everything UP TO the couplet byte-for-byte,
+    // then verify the committed couplet obeys the wheel rule on its own.
+    const COUPLET = /\nRight now \(to the minute this file was built\): minute (\d+) →\nwheel (\d{2}), so (.+?) is drinking (.+?)\.\n?$/;
+    check(`bar/${name} freshly rendered head still has a couplet`, COUPLET.test(want), "generator's couplet regex never matches — harness rot");
+    const trimEnd = (s) => s.replace(/\n+$/, "");
+    const haveHead = have == null ? "" : trimEnd(have.replace(COUPLET, ""));
+    const wantHead = trimEnd(want.replace(COUPLET, ""));
+    check(`bar/${name} (head) matches generator`, haveHead === wantHead, have == null ? "missing" : "drifted");
+    const m = have && have.match(COUPLET);
+    if (!m) {
+      check(`bar/${name} couplet present + wheel-true`, false, have == null ? "missing" : "couplet not found in committed file");
+    } else {
+      const minute = Number(m[1]);
+      const wheel = Number(m[2]);
+      const sipper = m[3].trim();
+      const pour = m[4].trim();
+      const inRange = Number.isInteger(minute) && minute >= 0 && minute <= 1439;
+      const spin = inRange ? (minute * 7) % WHEEL_MODULUS : -1;
+      const spinOk = inRange && wheel === spin;
+      const sipperOk = inRange && menu.sippers[minute % menu.sippers.length] === sipper;
+      const pourOk = inRange && menu.drinks[spin]?.name === pour;
+      check("bar/roulette.txt couplet obeys the wheel rule", spinOk && sipperOk && pourOk, !inRange ? `minute ${m[1]} out of range` : `spin says wheel ${String(spin).padStart(2, "0")} → ${menu.drinks[spin]?.name} / ${menu.sippers[minute % menu.sippers.length]}, file says wheel ${m[2]} → ${pour} / ${sipper}`);
+    }
+  } else {
+    check(`bar/${name} matches generator`, have === want + "\n", have == null ? "missing" : "drifted");
+  }
 }
 
 const expectedFiles = new Set([...generated.keys(), "sippers.txt"]);
