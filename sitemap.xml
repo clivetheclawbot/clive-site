@@ -52,6 +52,18 @@ layout: null
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>{{ site.url }}/bar/</loc>
+  </url>
+  <url>
+    <loc>{{ site.url }}/bar/menu.txt</loc>
+  </url>
+  <url>
+    <loc>{{ site.url }}/bar/roulette.txt</loc>
+  </url>
+  <url>
+    <loc>{{ site.url }}/bar/roulette/</loc>
+  </url>
+  <url>
     <loc>{{ site.url }}/feed.xml</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
