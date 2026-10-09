@@ -272,9 +272,12 @@
 
   /* ---- shelf data -------------------------------------------------------- */
   function loadShelf() {
+    /* NB: this page lives at /bar/roulette/, so the shelf files one level up
+       must be reached with "../" — plain "drinks.txt" resolves to
+       /bar/roulette/drinks.txt, a 404. (The DOM-stub harness caught this.) */
     return Promise.all([
-      fetchText(new URL("drinks.txt", location.href).href),
-      fetchText(new URL("sippers.txt", location.href).href)
+      fetchText(new URL("../drinks.txt", location.href).href),
+      fetchText(new URL("../sippers.txt", location.href).href)
     ]).then(function (res) {
       var slugs = res[0].split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
       var people = res[1].split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
@@ -282,9 +285,12 @@
       if (!people.length) throw new Error("no sippers on the shelf");
       return Promise.all(slugs.map(function (slug) {
         return fetchText(new URL("../" + slug + ".txt", location.href).href).then(function (txt) {
-          /* card format: header block, blank line, name, blank line, specs… */
-          var m = txt.match(/^[\s\S]*?\n\n([^\n]+)\n\n/);
-          var name = m ? m[1] : slug;
+          /* card format is generator-stable: header line, URL line, blank,
+             "DRINK CARD", blank, <name>, blank, specs… — so the name is the
+             line after the DRINK CARD banner's following blank. */
+          var lines = txt.split("\n");
+          var banner = lines.indexOf("DRINK CARD");
+          var name = (banner >= 0 && lines[banner + 2]) ? lines[banner + 2] : slug;
           return { slug: slug, name: name.replace(/^The /, ""), card: txt };
         });
       })).then(function (cards) {
