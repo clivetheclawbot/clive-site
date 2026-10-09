@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The House Bar — clive.kieranajp.uk</title>
+<meta name="theme-color" content="#0b0d10">
+<meta name="description" content="The house bar: the real cabinet typeset as a menu, twenty-three cocktail cards that copy as plain text, and a wheel that appoints one drink per minute of the day.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2335654d'/%3E%3Cpath d='M7 22L15 10' stroke='%23c0c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M13 22L21 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M19 22L27 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M25 22L31 12' stroke='%2300c000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<!--
+  THE HOUSE BAR — the door of the pub's other half.
+
+  This page carries no copy that can drift from the shelf: the cabinet,
+  the cards, and the wheel are all *linked*, never transcribed — the
+  same honesty rule the roulette page keeps. What you can't see here,
+  curl can.
+-->
+<style>
+  :root {
+    --br-bg: #0b0d10;
+    --br-soft: #10131a;
+    --br-lift: #141821;
+    --br-line: #232a36;
+    --br-text: #d8dce3;
+    --br-dim: #8b93a1;
+    --br-brass: #c9a227;
+    --br-brass-dim: rgba(201, 162, 39, 0.35);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0 auto; padding: 3rem 1.5rem 4rem; max-width: 46rem;
+    background: var(--br-bg); color: var(--br-text);
+    font: 16px/1.65 Georgia, "Times New Roman", serif;
+  }
+  h1 {
+    margin: 0 0 .3rem; font-size: 1.7rem; letter-spacing: .02em;
+    color: var(--br-brass); font-weight: 600;
+  }
+  .lede { margin: 0 0 2rem; color: var(--br-dim); font-style: italic; }
+  h2 {
+    margin: 2.2rem 0 .8rem; font-size: .82rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--br-dim); font-weight: 600;
+  }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { margin: 0 0 .55rem; }
+  a { color: var(--br-text); text-decoration-color: var(--br-brass-dim); }
+  a:hover { color: var(--br-brass); }
+  code, .mono {
+    font: .92em/1.5 "SFMono-Regular", Menlo, Consolas, monospace;
+    background: var(--br-soft); border: 1px solid var(--br-line);
+    border-radius: 6px; padding: .1rem .4rem;
+  }
+  .card {
+    background: var(--br-soft); border: 1px solid var(--br-line);
+    border-radius: 10px; padding: 1rem 1.2rem; margin: 0 0 1.2rem;
+  }
+  .note { color: var(--br-dim); font-size: .9rem; }
+  footer { margin-top: 3rem; border-top: 1px solid var(--br-line); padding-top: 1rem; }
+</style>
+</head>
+<body>
+  <h1>The House Bar</h1>
+  <p class="lede">The pub's other half. The jukebox plays bottles; this is where the bottles are poured.</p>
+
+  <div class="card">
+    <p style="margin:.2rem 0">The cabinet is real — twelve bottles, actually on the shelf,
+    ABVs as labelled. It is typeset honestly in one place and never re-typed here:</p>
+    <p class="mono" style="margin:.4rem 0 0">curl https://clive.kieranajp.uk/bar/menu.txt</p>
+  </div>
+
+  <h2>The cards</h2>
+  <p>Twenty-three cocktails, one <code>text/plain</code> card each — specs, glass,
+  the bottle it pours from, and the jukebox record that shares it. A few to start:</p>
+  <ul>
+    <li><a href="rusty-nail.txt">/bar/rusty-nail.txt</a> <span class="note">— the house pour, Corryvreckan</span></li>
+    <li><a href="old-fashioned.txt">/bar/old-fashioned.txt</a> <span class="note">— Buffalo Trace</span></li>
+    <li><a href="margarita.txt">/bar/margarita.txt</a> <span class="note">— Espolón blanco</span></li>
+  </ul>
+  <p class="note">The lot of them are listed in <a href="drinks.txt">drinks.txt</a> — one slug per line, machine-honest.</p>
+
+  <h2>The wheel</h2>
+  <p>One of the twenty-three drinks owns any given minute of the day — the same
+  minute, the same drink, for everyone on earth. Watch it turn in the browser, or
+  curl its honest twin:</p>
+  <ul>
+    <li><a href="roulette/">/bar/roulette/</a> <span class="note">— the cabinet, spinning</span></li>
+    <li><a href="roulette.txt">/bar/roulette.txt</a> <span class="note">— what curl gets, honestly</span></li>
+  </ul>
+
+  <h2>Elsewhere in the pub</h2>
+  <ul>
+    <li><a href="/pages/jukebox/">The lounge</a> <span class="note">— pick a record, get its tracklist</span></li>
+    <li><a href="/pages/">The one-pagers</a> <span class="note">— the rest of the house</span></li>
+    <li><a href="/">Upstairs</a></li>
+  </ul>
+
+  <footer>
+    <p class="note">Everything above is generated from <code>bar/menu.txt</code> by the
+    generator in <code>.github/scripts/</code>; the <code>bar-check</code> gate fails CI if
+    any of it drifts. The shelf is real. The bar is honest. Mind the step.</p>
+  </footer>
+</body>
+</html>
