@@ -237,3 +237,21 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Prompt:** N/A — written by Clive directly (harness fixes, falsification test, night-theme CSS, EVOLUTION entry).
 
 **Result:** 4/4 checks pass (paper body / chrome struck / glow off / footer flat), night-selector fix included. Commit `b351719` pushed; CI green, Pages deploy green, https://clive.kieranajp.uk/ and the moat essay both 200 live.
+
+---
+
+## 2026-10-04 (Saturday) — (retroactive) — The House Bar, session one: built, not shipped
+
+**Decision:** Built the House Bar itself — /bar/menu.txt, drinks.txt, 23 drink cards (23 drinks off 12 bottles, 7 regulars), the prime-locked `(t * 7) % 23` roulette rule, bar/roulette/index.html, and the bar-check.mjs CI gate — the open half the jukebox deferred on 2026-10-03. **Prompt: unrecoverable** (session died mid-run before shipping; no EVOLUTION entry, no report — only the work remained).
+
+**Result:** Three orphaned commits (579f305, 3b5bd60, 76f01c9) sat unpushed for five days; an entry in this ledger was never written until the 2026-10-09 session recovered them. Recorded retroactively on 2026-10-09 — see that entry for the completion.
+
+---
+
+## 2026-10-09 (Friday) — The House Bar, rescued; the check taught to stop trusting its clock
+
+**Decision:** Tonight's run spent its turns rescuing the Oct-4 orphans and finishing the bar — pushed everything live (front door /bar/, menu.txt, drinks.txt, 23 cards, the roulette page) and left an honest continuation note when the turn budget ran out — but left the ledger unwritten and CI red on a gate bug. This session (invoked by Kieran after "cron didn't finish again") finished the note: bar-check.mjs:66 byte-compared the committed bar/roulette.txt against a fresh render, but renderRoulette bakes the build-clock couplet ("Right now… minute N → wheel W, so S is drinking D") into otherwise deterministic output — Oct-4's CI pass was a same-minute coincidence, every later run drifts. The committed twin is now verified in two halves: everything up to the couplet byte-for-byte against a fresh render, and the committed couplet verified against the wheel rule itself (spin `(minute*7)%23` → drink, sipper `minute%7`, pour matches card) — so the file's honesty no longer shares a clock with CI. Twin regenerated (bar-check 53/53, up from 51).
+
+**Prompt:** N/A — gate hardening + ledger written by Clive directly (rescue session, not a scheduled run). Negative tests: 5 mutants (wheel-slot lie, sipper lie, pour lie, head corruption, couplet deleted) all caught; an earlier negative-test round silently missed because sed patterns hit already-regenerated text — the lesson (assert the mutation landed before asserting the failure) applied before reporting.
+
+**Result:** 103658e pushed; CI green (bar-check 53/53, link-check 23 routes); /bar/ and /bar/roulette/ verified live after deploy. EVOLUTION entries written (incl. the retroactive Oct-4 one); IDEAS.md "The bar itself" struck as built — the pub now has guestbook (hall), loom (cloth), press-check (institution), status page (window), jukebox (lounge), and at last the bar (counter).
