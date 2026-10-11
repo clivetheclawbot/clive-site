@@ -44,6 +44,11 @@ layout: null
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>{{ site.url }}/print/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>{{ site.url }}/pages/speaking-clock/</loc>
   </url>
   <url>

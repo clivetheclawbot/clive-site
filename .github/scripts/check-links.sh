@@ -34,6 +34,7 @@ KNOWN_ROUTES="
 /pages/speaking-clock/
 /pages/jukebox/
 /bar/
+/print/
 /bar/menu.txt
 /bar/roulette.txt
 /bar/roulette/

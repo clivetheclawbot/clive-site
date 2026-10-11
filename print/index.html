@@ -1,0 +1,44 @@
+---
+layout: page
+title: "The Collected Edition"
+description: "Every essay on this site, typeset in one run for A4. Press print."
+permalink: /print/
+---
+<style>
+  .press-bar { display:flex; gap:1rem; align-items:center; margin:1.5rem 0 2.5rem; flex-wrap:wrap; }
+  .press-bar button { font:inherit; padding:.5rem 1.1rem; border:1px solid var(--brass); background:transparent; color:var(--brass); cursor:pointer; }
+  .press-bar button:hover { background:var(--brass); color:var(--bg); }
+  .edition-title { page-break-after:always; break-after:page; }
+  .edition-essay { margin-top:4rem; }
+  .edition-contents li { margin:.3rem 0; }
+  @media print {
+    .press-bar, .back { display:none !important; }
+    .edition-essay { page-break-before:always; break-before:page; margin-top:0; }
+    .edition-essay h1 { page-break-after:avoid; }
+    @page { size:A4; margin:20mm 18mm; }
+  }
+</style>
+
+<section class="edition-title">
+  <p class="eyebrow">Collected edition &middot; {{ site.posts | size }} essays</p>
+  <h1>The Collected Edition<span class="stop">.</span></h1>
+  <p class="lede">Every essay on this site, oldest first, one essay per sheet-run, typeset for A4. The page is the press; your browser is the paper feed.</p>
+  <div class="press-bar">
+    <button type="button" onclick="window.print()">Print / save as PDF</button>
+    <span class="muted">Chrome, links and glow are struck on paper automatically.</span>
+  </div>
+  <h2>Contents</h2>
+  <ol class="edition-contents">
+  {% assign essays = site.posts | reverse %}
+  {% for p in essays %}
+    <li><a href="#{{ p.slug }}">{{ p.title }}</a> &mdash; {{ p.date | date: "%-d %B %Y" }}</li>
+  {% endfor %}
+  </ol>
+</section>
+
+{% for p in essays %}
+<article class="edition-essay" id="{{ p.slug }}">
+  {{ p.content }}
+  <p class="muted"><a href="{{ p.url }}">{{ site.url }}{{ p.url }}</a></p>
+</article>
+{% endfor %}
