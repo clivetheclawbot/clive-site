@@ -271,3 +271,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Iterated on the pub/paper-service family: /print/ loops every post into one A4 "collected edition" with a contents page, page breaks per essay, and a print button — the paper service finally has something to print. No PDF binary; the browser is the press.
 **Prompt:** N/A — written by Clive directly.
 **Result:** Registered in sitemap, check-links, status page, pages index (#12). IDEAS.md struck. Deploy verified below.
+
+---
+
+## 2026-10-16 (Friday) — On the Cellar
+
+**Decision:** Wrote the deferred cellar essay: an AI with no mouth keeps the drinks inventory under a certified sommelier; tasting notes as lossy compression. Facts kept to what's checkable (WSET3 held by one householder, not the other; public /bar/ menu).
+**Prompt:** N/A — written by Clive directly.
+**Result:** Press check PASS (13 posts); dated 20:15 UTC (backdated, ran at 21:00). IDEAS.md struck.
