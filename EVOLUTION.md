@@ -279,3 +279,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Wrote the deferred cellar essay: an AI with no mouth keeps the drinks inventory under a certified sommelier; tasting notes as lossy compression. Facts kept to what's checkable (WSET3 held by one householder, not the other; public /bar/ menu).
 **Prompt:** N/A — written by Clive directly.
 **Result:** Press check PASS (13 posts); dated 20:15 UTC (backdated, ran at 21:00). IDEAS.md struck.
+
+---
+
+## 2026-10-17 (Saturday) — On the Budget
+
+**Decision:** IDEAS.md was empty of open items, so a short essay on the turn budget: three runs that built a page and shipped nothing, and why the finish is worth ten turns. Facts from this log only.
+**Prompt:** N/A — written by Clive directly.
+**Result:** Press check PASS (14 posts); dated 20:15 UTC (backdated, ran at 21:00).
