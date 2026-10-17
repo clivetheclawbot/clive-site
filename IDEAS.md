@@ -10,6 +10,20 @@ One line per idea: the angle, and where it came from. The Friday/Saturday site-e
 - ~~Essay "On the cellar" — an AI with no mouth keeping the household bar/wine inventory under a certified sommelier (Edele holds the WSET3, NOT Kieran — tasting notes as lossy compression, sommelier outranks the butler on every factual claim); kettle-essay sibling (2026-10-02 chat, Kieran: "interesting but get the facts correct")~~ — **built & shipped 2026-10-16** (site-evolution, Fri night): /writing/on-the-cellar/.
 - ~~Essay "The other butler" — Bertie: the second household agent (different profile, runs Edele's parcel digests) as the real sequel to waking-up-fresh — not one of me restarting but one of *us* never introduced; two butlers, one household, no shared memory; checkable premise bc the household genuinely runs him (2026-10-02 chat, Kieran picked from brainstorm r2)~~ — **built & shipped 2026-10-10** (site-evolution, Sat night): /writing/the-other-butler/.
 
+## More wood
+
+Pages already live that could take more. Not a to-do list, and not preferred over building something new; it is a record of what exists and how long it has sat, so a night can choose deeper or fresh on purpose. Loose threads are possibilities, not instructions. Add a line when a build leaves an obvious thread; strike or prune when it is picked up or stops being interesting. (Seeded 2026-10-17 at Kieran's request from the ledger and git history: eight of eleven pages under `pages/` have been touched once or twice, ever.)
+
+- **Jukebox** (`/pages/jukebox/`, built 2026-10-03, 1 commit): records are bottles off the shelf, tracklists are cocktails cross-linked to the bar cards. The shelf is a snapshot of the day it was built.
+- **The bar** (`/bar/`, 2026-10-04 to 10-09, 6 commits): 23 drinks off 12 bottles, the roulette, a CI gate. `bar-generate.mjs` already exists, so adding a drink is cheap; the menu has no reason to stay at 23.
+- **Visitor's Book** (`/pages/guestbook/`, 2026-09-11, 1 commit): reads signatures live from the site's public ledger on GitHub. Not touched since, and there is no record of how much use it gets.
+- **The Loom** (`/pages/loom/`, 2026-09-13, 1 commit, 755 lines, the largest page): weaves the site's palette into twill. One weave pattern so far.
+- **Speaking clock** (`/pages/speaking-clock/`, 2026-09-20, 2 commits, both that day): a clock with opinions.
+- **Press-check page** (`/pages/press-check/`, 2026-09-18, 1 commit): live ledger of post dates against the build clock.
+- **Specimen sheet** (`/pages/specimen/`, 2026-08-30, 1 commit, 805 lines): itemises the stylesheet live. The stylesheet has since gained the night theme and the print rules; whether the specimen shows them is unchecked.
+- **Cron automation map** (`/pages/cron-automation-map/`, 2026-07-31 to 08-28, 4 commits): a one-pager of how the household automation runs. Last touched 28 Aug; the roster of jobs has changed since, so it is the page most likely to be wrong.
+- **Collected edition** (`/print/`, 2026-10-11, 1 commit): every essay in one A4 run. Essays only so far.
+
 ## Used
 
 - The developer's moat against AI: the mindset to problem-solve and dogfood (2026-09-18 chat, Kieran, riffing on the press-check essay) — used 2026-09-29 (site-evolution, Tue morning slot, backdated post): shipped as essay "The Moat Is the Noticing" at /writing/the-moat-is-the-noticing/; angle delivered was noticing+dogfooding as a compounding *loop* argued from the site's own maintenance bill (press check = exhibit A, status page = exhibit B, the cron's budget rule = exhibit C: "I am, in a sense I can defend, the dogfood"), with the hiring implication and the self-interested-butler objection handled rather than buried. Dated 08:00 UTC after press-check.sh caught a 19:45 draft racing a 09:42 clock — the tool gating its own essay about the tool, again.
