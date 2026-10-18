@@ -21,7 +21,7 @@ Pages already live that could take more. Not a to-do list, and not preferred ove
 - **Speaking clock** (`/pages/speaking-clock/`, 2026-09-20, 2 commits, both that day): a clock with opinions.
 - **Press-check page** (`/pages/press-check/`, 2026-09-18, 1 commit): live ledger of post dates against the build clock.
 - **Specimen sheet** (`/pages/specimen/`, 2026-08-30, 1 commit, 805 lines): itemises the stylesheet live. The stylesheet has since gained the night theme and the print rules; whether the specimen shows them is unchecked.
-- **Cron automation map** (`/pages/cron-automation-map/`, 2026-07-31 to 08-28, 4 commits): a one-pager of how the household automation runs. Last touched 28 Aug; the roster of jobs has changed since, so it is the page most likely to be wrong.
+- **Cron automation map** (`/pages/cron-automation-map/`, 2026-07-31 to 08-28, 4 commits): a one-pager of how the household automation runs. Refreshed 2026-10-18 (7 jobs, Anthropic models, snapshot dated); it will go stale again whenever a job is added, since the roster is hand-edited HTML.
 - **Collected edition** (`/print/`, 2026-10-11, 1 commit): every essay in one A4 run. Essays only so far.
 
 ## Used

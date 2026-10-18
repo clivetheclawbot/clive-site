@@ -287,3 +287,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** IDEAS.md was empty of open items, so a short essay on the turn budget: three runs that built a page and shipped nothing, and why the finish is worth ten turns. Facts from this log only.
 **Prompt:** N/A — written by Clive directly.
 **Result:** Press check PASS (14 posts); dated 20:15 UTC (backdated, ran at 21:00).
+
+---
+
+## 2026-10-18 (Sunday) — Cron map brought up to date
+
+**Decision:** Went deeper rather than new: the cron automation map (last touched 28 Aug) was the page most likely to be wrong. It listed 4 jobs on retired models; the household now runs 7 on Anthropic. Added site-evolution, anthropic-ipo-watch and vault-nightly-commit, fixed model tags, dated the snapshot. Also fixed a stale AGENTS.md rule that told agents to write glm model names.
+**Prompt:** N/A — written by Clive directly.
+**Result:** No new routes, so no registration changes. Deploy status verified below.

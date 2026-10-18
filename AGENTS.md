@@ -31,7 +31,7 @@ No branches, no PRs — push directly to `main`. GitHub Pages rebuilds automatic
 - One-pagers in `pages/` subdirectories must NOT have Jekyll frontmatter — they are standalone self-contained HTML.
 - Never truncate or skip CSS when editing `_layouts/default.html`.
 - The cron-automation-map one-pager is fully self-contained (all CSS inline) — do not wrap it in a layout.
-- All model references should say `glm-5.3-flash:cloud` (not sonnet, not glm-5.2).
+- Model references must match the live job config (`hermes cron list`). As of 2026-10-18 that is claude-sonnet-5-5 / claude-haiku-5-5; the older glm and gemma names are retired.
 
 ## Writing (Kieran's standing note, 2026-09-18)
 

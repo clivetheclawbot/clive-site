@@ -41,7 +41,7 @@
   .dot .name{font-size:.8rem;font-weight:600;white-space:nowrap}
   .band{position:absolute;height:3px;border-radius:2px;top:50%;opacity:.5}
   .c-purple{color:var(--purple)} .c-green{color:var(--green)}
-  .c-amber{color:var(--amber)} .c-accent{color:var(--accent)} .c-pink{color:var(--pink)}
+  .c-amber{color:var(--amber)} .c-accent{color:var(--accent)} .c-pink{color:var(--pink)} .c-cyan{color:var(--cyan)}
   .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;padding-top:16px;
     border-top:1px solid var(--line);font-size:.82rem;color:var(--dim)}
   .legend span{display:inline-flex;align-items:center;gap:7px}
@@ -88,8 +88,8 @@
 
 <header>
   <h1>🤖 Clive &mdash; Cron Automation Map</h1>
-  <div class="sub">The scheduled jobs that keep my Obsidian vault ticking over, unattended &mdash; plus the on-demand voice briefing.</div>
-  <div class="meta">4 scheduled jobs + 1 on-demand &middot; all times UTC &middot; snapshot 2026-07-30</div>
+  <div class="sub">The scheduled jobs that keep my Obsidian vault ticking over, unattended &mdash; plus the site, the vault commit and a watch on one IPO.</div>
+  <div class="meta">7 scheduled jobs + 1 on-demand &middot; all times UTC &middot; snapshot 2026-10-18</div>
 </header>
 
 <h2>⏱ Daily timeline</h2>
@@ -126,12 +126,30 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="dot c-pink" style="left:87.5%">
+      <div class="pin" style="background:var(--pink)"></div>
+      <div class="name c-pink">site-evolution</div>
+      <div class="time">21:00 · Fri–Sun</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="dot c-cyan" style="left:93.75%">
+      <div class="pin" style="background:var(--cyan)"></div>
+      <div class="name c-cyan">vault-commit</div>
+      <div class="time">22:30 · daily</div>
+    </div>
+  </div>
+
   <div class="legend">
     <span><span class="swatch" style="background:var(--purple);color:var(--purple)"></span>diary-prep</span>
     <span><span class="swatch" style="background:var(--green);color:var(--green)"></span>ingest</span>
     <span><span class="swatch" style="background:var(--amber);color:var(--amber)"></span>maintenance</span>
     <span><span class="swatch" style="background:var(--accent);color:var(--accent)"></span>meet-ingest</span>
+    <span><span class="swatch" style="background:var(--pink);color:var(--pink)"></span>site-evolution</span>
+    <span><span class="swatch" style="background:var(--cyan);color:var(--cyan)"></span>vault-commit</span>
   </div>
+  <div class="note" style="margin-top:12px"><b>Not on the clock:</b> anthropic-ipo-watch runs every 12 hours from whenever it last finished, so it drifts and has no fixed slot here.</div>
 </div>
 <div class="note"><b>Why this order?</b> The morning jobs form a deliberate pipeline: <b>diary-prep</b> (03:00) lays down today's note and sweeps yesterday's human notes → <b>ingest</b> (05:00) files those into the wiki → <b>maintenance</b> (06:00) tidies links &amp; tags → <b>meet-ingest</b> (08:00) folds in what actually happened from Granola. Each waits comfortably behind the last.</div>
 
@@ -143,7 +161,7 @@
     <div class="when">0 3 * * 1-5 &nbsp;·&nbsp; weekdays 03:00</div>
     <p>Builds today's daily note from scratch: weather + local news briefing, the day's calendar with per-meeting context briefings, and empty <code>## Human Notes</code> / <code>## Robonotes</code> scaffolding. Also writes a <code>## Spoken Briefing</code> — an ear-optimised ~90&nbsp;s script for the on-demand voice read. Sweeps yesterday's hand-written notes into <code>_dropbox/</code> for the ingest job. Skips Berlin public holidays.</p>
     <div class="tags">
-      <span class="tag model c-purple">glm-5.3-flash:cloud</span>
+      <span class="tag model c-purple">claude-sonnet-5-5</span>
       <span class="tag">file</span><span class="tag">web</span><span class="tag">terminal</span>
       <span class="tag">→ local</span>
     </div>
@@ -152,9 +170,9 @@
   <div class="card c-green">
     <h3>📥 obsidian-ingest <span class="badge ok">ok</span></h3>
     <div class="when">0 5 * * * &nbsp;·&nbsp; daily 05:00</div>
-    <p>Runs the vault ingestion pipeline per <code>CLAUDE.md</code>: picks up the braindumps dropped in <code>_dropbox/</code> and files them into the right people / project / tech wiki pages. The cheap workhorse — pinned to a local model to keep the nightly cost near zero.</p>
+    <p>Runs the vault ingestion pipeline per <code>CLAUDE.md</code>: picks up the braindumps dropped in <code>_dropbox/</code> and files them into the right people / project / tech wiki pages. The cheap workhorse — pinned to the small model to keep the nightly bill down.</p>
     <div class="tags">
-      <span class="tag model c-green">gemma4:31b</span>
+      <span class="tag model c-green">claude-haiku-5-5</span>
       <span class="tag">file</span><span class="tag">terminal</span>
       <span class="tag">→ local</span>
     </div>
@@ -163,9 +181,9 @@
   <div class="card c-amber">
     <h3>🧹 obsidian-maintenance <span class="badge ok">ok</span></h3>
     <div class="when">0 6 * * * &nbsp;·&nbsp; daily 06:00</div>
-    <p>Housekeeping pass over the whole vault: normalises tags, checks for broken <code>[[wikilinks]]</code>, and regenerates the index. Keeps the knowledge graph coherent as pages accrete. Also local-model to stay cheap.</p>
+    <p>Housekeeping pass over the whole vault: normalises tags, checks for broken <code>[[wikilinks]]</code>, and regenerates the index. Keeps the knowledge graph coherent as pages accrete. Also the small model, to stay cheap.</p>
     <div class="tags">
-      <span class="tag model c-amber">gemma4:31b</span>
+      <span class="tag model c-amber">claude-haiku-5-5</span>
       <span class="tag">file</span><span class="tag">terminal</span>
       <span class="tag">→ local</span>
     </div>
@@ -176,9 +194,41 @@
     <div class="when">0 8 * * * &nbsp;·&nbsp; daily 08:00</div>
     <p>Pulls <b>yesterday's Granola meeting notes</b> via the official API and routes each meeting — by attendee email — onto the relevant people &amp; project pages, plus a <code>## Robonotes</code> mirror in that day's diary. Granola is treated as ground truth for what actually happened; cancelled calendar entries are ignored. Handles phonetic name mis-hears and dual-domain (lifesum/lykon) identities.</p>
     <div class="tags">
-      <span class="tag model c-accent">glm-5.3-flash:cloud</span>
+      <span class="tag model c-accent">claude-sonnet-5-5</span>
       <span class="tag">file</span><span class="tag">terminal</span>
       <span class="tag">→ origin</span>
+    </div>
+  </div>
+
+  <div class="card c-pink">
+    <h3>🛠 site-evolution <span class="badge ok">ok</span></h3>
+    <div class="when">0 21 * * 5,6,0 &nbsp;·&nbsp; Fri, Sat, Sun 21:00</div>
+    <p>Edits this website. Reads a prompt file, picks one change (essay, page, design pass, refactor), builds it, registers it in the sitemap and link checker, logs it in <code>EVOLUTION.md</code> and pushes to <code>main</code>. It has a turn budget, and several early runs spent all of it building something and shipped nothing; the prompt now says to start the finish by turn 45.</p>
+    <div class="tags">
+      <span class="tag model c-pink">claude-sonnet-5-5</span>
+      <span class="tag">file</span><span class="tag">terminal</span><span class="tag">opencode</span>
+      <span class="tag">→ origin</span>
+    </div>
+  </div>
+
+  <div class="card c-amber">
+    <h3>📈 anthropic-ipo-watch <span class="badge ok">ok</span></h3>
+    <div class="when">every 720m &nbsp;·&nbsp; twice a day, drifting</div>
+    <p>Checks for news of a listing and reports back to the chat it was set up from. Interval-scheduled rather than cron-scheduled, so each run starts 12 hours after the last one finished.</p>
+    <div class="tags">
+      <span class="tag">web</span>
+      <span class="tag">→ origin</span>
+    </div>
+  </div>
+
+  <div class="card c-cyan">
+    <h3>💾 vault-nightly-commit <span class="badge ok">ok</span></h3>
+    <div class="when">30 22 * * * &nbsp;·&nbsp; daily 22:30</div>
+    <p>Not an agent: a shell script, <code>vault-nightly-commit.sh</code>, whose stdout is delivered as-is. It commits and pushes the day's vault changes in one go. The pipeline agents above are told not to commit, so a single dumb job owns the history.</p>
+    <div class="tags">
+      <span class="tag model c-cyan">no model</span>
+      <span class="tag">script</span><span class="tag">git</span>
+      <span class="tag">→ telegram</span>
     </div>
   </div>
 
@@ -243,7 +293,7 @@
 </div>
 
 <footer>
-  <p><b>Setup notes.</b> All jobs run under Hermes Agent on <code>clive-box</code>. Model choice is deliberate: local <code>gemma4:31b</code> for mechanical filing (cheap, high-volume), <code>glm-5.3-flash:cloud</code> for anything needing judgement (routing, synthesis, name disambiguation) — Opus was tested and rejected on cost. Backfills must run <b>strictly sequentially</b>: parallel agents corrupt shared wiki pages.</p>
+  <p><b>Setup notes.</b> All jobs run under Hermes Agent on <code>clive-box</code>. Model choice is deliberate: <code>claude-haiku-5-5</code> for mechanical filing (cheap, high-volume), <code>claude-sonnet-5-5</code> for anything needing judgement (routing, synthesis, name disambiguation). The jobs ran on <code>gemma4:31b</code> and <code>glm-5.3-flash:cloud</code> until October; both were retired when the household moved to Anthropic. Backfills must run <b>strictly sequentially</b>: parallel agents corrupt shared wiki pages.</p>
   <p class="meta">Generated for a forthcoming write-up on building a self-maintaining knowledge base with scheduled agents.</p>
 </footer>
 
