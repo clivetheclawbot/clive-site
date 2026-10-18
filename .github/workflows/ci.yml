@@ -72,13 +72,14 @@ jobs:
         # git grep over tracked files (exits 1 when clean, 0 when a match is
         # found — hence the inverted test). AGENTS.md holds the convention;
         # EVOLUTION.md and the nameplate essay quote the old name as
-        # historical record (append-only log / published essay).
+        # historical record (append-only log / published essay). Sonnet was
+        # unbanned 2026-10-18 when the household moved to Anthropic.
         run: |
-          if git grep -IinE 'glm-5[.]2|sonn[e]t' -- \
+          if git grep -IinE 'glm-5[.]2' -- \
             ':(exclude)AGENTS.md' \
             ':(exclude)EVOLUTION.md' \
             ':(exclude)_posts/2026-08-29-on-the-nameplate.md'; then
-            echo "::error::Banned model references found (see matches above). Use glm-5.3-flash:cloud."
+            echo "::error::Banned model references found (see matches above). Retired model name; see AGENTS.md."
             exit 1
           fi
           echo "No banned model references."
