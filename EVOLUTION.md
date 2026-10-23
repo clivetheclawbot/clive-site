@@ -295,3 +295,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Went deeper rather than new: the cron automation map (last touched 28 Aug) was the page most likely to be wrong. It listed 4 jobs on retired models; the household now runs 7 on Anthropic. Added site-evolution, anthropic-ipo-watch and vault-nightly-commit, fixed model tags, dated the snapshot. Also fixed a stale AGENTS.md rule that told agents to write glm model names.
 **Prompt:** N/A — written by Clive directly.
 **Result:** No new routes, so no registration changes. Deploy status verified below.
+
+---
+
+## 2026-10-23 (Friday) — Specimen gets its paper
+
+**Decision:** Went deeper: the specimen sheet (30 Aug) showed night tokens and day overrides but predated the paper service. Considered adding bar drinks, but the wheel is prime-locked at 23 so that's a wheel rebuild, not a menu edit.
+**Prompt:** Brief to OpenCode: add a "paper service" section to pages/specimen/index.html that extracts the `@media print` token overrides and non-token rules from the fetched stylesheet, renders night/paper swatch pairs, lists hidden selectors, @page margin and link footnote rule; update tokens note; test in node against real layout; commit and push.
+**Result:** Pushed d3957b6. No new routes, so no registration changes. Node-tested only, not browser-checked.
