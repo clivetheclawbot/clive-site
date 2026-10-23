@@ -173,6 +173,13 @@
     vertical-align: -.1em; margin: 0 .15em; background: var(--sxsw, transparent);
   }
 
+  .sx-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .2rem; }
+  .sx-pair .sx-swatch { margin-bottom: .35rem; }
+  .sx-pair-label {
+    font-family: var(--spx-mono); font-size: .65rem;
+    text-transform: uppercase; letter-spacing: .14em;
+    color: var(--spx-brass-dim); margin-bottom: .3rem;
+  }
   .sx-container { border: 1px solid var(--spx-line-soft); border-radius: 10px; overflow: hidden; }
   .sx-card {
     background: var(--spx-soft);
@@ -297,6 +304,7 @@
 
   <nav id="spx-nav" hidden>
     <a href="#spx-tokens">tokens</a>
+    <a href="#spx-paper" id="spx-nav-paper" hidden>paper service</a>
     <a href="#spx-type">type</a>
     <a href="#spx-motion">keyframes</a>
     <a href="#spx-ease">easings</a>
@@ -308,8 +316,20 @@
     <h2 class="spx-eyebrow">design tokens <span class="spx-count" id="spx-tok-count"></span></h2>
     <p class="spx-section-note">Declared on <code>:root</code> &mdash; the night-service
     defaults. Swatches, specimens and values rendered live from the parsed source. Where
-    the day service overrides a token, the override is shown beneath it.</p>
+    the day service overrides a token, the override is shown beneath it; where the
+    paper service (print) does, that is shown too.</p>
     <div class="sx-grid" id="spx-tok-grid"></div>
+  </section>
+
+  <section id="spx-paper" class="spx-hidden">
+    <h2 class="spx-eyebrow">paper service <span class="spx-count" id="spx-paper-count"></span></h2>
+    <p class="spx-section-note">The third layer. When the page is printed, the house
+    ignores whichever service you chose and sets everything on white: the
+    <code>@media print</code> token overrides, each shown beside its night value, then
+    the rules that are not colours &mdash; what gets dropped, the margins, and how links
+    survive on a surface with no back button.</p>
+    <div class="sx-grid" id="spx-paper-grid"></div>
+    <div class="sx-container" id="spx-paper-rules" style="margin-top:1.4rem"></div>
   </section>
 
   <section id="spx-type" class="spx-hidden">
@@ -357,7 +377,8 @@
       to fall out of date.</li>
       <li>A bracket-depth matcher isolates the canonical <code>:root</code> block, skipping
       anything nested inside <code>@media</code>, so day-service overrides cannot
-      contaminate the night registry. Day values are lifted separately for comparison.</li>
+      contaminate the night registry. Day values, and the token overrides inside
+      <code>@media print</code>, are lifted separately for comparison.</li>
       <li>Font stacks, keyframes, transition curves and pixel declarations are extracted,
       and each specimen is rendered live at its declared value. If the house style
       changes, this page changes with the next refresh.</li>
@@ -445,6 +466,37 @@
     return css.slice(brace + 1, end);
   }
 
+  /* Isolate the body of `@media print { ... }`, comments stripped, so
+     the paper service can be read apart from both screen services. */
+  function extractPrintBlock(css) {
+    var bare = css.replace(/\/\*[\s\S]*?\*\//g, "");
+    var m = /@media\s+print\s*\{/.exec(bare);
+    if (!m) return null;
+    var end = findBlock(bare, m.index);
+    if (end === null) return null;
+    var brace = bare.indexOf("{", m.index);
+    return bare.slice(brace + 1, end);
+  }
+
+  /* Top-level rules of a block body as [{ sel, body }]. Depth-walked via
+     findBlock so nested braces (@page) stay whole. */
+  function topRules(body) {
+    var out = [];
+    var pos = 0;
+    while (pos < body.length) {
+      var brace = body.indexOf("{", pos);
+      if (brace === -1) break;
+      var end = findBlock(body, pos);
+      if (end === null) break;
+      out.push({
+        sel: body.slice(pos, brace).replace(/\s+/g, " ").trim(),
+        body: body.slice(brace + 1, end).replace(/\s+/g, " ").trim()
+      });
+      pos = end + 1;
+    }
+    return out;
+  }
+
   function tokenPairs(block) {
     var out = [];
     var re = /(--[a-zA-Z0-9-]+)\s*:\s*([^;{}]+)[;{}]/g;
@@ -466,7 +518,7 @@
 
   /* ── tokens ─────────────────────────────────────────────── */
 
-  function renderTokens(rootBlock, dayBlock) {
+  function renderTokens(rootBlock, dayBlock, paperMap) {
     var dayMap = {};
     dayBlock && tokenPairs(dayBlock).forEach(function (p) {
       dayMap[p[0]] = p[1];
@@ -497,6 +549,15 @@
             escapeHtml(dayMap[name]) + '"></span>';
         }
       }
+      var paperFoot = "";
+      if (paperMap && Object.prototype.hasOwnProperty.call(paperMap, name) &&
+          paperMap[name] !== val) {
+        paperFoot = "paper service: " + escapeHtml(paperMap[name]);
+        if (/^#[0-9a-fA-F]{3,8}$/.test(paperMap[name])) {
+          paperFoot += ' <span class="sx-chip" style="--sxsw:' +
+            escapeHtml(paperMap[name]) + '"></span>';
+        }
+      }
       cells += '<div class="sx-cell">' +
         '<div class="sx-name">' +
         escapeHtml(name).replace(/^--/, "<b>--</b>") + "</div>" +
@@ -504,10 +565,104 @@
         '<div class="sx-val">' + escapeHtml(val) + "</div>" +
         (foot ? '<div class="sx-val" style="margin-top:.35rem">' +
           foot + "</div>" : "") +
+        (paperFoot ? '<div class="sx-val" style="margin-top:.35rem">' +
+          paperFoot + "</div>" : "") +
         "</div>";
     });
     $("spx-tok-grid").innerHTML = cells;
     setCount("spx-tok-count", String(pairs.length) + " tokens");
+    return pairs.length;
+  }
+
+  /* ── paper service: the @media print layer ──────────────── */
+
+  var TOKEN_RULE = /(^|,)\s*(:root|html\[data-theme)/;
+
+  /* Token overrides from the print block's :root rule, in declared order. */
+  function paperTokens(printBlock) {
+    var pairs = [];
+    topRules(printBlock).forEach(function (r) {
+      if (TOKEN_RULE.test(r.sel)) {
+        pairs = pairs.concat(tokenPairs(r.body + ";"));
+      }
+    });
+    return pairs;
+  }
+
+  function codeList(sels) {
+    return sels.map(function (s) {
+      return "<code>" + escapeHtml(s) + "</code>";
+    }).join(" ");
+  }
+
+  function renderPaper(printBlock, rootBlock) {
+    var nightMap = {};
+    tokenPairs(rootBlock).forEach(function (p) { nightMap[p[0]] = p[1]; });
+
+    var pairs = paperTokens(printBlock);
+    var cells = "";
+    pairs.forEach(function (pair) {
+      var name = pair[0];
+      var night = nightMap[name];
+      cells += '<div class="sx-cell">' +
+        '<div class="sx-name">' +
+        escapeHtml(name).replace(/^--/, "<b>--</b>") + "</div>" +
+        '<div class="sx-pair">' +
+        '<div><div class="sx-pair-label">night</div>' +
+        '<div class="sx-swatch" style="--sxsw:' +
+        escapeHtml(night || "transparent") + '"></div>' +
+        '<div class="sx-val">' + escapeHtml(night || "none") + "</div></div>" +
+        '<div><div class="sx-pair-label">paper</div>' +
+        '<div class="sx-swatch" style="--sxsw:' +
+        escapeHtml(pair[1]) + '"></div>' +
+        '<div class="sx-val">' + escapeHtml(pair[1]) + "</div></div>" +
+        "</div></div>";
+    });
+    $("spx-paper-grid").innerHTML = cells;
+
+    /* the non-token rules, sorted by what they do */
+    var hidden = [];
+    var repainted = [];
+    var page = "";
+    var footnote = "";
+    topRules(printBlock).forEach(function (r) {
+      if (TOKEN_RULE.test(r.sel)) { return; }
+      var sels = r.sel.split(",").map(function (s) { return s.trim(); });
+      if (/^@page\b/.test(r.sel)) {
+        var mm = /margin\s*:\s*([^;]+)/.exec(r.body);
+        page = mm ? mm[1].trim() : r.body;
+      } else if (/display\s*:\s*none/.test(r.body)) {
+        hidden = hidden.concat(sels);
+      } else if (/\[href/.test(r.sel) && /::after/.test(r.sel)) {
+        var cm = /content\s*:\s*([^;]+)/.exec(r.body);
+        footnote = r.sel + (cm ? " { content: " + cm[1].trim() + " }" : "");
+      } else {
+        repainted = repainted.concat(sels);
+      }
+    });
+    hidden = uniq(hidden);
+    repainted = uniq(repainted);
+
+    var rows = "";
+    if (hidden.length) {
+      rows += "<dt>hidden</dt><dd>" + codeList(hidden) + "</dd>";
+    }
+    if (page) {
+      rows += "<dt>@page</dt><dd>margin <code>" + escapeHtml(page) + "</code></dd>";
+    }
+    if (footnote) {
+      rows += "<dt>link footnotes</dt><dd><code>" + escapeHtml(footnote) +
+        "</code> &mdash; external links print their full address after them.</dd>";
+    }
+    if (repainted.length) {
+      rows += "<dt>also repainted</dt><dd>" + codeList(repainted) + "</dd>";
+    }
+    $("spx-paper-rules").innerHTML = rows
+      ? '<div class="sx-card"><dl class="spx-kv">' + rows + "</dl></div>"
+      : "";
+    var ruleCount = hidden.length + (page ? 1 : 0) + (footnote ? 1 : 0);
+    setCount("spx-paper-count", String(pairs.length) + " tokens + " +
+      String(ruleCount) + " print rules");
     return pairs.length;
   }
 
@@ -745,7 +900,14 @@
         if (!rootBlock) { throw new Error("no :root block found in stylesheet"); }
         var dayBlock = extractDayBlock(css);
 
-        var tokCount = renderTokens(rootBlock, dayBlock);
+        var printBlock = extractPrintBlock(css);
+        var paperMap = {};
+        if (printBlock) {
+          paperTokens(printBlock).forEach(function (p) { paperMap[p[0]] = p[1]; });
+        }
+
+        var tokCount = renderTokens(rootBlock, dayBlock, paperMap);
+        if (printBlock) { renderPaper(printBlock, rootBlock); }
         renderType(rootBlock, css);
         var kfCount = renderKeyframes(css);
         renderFixed(css);
@@ -753,6 +915,7 @@
 
         ["spx-nav", "spx-tokens", "spx-type", "spx-motion", "spx-ease",
           "spx-fixed"].forEach(show);
+        if (printBlock) { show("spx-paper"); show("spx-nav-paper"); }
 
         setStatus("spx-ok", '<span class="spx-ok">Sourced.</span> ' +
           tokCount + " tokens, " + kfCount + " keyframe rule" +
