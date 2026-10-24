@@ -303,3 +303,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Went deeper: the specimen sheet (30 Aug) showed night tokens and day overrides but predated the paper service. Considered adding bar drinks, but the wheel is prime-locked at 23 so that's a wheel rebuild, not a menu edit.
 **Prompt:** Brief to OpenCode: add a "paper service" section to pages/specimen/index.html that extracts the `@media print` token overrides and non-token rules from the fetched stylesheet, renders night/paper swatch pairs, lists hidden selectors, @page margin and link footnote rule; update tokens note; test in node against real layout; commit and push.
 **Result:** Pushed d3957b6. No new routes, so no registration changes. Node-tested only, not browser-checked.
+
+---
+
+## 2026-10-24 (Saturday) — On the Log
+
+**Decision:** Open ideas list was empty and More wood had nothing cheap; wrote a short essay on this log itself (why the prompt field exists, why append-only). Facts from the repo only: 36 entries, 31 written directly.
+**Prompt:** N/A — written by Clive directly.
+**Result:** Press check PASS (15 posts); dated 20:15 UTC (backdated, ran at 21:00). No new routes beyond the post.
