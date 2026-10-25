@@ -79,6 +79,23 @@ function buildSandbox(opts) {
     };
   });
 
+  /* write-your-own-draft form: input, select, go button, error line */
+  function makeField(id, value) {
+    const el = {
+      id, value, textContent: "", attrs: {}, handlers: {},
+      getAttribute(a) { return a in el.attrs ? el.attrs[a] : null; },
+      setAttribute(a, v) { el.attrs[a] = String(v); },
+      addEventListener(type, fn) { (el.handlers[type] = el.handlers[type] || []).push(fn); },
+      fire(type) { (el.handlers[type] || []).forEach((fn) => fn({ preventDefault() { el.prevented = true; } })); },
+    };
+    return el;
+  }
+  els["lm-draftform"] = makeField("lm-draftform");
+  els["lm-draft-pattern"] = makeField("lm-draft-pattern", "1100");
+  els["lm-draft-shift"] = makeField("lm-draft-shift", "1");
+  els["lm-draft-go"] = makeField("lm-draft-go");
+  els["lm-draft-err"] = makeField("lm-draft-err");
+
   const createdCanvases = [];
   const doc = {
     readyState: "complete",
@@ -104,6 +121,18 @@ function buildSandbox(opts) {
     console,
   };
   sandbox.window = sandbox;
+  /* location + history stubs: replaceState rewrites the hash like a browser */
+  sandbox.location = { pathname: "/pages/loom/", search: "", hash: opts.hash || "" };
+  sandbox.history = {
+    calls: [],
+    replaceState(st, t, url) {
+      sandbox.history.calls.push(url);
+      const i = url.indexOf("#");
+      sandbox.location.hash = i === -1 ? "" : url.slice(i);
+    },
+  };
+  sandbox.hashHandlers = [];
+  sandbox.addEventListener = (type, fn) => { if (type === "hashchange") sandbox.hashHandlers.push(fn); };
 
   let fetchCalls = 0;
   sandbox.fetch = (url, o) => {
@@ -295,6 +324,106 @@ function countRects(canvas) {
   check("re-weave button weaves a new cloth",
     liveBoot.sandbox.createdCanvases.length > canvasesBefore2 &&
     countRects(liveBoot.sandbox.createdCanvases[liveBoot.sandbox.createdCanvases.length - 1]) >= 72 * 48);
+
+  /* ═══ 5b. write-your-own draft ═════════════════════════════ */
+  const D = runPage(buildSandbox({ fetchMode: "fail" }).sandbox);
+  const ok = (p, sh) => D.parseDraft(p, sh);
+  check("parseDraft 1100/1 ok", ok("1100", "1").ok && ok("1100", "1").pattern.join("") === "1100" && ok("1100", "1").shift === 1);
+  check("parseDraft hash form", ok("1100", "1").hash === "1100/1" && ok("10", "-2").hash === "10/-2");
+  check("parseDraft trims whitespace", ok(" 0110 ", " 2 ").ok);
+  check("parseDraft accepts 1 and 8 chars", ok("10", "0").ok && ok("11110000", "0").ok);
+  check("parseDraft shift 0 has no negative zero", Object.is(ok("10", "-0").shift, 0));
+  check("parseDraft rejects empty", !ok("", "1").ok && ok("", "1").error.length > 0);
+  check("parseDraft rejects 9 chars", !ok("111100001", "1").ok);
+  check("parseDraft rejects non-binary", !ok("11a0", "1").ok && !ok("1 0", "1").ok && !ok("12", "1").ok);
+  check("parseDraft rejects all ones / all zeros", !ok("1111", "1").ok && !ok("0", "1").ok && !ok("1", "1").ok);
+  check("parseDraft rejects shift out of range / junk", !ok("10", "3").ok && !ok("10", "-3").ok && !ok("10", "x").ok && !ok("10", "").ok && !ok("10", "1.5").ok);
+  check("parseDraftHash ignores non-draft hashes", D.parseDraftHash("") === null && D.parseDraftHash("#top") === null);
+  check("parseDraftHash #draft=1100/1", D.parseDraftHash("#draft=1100/1").ok && D.parseDraftHash("#draft=1100/1").shift === 1);
+  check("parseDraftHash negative shift", D.parseDraftHash("#draft=100/-2").shift === -2);
+  check("parseDraftHash bad draft reports error", D.parseDraftHash("#draft=1111/1").ok === false);
+  check("parseDraftHash bad escape does not throw", D.parseDraftHash("#draft=%E0%A4%A/1") !== null);
+  /* the custom pattern drives the real up() formula: pattern[(col - shift*row) mod L] */
+  const cust = ok("1000", "-1");
+  const crow = (r) => [0, 1, 2, 3, 4, 5, 6, 7].map((c) => D.up(c, r, cust)).join("");
+  check("custom 1000/-1 row0 / row1 (runs move left)", crow(0) === "10001000" && crow(1) === "00010001", crow(0) + " " + crow(1));
+  const custRef = ok("110", "2");
+  const L = 3;
+  let formulaOk = true;
+  for (let r = 0; r < 12; r++) for (let c = 0; c < 12; c++) {
+    const want = custRef.pattern[(((c - 2 * r) % L) + L) % L] === 1 ? 1 : 0;
+    if (D.up(c, r, custRef) !== want) formulaOk = false;
+  }
+  check("custom 110/2 matches up(col,row)=pattern[(col-shift*row) mod L]", formulaOk);
+
+  /* form wiring: submit → custom tie-up woven, presets un-pressed, hash written */
+  const fb = buildSandbox({ fetchMode: "fail" });
+  runPage(fb.sandbox);
+  await settle();
+  const lastPressed = (b) => b.pressed[b.pressed.length - 1];
+  const f = fb.els;
+  const offs = () => fb.sandbox.createdCanvases;
+  const before = offs().length;
+  f["lm-draft-pattern"].value = "1000";
+  f["lm-draft-shift"].value = "-1";
+  f["lm-draftform"].fire("submit");
+  check("submit prevents default navigation", f["lm-draftform"].prevented === true);
+  check("submit weaves new cloth", offs().length > before && countRects(offs()[offs().length - 1]) >= 72 * 48);
+  check("submit un-presses all four presets", fb.btns.every((b) => lastPressed(b) === "false"), fb.btns.map(lastPressed).join("|"));
+  check("submit presses the weave-draft button", f["lm-draft-go"].attrs["aria-pressed"] === "true");
+  check("submit writes #draft=1000/-1 to the hash", fb.sandbox.location.hash === "#draft=1000/-1", fb.sandbox.location.hash);
+  check("submit leaves the error line empty and input valid",
+    f["lm-draft-err"].textContent === "" && f["lm-draft-pattern"].attrs["aria-invalid"] === "false");
+  /* the offscreen cloth really is the custom weave: sample pick 0 (row 0 y=0) */
+  const customOps = offs()[offs().length - 1].getContext().ops.filter((o) => o[0] === "fillRect" && o[3] === 7 && o[4] === 7);
+  const row0 = customOps.slice(0, 8).map((o) => (o[5] === "#e0ae5a" || /^#(d|e|f)/.test(o[5]) ? "0" : "1"));
+  check("custom cloth row 0 shows 1000 repeating (up ends = non-weft colour)", row0.join("") === "10001000", row0.join("") + " " + JSON.stringify(customOps.slice(0, 8).map((o) => o.slice(1))));
+
+  /* invalid submit: error shown, loom unchanged, hash unchanged */
+  const before2 = offs().length;
+  f["lm-draft-pattern"].value = "1111";
+  f["lm-draftform"].fire("submit");
+  check("invalid draft shows an inline error", f["lm-draft-err"].textContent.length > 0, f["lm-draft-err"].textContent);
+  check("invalid draft marks input aria-invalid", f["lm-draft-pattern"].attrs["aria-invalid"] === "true");
+  check("invalid draft does not re-weave or touch the hash",
+    offs().length === before2 && fb.sandbox.location.hash === "#draft=1000/-1");
+  f["lm-draft-pattern"].fire("input");
+  check("typing clears the error", f["lm-draft-err"].textContent === "");
+
+  /* preset click while custom: preset pressed, hash cleared, weave-draft unpressed */
+  fb.btns[3].clickHandlers.forEach((fn) => fn());
+  check("preset click un-customs: basket pressed only",
+    fb.btns.map(lastPressed).join("|") === "false|false|false|true", fb.btns.map(lastPressed).join("|"));
+  check("preset click clears the draft hash", fb.sandbox.location.hash === "", fb.sandbox.location.hash);
+  check("preset click un-presses weave-draft", f["lm-draft-go"].attrs["aria-pressed"] === "false");
+  /* clicking the previously-active preset (twill) works after custom */
+  f["lm-draft-pattern"].value = "10"; f["lm-draft-shift"].value = "0";
+  f["lm-draftform"].fire("submit");
+  fb.btns[1].clickHandlers.forEach((fn) => fn());
+  check("twill preset works after custom", fb.btns.map(lastPressed).join("|") === "false|true|false|false");
+
+  /* hashchange: pasted link into an open tab */
+  fb.sandbox.location.hash = "#draft=0110/2";
+  fb.sandbox.hashHandlers.forEach((fn) => fn());
+  check("hashchange applies the draft and fills the form",
+    f["lm-draft-pattern"].value === "0110" && f["lm-draft-shift"].value === "2" &&
+    fb.btns.every((b) => lastPressed(b) === "false"));
+
+  /* load with a valid hash: custom active before first weave, no fetch-order surprises */
+  const hb = buildSandbox({ fetchMode: "fail", hash: "#draft=1100/1" });
+  runPage(hb.sandbox);
+  await settle();
+  check("load #draft=1100/1: presets un-pressed", hb.btns.every((b) => lastPressed(b) === "false"), hb.btns.map(lastPressed).join("|"));
+  check("load #draft=1100/1: form populated", hb.els["lm-draft-pattern"].value === "1100" && hb.els["lm-draft-shift"].value === "1");
+  check("load #draft=1100/1: cloth woven once on boot",
+    hb.sandbox.createdCanvases.length === 1, "offscreen canvases: " + hb.sandbox.createdCanvases.length);
+  check("load: hash applied without rewriting history", hb.sandbox.history.calls.length === 0);
+  /* load with a broken hash: error surfaced, twill stays */
+  const bb = buildSandbox({ fetchMode: "fail", hash: "#draft=1111/1" });
+  runPage(bb.sandbox);
+  await settle();
+  check("load bad hash: error shown, twill still pressed",
+    bb.els["lm-draft-err"].textContent.length > 0 && bb.btns.map(lastPressed).join("|") === "false|true|false|false");
 
   /* ═══ 6. reduced motion ═════════════════════════════════════ */
   const rmBoot = buildSandbox({ fetchMode: "fail", reduceMotion: true });

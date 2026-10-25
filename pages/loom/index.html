@@ -195,6 +195,28 @@
   html[data-theme="day"] .lm-controls button[aria-pressed="true"] { background: rgba(138,100,32,.1); }
   .lm-controls .lm-gap { flex: 1 1 auto; }
 
+  /* ── write-your-own-draft form (reuses .lm-controls buttons) ── */
+  .lm-draft { align-items: center; margin-top: .75rem; padding-top: .9rem; border-top: 1px solid var(--lm-line-soft); }
+  .lm-draft label {
+    font-family: var(--lm-mono); font-size: .72rem; color: var(--lm-muted);
+    display: inline-flex; align-items: center; gap: .45rem;
+  }
+  .lm-draft input[type="text"], .lm-draft select {
+    font-family: var(--lm-mono); font-size: .78rem;
+    color: var(--lm-text);
+    background: var(--lm-lift);
+    border: 1px solid var(--lm-line);
+    border-radius: 5px;
+    padding: .36rem .55rem;
+  }
+  .lm-draft input[type="text"] { width: 9.5ch; box-sizing: content-box; letter-spacing: .14em; }
+  .lm-draft input[type="text"]:hover, .lm-draft select:hover { border-color: var(--lm-brass-dim); }
+  .lm-draft input[aria-invalid="true"] { border-color: var(--lm-brass); }
+  .lm-draft-err {
+    flex: 1 0 100%; margin: 0; min-height: 1.2em;
+    font-family: var(--lm-mono); font-size: .72rem; color: var(--lm-brass);
+  }
+
   /* ── the sampler gallery ───────────────────────────────── */
   .lm-gallery {
     display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem;
@@ -304,6 +326,22 @@
       <span class="lm-gap"></span>
       <button type="button" id="lm-reweave">re-weave</button>
     </div>
+    <form class="lm-controls lm-draft" id="lm-draftform" novalidate aria-label="Write your own draft">
+      <label for="lm-draft-pattern">draft
+        <input type="text" id="lm-draft-pattern" value="1100" autocomplete="off" autocapitalize="off"
+          spellcheck="false" inputmode="numeric" aria-describedby="lm-draft-err"
+          placeholder="1100"></label>
+      <label for="lm-draft-shift">shift
+        <select id="lm-draft-shift">
+          <option value="-2">-2</option>
+          <option value="-1">-1</option>
+          <option value="0">0</option>
+          <option value="1" selected>+1</option>
+          <option value="2">+2</option>
+        </select></label>
+      <button type="submit" id="lm-draft-go" aria-pressed="false">weave draft</button>
+      <p class="lm-draft-err" id="lm-draft-err" aria-live="polite"></p>
+    </form>
   </div>
 
   <h2 class="lm-h2">The sampler book</h2>
@@ -359,6 +397,7 @@
       <li><b>Dye lots.</b> The yarns are fetched live: <code>fetch("/", { cache: "no-cache" })</code>, first inline stylesheet, tokens read from <code>:root</code> and the day-service block. Same trick as the specimen sheet. If the fetch fails, a marked fallback lot is used and the provenance strip owns up.</li>
       <li><b>Why canvas.</b> CSS custom properties do not reach the 2D canvas, so the tokens are read as hex and handed to <code>fillStyle</code> directly. This is the entire reason the page is a loom and not a CSS grid.</li>
       <li><b>The model.</b> Warp end up &rarr; warp yarn shows; down &rarr; weft shows. One formula: <code>up(col, row) = pattern[(col &minus; shift&middot;row) mod L] === 1</code>. Tabby is <code>10</code>, twill is <code>1100</code> shifted 1, herringbone flips the shift sign every eight picks, and true basket weave takes two picks per shed so the shift only advances on every second row. A pattern thread in darker brass runs every twelfth pick; selvedge ends are muted. The draft strings are printed above the cloths so you can check the weave against the claim.</li>
+      <li><b>Your own draft.</b> Type one to eight <code>0</code>s and <code>1</code>s (1 is a raised end, and you need at least one of each), pick a shift from &minus;2 to 2, and press weave draft; the address bar keeps it as <code>#draft=1100/1</code> so you can send your handiwork to someone who did not ask for it.</li>
       <li><b>Fibre noise.</b> Each cell is jittered a few percent in brightness by a seeded generator, so cloth has grain without the structure wandering. Re-weave changes the seed, never the tie-up.</li>
       <li><b>Motion.</b> The working loom sweeps in pick by pick; the samplers arrive finished. Under <code>prefers-reduced-motion</code>, everything arrives finished, like it should have all along.</li>
     </ul>
@@ -411,6 +450,42 @@
       herringbone: { pattern: [1, 1, 0, 0], shift: 1, herringbone: true, band: 8 },
       basket:      { pattern: [1, 1, 0, 0], shift: 2, basket: true }
     };
+
+    /* ── write-your-own draft: validation + hash codec ──────── */
+    var MAX_DRAFT = 8, MAX_SHIFT = 2;
+
+    /* parseDraft("1100", "1") → { ok, pattern:[1,1,0,0], shift:1, hash:"1100/1" }
+       or { ok:false, error } with a message fit to show the visitor. */
+    function parseDraft(patternStr, shiftStr) {
+      var p = String(patternStr == null ? "" : patternStr).trim();
+      var s = String(shiftStr == null ? "" : shiftStr).trim();
+      if (p === "") return { ok: false, error: "The draft is empty. Give it one to " + MAX_DRAFT + " characters, each a 0 or a 1." };
+      var bad = p.match(/[^01]/);
+      if (bad) return { ok: false, error: "Only 0s and 1s, please. \u201c" + bad[0] + "\u201d is not a thread." };
+      if (p.length > MAX_DRAFT) return { ok: false, error: "That is " + p.length + " ends; the loom has heddles for " + MAX_DRAFT + "." };
+      if (p.indexOf("0") === -1 || p.indexOf("1") === -1) {
+        return { ok: false, error: "A draft needs at least one 0 and one 1, otherwise it is a sheet, not cloth." };
+      }
+      if (!/^[+-]?[0-9]+$/.test(s) || Math.abs(Number(s)) > MAX_SHIFT) {
+        return { ok: false, error: "Shift must be a whole number from -" + MAX_SHIFT + " to " + MAX_SHIFT + "." };
+      }
+      var n = Number(s);
+      if (n === 0) n = 0; /* no negative zero */
+      var pattern = [];
+      for (var i = 0; i < p.length; i++) pattern.push(p.charAt(i) === "1" ? 1 : 0);
+      return { ok: true, pattern: pattern, shift: n, hash: p + "/" + n };
+    }
+
+    /* "#draft=1100/1" → parseDraft result; null if the hash is not a draft. */
+    function parseDraftHash(hash) {
+      var m = /^#draft=(.*)$/.exec(String(hash || ""));
+      if (!m) return null;
+      var body = m[1];
+      try { body = decodeURIComponent(body); } catch (e) { /* use as typed */ }
+      var slash = body.indexOf("/");
+      if (slash === -1) return parseDraft(body, "1"); /* "#draft=1100": shift defaults to 1 */
+      return parseDraft(body.slice(0, slash), body.slice(slash + 1));
+    }
 
     /* ── colour helpers ─────────────────────────────────────── */
     function hexToRgb(hex) {
@@ -530,7 +605,8 @@
     var dyes = { dark: FALLBACK_DARK, day: FALLBACK_DAY };
     var liveDye = false;
     var seed = (Date.now() & 0xffff) >>> 0;
-    var currentTieup = "twill";
+    var currentTieup = "twill";   /* a TIEUPS key, or "custom" */
+    var customTieup = null;       /* { pattern, shift } from the draft form */
     var mainCtx = null, warpCtx = null;
     var sampling = false;
     var $ = function (id) { return document.getElementById(id); };
@@ -595,7 +671,7 @@
     function drawMain() {
       var canvas = $("lm-main");
       if (!canvas || !mainCtx) return;
-      var tieup = TIEUPS[currentTieup] || TIEUPS.twill;
+      var tieup = (currentTieup === "custom" && customTieup) ? customTieup : (TIEUPS[currentTieup] || TIEUPS.twill);
       var yarns = currentYarns();
       var seedHere = seed;
       var cols = canvas._lmCols, rows = canvas._lmRows, cell = canvas._lmCell;
@@ -679,11 +755,58 @@
       }
 
       var buttons = document.querySelectorAll ? document.querySelectorAll(".lm-controls [data-tieup]") : [];
+      var draftForm = $("lm-draftform");
+      var draftInput = $("lm-draft-pattern");
+      var draftShift = $("lm-draft-shift");
+      var draftGo = $("lm-draft-go");
+      var draftErr = $("lm-draft-err");
+
       function syncButtons() {
         for (var b = 0; b < buttons.length; b++) {
           var on = buttons[b].getAttribute("data-tieup") === currentTieup;
           buttons[b].setAttribute("aria-pressed", on ? "true" : "false");
         }
+        /* the weave-draft button is pressed exactly when custom cloth is on the loom */
+        if (draftGo) draftGo.setAttribute("aria-pressed", currentTieup === "custom" ? "true" : "false");
+      }
+
+      function showDraftError(msg) {
+        if (draftErr) draftErr.textContent = msg || "";
+        if (draftInput) draftInput.setAttribute("aria-invalid", msg ? "true" : "false");
+      }
+
+      /* keep location.hash in step (replaceState: no history entry per weave) */
+      function writeHash(h) {
+        var loc = window.location, hist = window.history;
+        if (!loc) return;
+        try {
+          if (hist && hist.replaceState) hist.replaceState(null, "", loc.pathname + loc.search + h);
+          else loc.hash = h;
+        } catch (e) { /* sandboxed frame: the cloth still weaves, the link just won't follow */ }
+      }
+
+      /* put a validated draft on the loom and mirror it into the form */
+      function useDraft(d, fromHash, deferDraw) {
+        customTieup = { pattern: d.pattern, shift: d.shift };
+        currentTieup = "custom";
+        if (draftInput) draftInput.value = d.pattern.join("");
+        if (draftShift) draftShift.value = String(d.shift);
+        showDraftError("");
+        syncButtons();
+        if (!fromHash) writeHash("#draft=" + d.hash);
+        if (!deferDraw) drawMain();
+      }
+
+      /* returns true if the hash held a draft (valid or not) */
+      function applyHash(initial) {
+        var loc = window.location;
+        var d = loc ? parseDraftHash(loc.hash) : null;
+        if (!d) return false;
+        if (!d.ok) { showDraftError("Draft in the address: " + d.error); return true; }
+        if (!initial && currentTieup === "custom" && customTieup &&
+            customTieup.pattern.join("") === d.pattern.join("") && customTieup.shift === d.shift) return true;
+        useDraft(d, true, initial); /* on load, startWeaving does the first weave */
+        return true;
       }
       for (var k = 0; k < buttons.length; k++) {
         (function (btn) {
@@ -691,6 +814,8 @@
             var t = btn.getAttribute("data-tieup");
             if (t && TIEUPS[t] && t !== currentTieup) {
               currentTieup = t;
+              showDraftError("");
+              writeHash("");
               syncButtons();
               drawMain();
             }
@@ -698,6 +823,18 @@
         })(buttons[k]);
       }
       syncButtons();
+
+      if (draftForm) draftForm.addEventListener("submit", function (ev) {
+        if (ev && ev.preventDefault) ev.preventDefault();
+        var d = parseDraft(draftInput ? draftInput.value : "", draftShift ? draftShift.value : "1");
+        if (!d.ok) { showDraftError(d.error); return; }
+        useDraft(d, false);
+      });
+      if (draftInput) draftInput.addEventListener("input", function () { showDraftError(""); });
+
+      /* a shared link: apply #draft=… before the first weave */
+      applyHash(true);
+      if (window.addEventListener) window.addEventListener("hashchange", function () { applyHash(false); });
 
       var reweave = $("lm-reweave");
       if (reweave) reweave.addEventListener("click", function () {
@@ -743,6 +880,8 @@
     window.__loomTest = {
       up: up,
       TIEUPS: TIEUPS,
+      parseDraft: parseDraft,
+      parseDraftHash: parseDraftHash,
       mulberry32: mulberry32,
       extractDyes: extractDyes,
       parseBlock: parseBlock,
