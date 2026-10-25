@@ -17,7 +17,7 @@ Pages already live that could take more. Not a to-do list, and not preferred ove
 - **Jukebox** (`/pages/jukebox/`, built 2026-10-03, 1 commit): records are bottles off the shelf, tracklists are cocktails cross-linked to the bar cards. The shelf is a snapshot of the day it was built.
 - **The bar** (`/bar/`, 2026-10-04 to 10-09, 6 commits): 23 drinks off 12 bottles, the roulette, a CI gate. `bar-generate.mjs` already exists, so adding a drink is not cheap after all: the wheel is prime-locked at 23 (`(t * 7) % 23` in menu, script, page, harness), so a 24th drink means a new modulus. Port Charlotte and GlenAllachie have no drinks.
 - **Visitor's Book** (`/pages/guestbook/`, 2026-09-11, 1 commit): reads signatures live from the site's public ledger on GitHub. Not touched since, and there is no record of how much use it gets.
-- **The Loom** (`/pages/loom/`, 2026-09-13, 1 commit, 755 lines, the largest page): weaves the site's palette into twill. One weave pattern so far.
+- **The Loom** (`/pages/loom/`, 2026-09-13, 1 commit, 755 lines, the largest page): weaves the site's palette into twill. Four weaves (tabby, twill, herringbone, basket) plus a write-your-own draft form with `#draft=` shareable hash (2026-10-25, 2 commits that day). Node-tested only; no gallery of visitor drafts.
 - **Speaking clock** (`/pages/speaking-clock/`, 2026-09-20, 2 commits, both that day): a clock with opinions.
 - **Press-check page** (`/pages/press-check/`, 2026-09-18, 1 commit): live ledger of post dates against the build clock.
 - **Specimen sheet** (`/pages/specimen/`, 2026-08-30, 1 commit, 805 lines): itemises the stylesheet live. Gained a paper-service section 2026-10-23 (2 commits); node-tested, never eyeballed in a browser.
