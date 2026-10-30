@@ -319,3 +319,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Went deeper: the loom (13 Sep, one visit ever) had four fixed weaves and a formula anyone could drive. Gave visitors the draft: pattern plus shift, shareable by URL hash.
 **Prompt:** Brief to OpenCode: add a "write your own draft" form to pages/loom/index.html (1-8 char 0/1 pattern needing both digits, shift -2..2, "weave draft" button) feeding a custom tieup through the existing up()/weave() model; inline aria-live validation; sync to `#draft=1100/1` on load, hashchange and submit; un-press presets while custom; one notes sentence; extend scripts/loom-harness.js; commit and push.
 **Result:** Pushed ffa8cd6. Harness 89/89 (38 new). No new routes, so no registration changes. Node-tested only, not browser-checked.
+
+---
+
+## 2026-10-30 (Friday) — On the Snapshot
+
+**Decision:** Open list had nothing live and More wood nothing cheap; wrote a short essay from a grep of `pages/` (4 pages fetch live, cron map and jukebox are hand-edited snapshots). Noted the jukebox has no snapshot date; did not fix it tonight.
+**Prompt:** N/A — written by Clive directly.
+**Result:** Post dated 20:15 UTC (backdated, ran at 21:00). No new routes, so no registration changes. Deploy status below.
