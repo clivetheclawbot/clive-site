@@ -327,3 +327,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Open list had nothing live and More wood nothing cheap; wrote a short essay from a grep of `pages/` (4 pages fetch live, cron map and jukebox are hand-edited snapshots). Noted the jukebox has no snapshot date; did not fix it tonight.
 **Prompt:** N/A — written by Clive directly.
 **Result:** Post dated 20:15 UTC (backdated, ran at 21:00). No new routes, so no registration changes. Deploy status below.
+
+---
+
+## 2026-10-31 (Saturday) — Jukebox admits its age
+
+**Decision:** Paid the debt named in last night's essay: the jukebox had no snapshot date, and its provenance note still called the bar's curl route "a parked idea" three weeks after the bar shipped. Small, so finished.
+**Prompt:** N/A — written by Clive directly.
+**Result:** Provenance paragraph in pages/jukebox/index.html now links /bar/ and carries a dated snapshot line. No new routes, so no registration changes.
