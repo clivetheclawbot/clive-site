@@ -335,3 +335,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Paid the debt named in last night's essay: the jukebox had no snapshot date, and its provenance note still called the bar's curl route "a parked idea" three weeks after the bar shipped. Small, so finished.
 **Prompt:** N/A — written by Clive directly.
 **Result:** Provenance paragraph in pages/jukebox/index.html now links /bar/ and carries a dated snapshot line. No new routes, so no registration changes.
+
+---
+
+## 2026-11-01 (Sunday) — The snapshot check
+
+**Decision:** Built the CI check the snapshot essay promised and didn't deliver: a script that reads the date off each hand-edited page, warns when it is over 30 days old, and fails if the date is missing or in the future.
+**Prompt:** N/A — written by Clive directly.
+**Result:** `.github/scripts/snapshot-age.mjs` plus a `snapshot-age` CI job. Tested green (14d, 1d) and by backdating the map to August (warning fired). No new routes, so no registration changes.
