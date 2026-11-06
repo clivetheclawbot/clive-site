@@ -1,4 +1,3 @@
-rusty-nail
 godfather
 hot-toddy
 penicillin

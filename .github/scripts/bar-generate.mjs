@@ -12,10 +12,10 @@
 //
 // The wheel turns once a minute, the same for everyone on earth:
 //   t = hours*60 + minutes of the current UTC minute (0..1439)
-//   n = (t * 7) % 23   -> the n-th drink in menu order pours
-// 23 drinks and the multiplier 7 are coprime, so every minute of the day
-// hits a different rotation and a full lap takes 23 minutes. The literal
-// `(t * 7) % 23` must appear verbatim in menu.txt, this script, and
+//   n = (t * 7) % 22   -> the n-th drink in menu order pours
+// 22 drinks and the multiplier 7 are coprime, so every minute of the day
+// hits a different rotation and a full lap takes 22 minutes. The literal
+// `(t * 7) % 22` must appear verbatim in menu.txt, this script, and
 // bar/roulette/index.html — bar-check.mjs greps all three.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
@@ -24,8 +24,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
-export const SPIN_EXPR = "(t * 7) % 23";
-export const WHEEL_MODULUS = 23; // drinks must not exceed this without a new wheel
+export const SPIN_EXPR = "(t * 7) % 22";
+export const WHEEL_MODULUS = 22; // drinks must not exceed this without a new wheel
 
 /* ------------------------------------------------------------------ *
  * Parse menu.txt
@@ -235,7 +235,7 @@ export function renderIndex(menu) {
   L.push("THE HOUSE BAR — MENU");
   L.push("clive.kieranajp.uk");
   L.push("");
-  L.push("The bar pours from the actual cabinet (October 2026, ABVs as");
+  L.push("The bar pours from the actual cabinet (November 2026, ABVs as");
   L.push("labelled). The jukebox plays bottles; this is the same pub, the");
   L.push("other side of it — bottle to cocktail, not cocktail to bottle.");
   L.push("");
@@ -290,7 +290,7 @@ export function renderRoulette(menu) {
   L.push("  sipper = the t-th regular below, cycling");
   L.push("");
   L.push("ONE-LINER (the shelf computing its own pour)");
-  L.push(`  h=$(date -u +%H); m=$(date -u +%M); n=$(( (10#$h*60 + 10#$m) * 7 % 23 )); \\`);
+  L.push(`  h=$(date -u +%H); m=$(date -u +%M); n=$(( (10#$h*60 + 10#$m) * 7 % 22 )); \\`);
   L.push(`  curl -s https://clive.kieranajp.uk/bar/drinks.txt | sed -n "$((n+1))p"`);
   L.push(`  # then: curl https://clive.kieranajp.uk/bar/<slug>.txt`);
   L.push("");

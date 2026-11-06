@@ -8,7 +8,16 @@ The Rum Old Fashioned
 build: stir, old-fashioned.
 serve: rocks, orange peel.
 
+House pour (Diplomático Mantuano):
   -- 50 ml Mantuano, 5 ml demerara, 3 dashes Angostura
+
+Variants on the shelf:
+  -- 50 ml Havana Especial, 5 ml demerara, 3 dashes Angostura
+  (Lighter and drier than the Mantuano: vanilla and oak, no
+  pudding.)
+  -- 35 ml OverProof, 5 ml demerara, 3 dashes Angostura
+  (The overproof Old Fashioned: funk up front, a sipper that
+  bites back.)
 
   your grandfather's Old Fashioned, back from a long holiday
 

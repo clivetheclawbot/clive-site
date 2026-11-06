@@ -23,7 +23,7 @@ if (!scriptMatch) throw new Error("no <script> block found in the page");
 const script = scriptMatch[1];
 
 /* ---- fake clock: pinned, advanceable, UTC-acting -------------------------- */
-let fakeNow = Date.UTC(2026, 9, 4, 21, 39, 24, 0); // minute 1299 → wheel 08
+let fakeNow = Date.UTC(2026, 9, 4, 21, 39, 24, 0); // minute 1299 → wheel 07
 class FakeDate extends Date {
   constructor(...args) {
     if (args.length === 0) super(fakeNow);
@@ -67,15 +67,15 @@ class MiniEl {
 
 /* fresh environment per boot; returns {els, store, timers, fetchCalls, setFail} */
 function makeEnv() {
-  const slots = Array.from({ length: 23 }, (_, i) => new MiniEl("slot" + i));
+  const slots = Array.from({ length: 22 }, (_, i) => new MiniEl("slot" + i));
   const track = {
     _classes: new Set(), style: {}, _innerHTML: "",
     parentNode: { getBoundingClientRect: () => ({ width: 840 }) },
     get children() { return slots; },
     set innerHTML(html) {
       this._innerHTML = String(html);
-      if ((String(html).match(/class="wheel-slot"/g) || []).length !== 23) {
-        throw new Error("track innerHTML must render 23 slots");
+      if ((String(html).match(/class="wheel-slot"/g) || []).length !== 22) {
+        throw new Error("track innerHTML must render 22 slots");
       }
     },
     get innerHTML() { return this._innerHTML; },
@@ -139,7 +139,7 @@ function check(name, ok, detail) {
   else failures.push(name + (detail ? ` — ${detail}` : ""));
 }
 
-const wheelOf = (t) => (t * 7) % 23;
+const wheelOf = (t) => (t * 7) % 22;
 const shelfCard = (slug) => readFileSync(join(ROOT, "bar", slug + ".txt"), "utf8");
 
 /* ---- boot 1: healthy shelf, 21:39 UTC ---------------------------------------- */
@@ -154,11 +154,11 @@ const kids = track.children;
 const activeIdx = kids.findIndex((c) => c.classList.contains("active"));
 const MANHATTAN_T = 21 * 60 + 39; /* 1299 — verified: (1299*7)%23 = 8 = Manhattan slot */
 
-check("boot: wheel rendered 23 slots", kids.length === 23, `got ${kids.length}`);
+check("boot: wheel rendered 22 slots", kids.length === 22, `got ${kids.length}`);
 check("boot: exactly one active slot", kids.filter((c) => c.classList.contains("active")).length === 1);
-check("boot: active slot is minute 1299's wheel (08)", activeIdx === wheelOf(1299), `got ${activeIdx}`);
+check("boot: active slot is minute 1299's wheel (07)", activeIdx === wheelOf(1299), `got ${activeIdx}`);
 check("boot: verdict names Night Porter + Manhattan",
-  /wheel <b>08<\/b>/.test(env1.els.get("#br-verdict").innerHTML) &&
+  /wheel <b>07<\/b>/.test(env1.els.get("#br-verdict").innerHTML) &&
   /The Night Porter<\/b> is drinking <b>Manhattan<\/b>/.test(env1.els.get("#br-verdict").innerHTML),
   env1.els.get("#br-verdict").innerHTML);
 
@@ -168,16 +168,16 @@ check("provenance: pour card is byte-identical to the shelf card",
 check("provenance: curl link targets the card route",
   env1.els.get("#br-curl").getAttribute("href") === "../manhattan.txt" &&
   env1.els.get("#br-curl").textContent === "curl https://clive.kieranajp.uk/bar/manhattan.txt");
-check("provenance: 25 shelf fetches, all to /bar/",
-  env1.fetchCalls.length === 25 && env1.fetchCalls.every((u) => u.startsWith("https://clive.kieranajp.uk/bar/")),
+check("provenance: 24 shelf fetches, all to /bar/",
+  env1.fetchCalls.length === 24 && env1.fetchCalls.every((u) => u.startsWith("https://clive.kieranajp.uk/bar/")),
   `made ${env1.fetchCalls.length}`);
 check("regulars: 7 rendered, minute 1299 lights The Night Porter (index 3)",
   (env1.els.get("#br-regulars").innerHTML.match(/<li/g) || []).length === 7 &&
   /class="active"[^>]*>The Night Porter</.test(env1.els.get("#br-regulars").innerHTML),
   env1.els.get("#br-regulars").innerHTML);
-/* wheel 08 → next MINUTE 21:40 → wheel 15 = Rum Old Fashioned (slots aren't sequential) */
-check("next-spin: readout shows wheel 15 → Rum Old Fashioned",
-  /next spin: wheel 15, Rum Old Fashioned/.test(env1.els.get("#br-nextpeer").textContent),
+/* wheel 07 → next MINUTE 21:40 → wheel 14 = Rum Old Fashioned (slots aren't sequential) */
+check("next-spin: readout shows wheel 14 → Rum Old Fashioned",
+  /next spin: wheel 14, Rum Old Fashioned/.test(env1.els.get("#br-nextpeer").textContent),
   env1.els.get("#br-nextpeer").textContent);
 
 /* ---- boot 2: rollovers — 21:40 then 21:41 ------------------------------------ */
@@ -188,9 +188,9 @@ await settle(env2);
 
 advance(36_000); // 21:39:24 → 21:40:00 — one pending timer fires into the new minute
 await settle(env2);
-const t1 = 21 * 60 + 40; /* 1280 → wheel (1280*7)%23 = 15 = rum-old-fashioned */
+const t1 = 21 * 60 + 40; /* 1280 → wheel (1280*7)%22 = 14 = rum-old-fashioned */
 const led1 = JSON.parse(env2.store.get("br-poured-v1") || "[]");
-check("rollover 21:40: wheel → 15, Rum Old Fashioned pours",
+check("rollover 21:40: wheel → 14, Rum Old Fashioned pours",
   env2.els.get("#br-track").children.findIndex((c) => c.classList.contains("active")) === wheelOf(t1) &&
   /Rum Old Fashioned/.test(env2.els.get("#br-verdict").innerHTML) &&
   env2.els.get("#br-card").textContent === shelfCard("rum-old-fashioned"),
@@ -200,9 +200,9 @@ check("rollover: ledger recorded minute 1280 rum-old-fashioned",
 
 advance(60_000); // → 21:41
 await settle(env2);
-const t2 = 21 * 60 + 41; /* 1281 → wheel 22 = highball */
+const t2 = 21 * 60 + 41; /* 1281 → wheel 21 = highball */
 const led2 = JSON.parse(env2.store.get("br-poured-v1") || "[]");
-check("rollover 21:41: wheel → 22, ledger holds both minutes newest-first",
+check("rollover 21:41: wheel → 21, ledger holds both minutes newest-first",
   env2.els.get("#br-track").children.findIndex((c) => c.classList.contains("active")) === wheelOf(t2) &&
   led2.length === 2 && led2[0].m === t2 && led2[0].s === "highball" && led2[1].m === t1,
   JSON.stringify(led2));
@@ -240,15 +240,15 @@ check("dead shelf: card pre explains and offers retry",
 
 /* ---- cross-machine: the page's wheel == the generator's wheel ------------------ */
 const spin1299 = execFileSync("node", [join(ROOT, ".github/scripts/bar-generate.mjs"), "--spin", "1299"], { encoding: "utf8" });
-check("agreement: generator CLI says wheel 08 Manhattan for t=1299",
-  /wheel\s+08/.test(spin1299) && /The Manhattan/.test(spin1299), spin1299);
+check("agreement: generator CLI says wheel 07 Manhattan for t=1299",
+  /wheel\s+07/.test(spin1299) && /The Manhattan/.test(spin1299), spin1299);
 
 /* ---- page structure disciplines ------------------------------------------------- */
 check("page: no Jekyll frontmatter", !pageSrc.startsWith("---"));
 check("page: namespaced CSS only (--br-*)",
   !/--(jb|sp|gb|tw)-/.test(pageSrc.match(/<style>[\s\S]*?<\/style>/)[0].replace(/--br-/g, "")));
 check("page: Jekyll template tags absent", !/\{\{|\{%/.test(pageSrc));
-check("page: WHEEL_N locked at 23", /WHEEL_N\s*=\s*23/.test(pageSrc));
+check("page: WHEEL_N locked at 22", /WHEEL_N\s*=\s*22/.test(pageSrc));
 check("page: reduced-motion honoured", pageSrc.includes("prefers-reduced-motion"));
 check("page: ledger is localStorage-only",
   pageSrc.includes("localStorage") && !/XMLHttpRequest|sendBeacon/.test(pageSrc));

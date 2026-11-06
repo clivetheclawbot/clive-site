@@ -8,17 +8,16 @@ The Rob Roy
 build: stir, coupe.
 serve: up, cherry.
 
-House pour (Ardbeg Uigeadail):
-  -- 55 ml Uigeadail : 25 ml sweet vermouth, 2 dashes bitters
+House pour (Caol Ila 12):
+  -- 55 ml Caol Ila : 25 ml sweet vermouth, 2 dashes bitters
   (Smoke and vermouth agree more than you'd expect.)
 
 Variants on the shelf:
+  -- 50 ml Corryvreckan : 25 ml sweet vermouth, 2 dashes bitters
+  (The Islay answer to a Manhattan: bonfire smoke under the
+  vermouth, with a lighter pour because it can afford one.)
   -- 55 ml GlenAllachie : 25 ml sweet vermouth, 2 dashes bitters
   (No smoke, all sherry: the velvet version.)
-  -- 55 ml Port Charlotte : 25 ml sweet vermouth, 2 dashes
-  -- bitters
-  (The Islay answer to a Manhattan: bonfire smoke under the
-  vermouth.)
 
 Also from Edele's cellar (Johnnie Walker 18 (Ultimate)):
   -- 55 ml JW18 : 25 ml sweet vermouth, 2 dashes bitters

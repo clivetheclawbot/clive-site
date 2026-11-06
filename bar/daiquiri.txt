@@ -8,7 +8,16 @@ The Daiquiri
 build: hard shake, coupe.
 serve: up.
 
+House pour (Havana Club 3):
   -- 50 ml Havana 3, 25 ml lime, 15 ml caster sugar
+
+Variants on the shelf:
+  -- 50 ml Havana Especial, 25 ml lime, 15 ml caster sugar
+  (Gold rum, the same three ingredients: softer, rounder, a
+  little vanilla.)
+  -- 35 ml OverProof, 25 ml lime, 15 ml caster sugar
+  (At 69% the pour drops to 35 ml and the drink gets louder, not
+  stronger.)
 
   three ingredients, zero forgiveness — the ratio is the whole
   band

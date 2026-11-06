@@ -8,8 +8,10 @@ The Brooklyn
 build: stir, coupe.
 serve: up, cherry.
 
-  -- 55 ml Yellow Rose, 20 ml dry vermouth, 7.5 ml Amaro Nonino,
-  -- 7.5 ml maraschino
+  -- 55 ml Bulleit, 20 ml dry vermouth, 7.5 ml Amaro Nonino, 7.5
+  -- ml maraschino
+  (Bulleit stands in for rye and keeps the pepper; the Nonino
+  and maraschino do the rest.)
 
   Manhattan's darker cousin
 

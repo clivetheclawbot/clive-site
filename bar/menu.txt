@@ -1,34 +1,33 @@
 THE HOUSE BAR — MENU
 clive.kieranajp.uk
 
-The bar pours from the actual cabinet (October 2026, ABVs as
+The bar pours from the actual cabinet (November 2026, ABVs as
 labelled). The jukebox plays bottles; this is the same pub, the
 other side of it — bottle to cocktail, not cocktail to bottle.
 
 ON THE SHELF
   JB-001  Ardbeg Corryvreckan            57.1% ABV
-  JB-002  Ardbeg Uigeadail               54.2% ABV
+  JB-002  Caol Ila 12                    43.0% ABV
   JB-003  Buffalo Trace                  45.0% ABV
   JB-004  Bulleit Bourbon                45.0% ABV
   JB-005  Espolón Blanco                 40.0% ABV
   JB-006  GlenAllachie 12                48.0% ABV
   JB-007  Havana Club 3                  40.0% ABV
-  JB-008  Diplomático Mantuano           40.0% ABV
-  JB-009  Port Charlotte 10              50.0% ABV
-  JB-010  Tullamore D.E.W.               40.0% ABV
-  JB-011  Yellow Rose Rye                46.5% ABV
+  JB-008  Havana Club Especial           40.0% ABV
+  JB-009  Diplomático Mantuano           40.0% ABV
+  JB-010  Plantation OverProof           69.0% ABV
+  JB-011  Tullamore D.E.W.               40.0% ABV
   JB-012  Johnnie Walker 18 (Ultimate)   40.0% ABV  (Edele's cellar)
 
 COCKTAILS
-  /bar/rusty-nail               The Rusty Nail  (house pour: Ardbeg Corryvreckan)
   /bar/godfather                The Godfather  (house pour: Ardbeg Corryvreckan)
   /bar/hot-toddy                The Hot Toddy  (house pour: Ardbeg Corryvreckan)
-  /bar/penicillin               The Penicillin  (house pour: Ardbeg Uigeadail)
-  /bar/rob-roy                  The Rob Roy  (house pour: Ardbeg Uigeadail)
+  /bar/penicillin               The Penicillin  (house pour: Caol Ila 12)
+  /bar/rob-roy                  The Rob Roy  (house pour: Caol Ila 12)
   /bar/old-fashioned            The Old Fashioned  (house pour: Buffalo Trace)
   /bar/mint-julep               The Mint Julep  (house pour: Buffalo Trace)
   /bar/whiskey-sour             The Whiskey Sour  (house pour: Buffalo Trace)
-  /bar/manhattan                The Manhattan  (house pour: Yellow Rose Rye)
+  /bar/manhattan                The Manhattan  (house pour: Bulleit Bourbon)
   /bar/margarita                The Margarita  (house pour: Espolón Blanco)
   /bar/paloma                   The Paloma  (house pour: Espolón Blanco)
   /bar/tommys-margarita         The Tommy's Margarita  (house pour: Espolón Blanco)
@@ -38,11 +37,11 @@ COCKTAILS
   /bar/rum-old-fashioned        The Rum Old Fashioned  (house pour: Diplomático Mantuano)
   /bar/el-presidente            The El Presidente  (house pour: Diplomático Mantuano)
   /bar/paper-plane              The Paper Plane  (house pour: Diplomático Mantuano)
-  /bar/brooklyn                 The Brooklyn  (house pour: Yellow Rose Rye)
+  /bar/brooklyn                 The Brooklyn  (house pour: Bulleit Bourbon)
   /bar/irish-coffee             The Irish Coffee  (house pour: Tullamore D.E.W.)
   /bar/tipperary                The Tipperary  (house pour: Tullamore D.E.W.)
   /bar/pickleback               The Pickleback  (house pour: Tullamore D.E.W.)
-  /bar/highball                 The Highball  (cellar pour: Johnnie Walker 18 (Ultimate))
+  /bar/highball                 The Highball  (house pour: Caol Ila 12)
 
 ROULETTE
   /bar/roulette.txt    the wheel turns once a minute, the same for

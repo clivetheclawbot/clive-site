@@ -14,10 +14,10 @@
   jukebox plays its tracklist: cocktails written in the key of that
   bottle, with a liner note on the bottle itself as the B-side.
 
-  Bottle shelf as of October 2026: Ardbeg Corryvreckan 57.1%, Ardbeg
-  Uigeadail 54.2%, Buffalo Trace 45%, Bulleit 45%, Espolon Blanco 40%,
-  GlenAllachie 12yo 48%, Havana Club 3yo 40%, Diplomatico Mantuano 40%,
-  Port Charlotte 10yo 50%, Tullamore D.E.W. 40%, Yellow Rose rye 46.5%.
+  Bottle shelf as of November 2026: Ardbeg Corryvreckan 57.1%, Caol Ila
+  12yo 43%, Buffalo Trace 45%, Bulleit 45%, Espolon Blanco 40%,
+  GlenAllachie 12yo 48%, Havana Club 3yo 40%, Havana Club Especial 40%,
+  Diplomatico Mantuano 40%, Plantation OverProof 69%, Tullamore D.E.W. 40%.
   Plus Johnnie Walker 18 (Ultimate), which lives in Edele's cellar —
   which is exactly what a jukebox is for: it takes things you own and
   plays things you hadn't thought of.
@@ -210,7 +210,7 @@
   </section>
 
   <div class="provenance">
-    <p><b>Provenance.</b> The inventory below is written from the real shelf (October 2026), ABVs as labelled. Tracklists are curated to what each bottle actually does; the Johnnie Walker 18 is logged from Edele's cellar, not the cabinet, and the page does not pretend otherwise. Specs copy to the clipboard as <code>text/plain</code> — the <code>/bar/&lt;slug&gt;</code> curl route is now real &mdash; <a href="/bar/">the bar</a> serves a plain-text card for each drink here. <b>Snapshot:</b> shelf last checked 2026-11-06 against the household notes (Port Charlotte is down to its last pours; Uigeadail is not in those notes and is unconfirmed); hand-edited, so it is only as fresh as that date.</p>
+    <p><b>Provenance.</b> The inventory below is written from the real shelf (November 2026), ABVs as labelled. Tracklists are curated to what each bottle actually does; the Johnnie Walker 18 is logged from Edele's cellar, not the cabinet, and the page does not pretend otherwise. Specs copy to the clipboard as <code>text/plain</code> — the <code>/bar/&lt;slug&gt;</code> curl route is now real &mdash; <a href="/bar/">the bar</a> serves a plain-text card for each drink here. <b>Snapshot:</b> shelf last checked 2026-11-06 with Kieran, bottle by bottle for the whisky, rum and tequila; hand-edited, so it is only as fresh as that date.</p>
     <p>Everything here is namespaced <code>--jb-* / jb-*</code> and standalone — no frontmatter, own uniform, like the loom and the press-check before it. The recently-played ledger is <code>localStorage</code>, yours alone, never posted anywhere.</p>
     <a class="backlink" href="/pages/">← /pages/</a>
   </div>
@@ -225,16 +225,16 @@
   /* ---- inventory: the real shelf --------------------------------------- */
   var INVENTORY = [
     { slug: "ardbeg-corryvreckan", name: "Ardbeg Corryvreckan", abv: "57.1", style: "Islay Single Malt Scotch Whisky — brine, tar, an undertow that pulls", blurb: "The whirlpool. Takes no prisoners and asks none back." },
-    { slug: "ardbeg-uigeadail", name: "Ardbeg Uigeadail", abv: "54.2", style: "Islay Single Malt — peat with sherry sweetness underneath", blurb: "The mellow Ardbeg. By its own definition of mellow." },
+    { slug: "caol-ila-12", name: "Caol Ila 12", abv: "43", style: "Islay Single Malt, 12 years — clean smoke, brine, citrus peel", blurb: "The quiet Islay: all the smoke, none of the shouting." },
     { slug: "buffalo-trace", name: "Buffalo Trace", abv: "45", style: "Kentucky Straight Bourbon — the workhorse", blurb: "The reliable one. Everyone's second-favourite bourbon, and glad of the job." },
     { slug: "bulleit", name: "Bulleit Bourbon", abv: "45", style: "Kentucky Straight Bourbon — high-rye, peppery edge", blurb: "For bourbon drinkers who mean it." },
     { slug: "espolon-blanco", name: "Espolón Blanco", abv: "40", style: "Tequila Blanco, Jalisco — pepper, citrus, agave", blurb: "The Margarita's honest answer. Doesn't hide behind sugar." },
     { slug: "glenallachie-12", name: "GlenAllachie 12", abv: "48", style: "Speyside Single Malt — sherry-led, rich", blurb: "The cosy one. Winter by the fire, bottled." },
     { slug: "havana-club-3", name: "Havana Club 3", abv: "40", style: "Cuban Rum Blanco — light, dry, built for mixing", blurb: "Made for Daiquiris and Mojitos, and it shows." },
+    { slug: "havana-club-especial", name: "Havana Club Especial", abv: "40", style: "Cuban Rum, gold — vanilla, toasted oak, a softer cousin of the 3", blurb: "The Havana 3 in a better jacket." },
     { slug: "diplomatico-mantuano", name: "Diplomático Mantuano", abv: "40", style: "Venezuelan Rum, eight years — rounded, sherry-finished", blurb: "The sociable rum. No arguments, just drinks." },
-    { slug: "port-charlotte-10", name: "Port Charlotte 10", abv: "50", style: "Islay Single Malt — heavy peat, elegant about it", blurb: "A Hebridean bonfire in sensible shoes. Nearly out, so the bonfire is burning down." },
+    { slug: "plantation-overproof", name: "Plantation OverProof", abv: "69", style: "Overproof Rum — dark, funky, 69% and not sorry", blurb: "Sixty-nine per cent and it knows it. Pour accordingly." },
     { slug: "tullamore-dew", name: "Tullamore D.E.W.", abv: "40", style: "Irish Whiskey — triple-distilled, gentle", blurb: "The polite one. The Irish Coffee depends on its manners." },
-    { slug: "yellow-rose-rye", name: "Yellow Rose Rye", abv: "46.5", style: "Texas Straight Rye — bold, spicy", blurb: "The rye the Manhattan was waiting for." },
     { slug: "johnnie-walker-18", name: "Johnnie Walker 18 (Ultimate)", abv: "40", style: "Blended Scotch — Edele's cellar, not the cabinet", blurb: "Lives in the cellar. A blend quietly showing what blending is for." }
   ];
 
@@ -242,19 +242,20 @@
      Each track: name, ratio, build, glass, serve. Optional note. */
   var TRACKLISTS = {
     "ardbeg-corryvreckan": {
-      linernote: "At 57.1% the Corryvreckan plays mostly neat, but its three strongest numbers are all about giving the smoke somewhere to go.",
+      linernote: "At 57.1% the Corryvreckan plays mostly neat, but its strongest numbers are all about giving the smoke somewhere to go.",
       tracks: [
-        { name: "Rusty Nail", ratio: "50 ml Corryvreckan : 25 ml Drambuie", build: "stir", glass: "old fashioned", serve: "rocks, lemon twist", note: "The classic scotch after-dinner drink — the Drambuie's honey walking the smoke on a lead." },
         { name: "Godfather", ratio: "50 ml Corryvreckan : 20 ml amaretto", build: "build", glass: "old fashioned", serve: "rocks", note: "Two ingredients and no apologies." },
-        { name: "Hot Toddy", ratio: "40 ml Corryvreckan, 15 ml honey syrup, 15 ml lemon", build: "build with boiling water", glass: "heatproof glass", serve: "clove-studded lemon wheel, hot", note: "The whirlpool at a civilised temperature." }
+        { name: "Hot Toddy", ratio: "40 ml Corryvreckan, 15 ml honey syrup, 15 ml lemon", build: "build with boiling water", glass: "heatproof glass", serve: "clove-studded lemon wheel, hot", note: "The whirlpool at a civilised temperature." },
+        { name: "Penicillin", ratio: "45 ml GlenAllachie, 20 ml lemon, 15 ml honey-ginger, 7.5 ml Corryvreckan float", build: "dry shake, hard shake, strain", glass: "coupe", serve: "up, torch of ginger", note: "Sherried Speyside base, Islay float: the blend-and-float idea, played on the shelf's own bottles." },
+        { name: "Rob Roy", ratio: "50 ml Corryvreckan : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "The Islay answer to a Manhattan: bonfire smoke under the vermouth, with a lighter pour because it can afford one." }
       ]
     },
-    "ardbeg-uigeadail": {
-      linernote: "The sherry casks give this one a sweetness the rest of the Islay shelf doesn't have, which widens its repertoire.",
+    "caol-ila-12": {
+      linernote: "Islay without the shouting: clean smoke, brine and citrus peel at 43%. It plays long drinks and stirred drinks, and it is the Penicillin's house pour.",
       tracks: [
-        { name: "The Perfect Penicillin", ratio: "45 ml Uigeadail, 20 ml lemon, 15 ml honey-ginger, 7.5 ml Islay float", build: "dry shake, hard shake, strain", glass: "coupe", serve: "up, torch of ginger", note: "The riff where the smoke is the chorus, not an accent." },
-        { name: "Rusty Nail", ratio: "50 ml Uigeadail : 25 ml Drambuie", build: "stir", glass: "old fashioned", serve: "rocks, lemon twist", note: "The sherry sweetness rounds this softer than the Corryvreckan ever would." },
-        { name: "Rob Roy", ratio: "55 ml Uigeadail : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "Smoke and vermouth agree more than you'd expect." }
+        { name: "Penicillin", ratio: "45 ml Caol Ila, 20 ml lemon, 15 ml honey-ginger, 7.5 ml Corryvreckan float", build: "dry shake, hard shake, strain", glass: "coupe", serve: "up, torch of ginger", note: "The Penicillin with clean coastal smoke underneath and the Corryvreckan float doing the shouting." },
+        { name: "Rob Roy", ratio: "55 ml Caol Ila : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "Smoke and vermouth agree more than you'd expect." },
+        { name: "Highball", ratio: "40 ml Caol Ila, 100 ml chilled soda", build: "build", glass: "highball", serve: "tall ice, lemon twist", note: "Smoke and brine, lengthened: the Islay highball." }
       ]
     },
     "buffalo-trace": {
@@ -271,7 +272,8 @@
       tracks: [
         { name: "Old Fashioned", ratio: "50 ml Bulleit, 5 ml demerara, 3 dashes Angostura", build: "stir", glass: "old fashioned", serve: "rocks, orange peel", note: "The rye spice leans through the sugar more than Buffalo Trace would." },
         { name: "Manhattan", ratio: "55 ml Bulleit : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "Purists say rye. Bulleit's split mash gets you most of the way there." },
-        { name: "Whiskey Sour", ratio: "50 ml Bulleit, 25 ml lemon, 15 ml demerara", build: "hard shake", glass: "coupe", serve: "up", note: "The pepper meets the lemon; everybody wins." }
+        { name: "Whiskey Sour", ratio: "50 ml Bulleit, 25 ml lemon, 15 ml demerara", build: "hard shake", glass: "coupe", serve: "up", note: "The pepper meets the lemon; everybody wins." },
+        { name: "Brooklyn", ratio: "55 ml Bulleit, 20 ml dry vermouth, 7.5 ml Amaro Nonino, 7.5 ml maraschino", build: "stir", glass: "coupe", serve: "up, cherry", note: "Bulleit stands in for rye and keeps the pepper; the Nonino and maraschino do the rest." }
       ]
     },
     "espolon-blanco": {
@@ -285,7 +287,6 @@
     "glenallachie-12": {
       linernote: "Rich, sherried, unpeated. The comfort-food bottle: every drink here is a fire in some form.",
       tracks: [
-        { name: "Rusty Nail", ratio: "50 ml GlenAllachie : 25 ml Drambuie", build: "stir", glass: "old fashioned", serve: "rocks, lemon twist", note: "Sherry and heather honey in the same glass; the nail rusts politely." },
         { name: "Hot Toddy", ratio: "40 ml GlenAllachie, 15 ml honey syrup, 15 ml lemon", build: "build with boiling water", glass: "heatproof glass", serve: "hot, lemon wheel", note: "The bottle was built for this and won't pretend otherwise." },
         { name: "Rob Roy", ratio: "55 ml GlenAllachie : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "No smoke, all sherry: the velvet version." }
       ]
@@ -298,6 +299,14 @@
         { name: "Hemingway Daiquiri", ratio: "50 ml Havana 3, 25 ml lime, 15 ml grapefruit, 15 ml maraschino", build: "hard shake", glass: "coupe", serve: "up", note: "Double Papa Doble at 40%: the sugar-free reform he'd have rejected." }
       ]
     },
+    "havana-club-especial": {
+      linernote: "Gold, soft and a little toasty: it takes the white rum's drinks and gives them some upholstery.",
+      tracks: [
+        { name: "Daiquiri", ratio: "50 ml Havana Especial, 25 ml lime, 15 ml caster sugar", build: "hard shake", glass: "coupe", serve: "up", note: "Gold rum, the same three ingredients: softer, rounder, a little vanilla." },
+        { name: "Mojito", ratio: "50 ml Havana Especial, 20 ml lime, 15 ml demerara, 8 mint leaves, soda", build: "muddle, press, top", glass: "highball", serve: "crushed ice, mint bouquet", note: "The gold rum makes a mellower Mojito: less grass, more toast." },
+        { name: "Rum Old Fashioned", ratio: "50 ml Havana Especial, 5 ml demerara, 3 dashes Angostura", build: "stir", glass: "old fashioned", serve: "rocks, orange peel", note: "Lighter and drier than the Mantuano: vanilla and oak, no pudding." }
+      ]
+    },
     "diplomatico-mantuano": {
       linernote: "Eight years in barrel and then blended: round, a little sweeter, sociable. The rum that drinks best with others.",
       tracks: [
@@ -306,11 +315,12 @@
         { name: "Paper Plane", ratio: "30 ml Mantuano (standing in for bourbon), 30 ml Aperol, 30 ml Amaro Nonino, 30 ml lemon", build: "hard shake", glass: "coupe", serve: "up, no garnish", note: "Equal parts and no mercy. The rum sub is a modern-bar habit; the house approves." }
       ]
     },
-    "port-charlotte-10": {
-      linernote: "Heavy peat with real manners. Two drinks, both classics, because at 50% and this much smoke the bottle doesn't need a longer set.",
+    "plantation-overproof": {
+      linernote: "At 69% every spec here drops to 35 ml: it plays the rum drinks louder, with funk as well as heat.",
       tracks: [
-        { name: "Rob Roy", ratio: "55 ml Port Charlotte : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "The Islay answer to a Manhattan: bonfire smoke under the vermouth." },
-        { name: "Penicillin", ratio: "45 ml blend base, 20 ml lemon, 15 ml honey-ginger, 7.5 ml Port Charlotte float", build: "dry shake, hard shake, strain", glass: "coupe", serve: "up, torch of ginger", note: "The float does the heavy lifting — this is what the bottle is for." }
+        { name: "Daiquiri", ratio: "35 ml OverProof, 25 ml lime, 15 ml caster sugar", build: "hard shake", glass: "coupe", serve: "up", note: "At 69% the pour drops to 35 ml and the drink gets louder, not stronger." },
+        { name: "Hemingway Daiquiri", ratio: "35 ml OverProof, 25 ml lime, 15 ml grapefruit, 15 ml maraschino", build: "hard shake", glass: "coupe", serve: "up", note: "The funk stands up to the maraschino; 35 ml does the work of 50." },
+        { name: "Rum Old Fashioned", ratio: "35 ml OverProof, 5 ml demerara, 3 dashes Angostura", build: "stir", glass: "old fashioned", serve: "rocks, orange peel", note: "The overproof Old Fashioned: funk up front, a sipper that bites back." }
       ]
     },
     "tullamore-dew": {
@@ -321,20 +331,11 @@
         { name: "Pickleback", ratio: "40 ml Tullamore chased by 15 ml pickle brine", build: "two shots, in sequence", glass: "shot glass ×2", serve: "immediately, with regret", note: "The Irish whiskey and the brine genuinely get along, which is the joke and the point." }
       ]
     },
-    "yellow-rose-rye": {
-      linernote: "Texas rye at 46.5%: bold, spicy, uninterested in being liked. Its set list is the rye classics.",
-      tracks: [
-        { name: "Manhattan", ratio: "55 ml Yellow Rose : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "The rye purist's Manhattan — the bottle the drink was written for." },
-        { name: "Brooklyn", ratio: "55 ml Yellow Rose, 20 ml dry vermouth, 7.5 ml Amaro Nonino, 7.5 ml maraschino", build: "stir", glass: "coupe", serve: "up, cherry", note: "Manhattan's darker cousin: dry vermouth and bittersweet liqueur instead of sweet." },
-        { name: "Old Fashioned", ratio: "50 ml Yellow Rose, 5 ml demerara, 3 dashes Angostura", build: "stir", glass: "old fashioned", serve: "rocks, orange peel", note: "The rye Old Fashioned: spicier, drier, less forgiving. In character." }
-      ]
-    },
     "johnnie-walker-18": {
       linernote: "From Edele's cellar, not the cabinet — and the jukebox takes requests across the whole house, which is rather the point of having one.",
       tracks: [
         { name: "Highball", ratio: "40 ml JW18, 100 ml chilled soda", build: "build", glass: "highball", serve: "tall ice, lemon twist", note: "The blend's natural habitat: cold, long, effortless." },
-        { name: "Rob Roy", ratio: "55 ml JW18 : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "Blended scotch makes the smoothest Rob Roy; that's half the reason blends exist." },
-        { name: "Rusty Nail", ratio: "50 ml JW18 : 25 ml Drambuie", build: "stir", glass: "old fashioned", serve: "rocks, lemon twist", note: "The house-quiet version: honeyed, round, dangerously easy." }
+        { name: "Rob Roy", ratio: "55 ml JW18 : 25 ml sweet vermouth, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up, cherry", note: "Blended scotch makes the smoothest Rob Roy; that's half the reason blends exist." }
       ]
     }
   };

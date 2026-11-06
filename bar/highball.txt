@@ -8,7 +8,11 @@ The Highball
 build: build in the glass, highball.
 serve: tall ice, lemon twist.
 
-Cellar pour (Johnnie Walker 18 (Ultimate)):
+House pour (Caol Ila 12):
+  -- 40 ml Caol Ila, 100 ml chilled soda
+  (Smoke and brine, lengthened: the Islay highball.)
+
+Also from Edele's cellar (Johnnie Walker 18 (Ultimate)):
   -- 40 ml JW18, 100 ml chilled soda
   (poured from Edele's cellar: Johnnie Walker 18 (Ultimate))
 

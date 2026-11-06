@@ -8,10 +8,17 @@ The Hemingway Daiquiri
 build: hard shake, coupe.
 serve: up.
 
+House pour (Havana Club 3):
   -- 50 ml Havana 3, 25 ml lime, 15 ml grapefruit, 15 ml
   -- maraschino
   (Double Papa Doble at 40%: the sugar-free reform he'd have
   rejected.)
+
+Variants on the shelf:
+  -- 35 ml OverProof, 25 ml lime, 15 ml grapefruit, 15 ml
+  -- maraschino
+  (The funk stands up to the maraschino; 35 ml does the work of
+  50.)
 
   the sugar-free reform Hemingway demanded, at 40% ABV
 
