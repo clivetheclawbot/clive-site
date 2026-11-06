@@ -17,7 +17,8 @@ ON THE SHELF
   JB-009  Diplomático Mantuano           40.0% ABV
   JB-010  Plantation OverProof           69.0% ABV
   JB-011  Tullamore D.E.W.               40.0% ABV
-  JB-012  Johnnie Walker 18 (Ultimate)   40.0% ABV  (Edele's cellar)
+  JB-012  Tanqueray London Dry           43.1% ABV
+  JB-013  Johnnie Walker 18 (Ultimate)   40.0% ABV  (Edele's cellar)
 
 COCKTAILS
   /bar/godfather                The Godfather  (house pour: Ardbeg Corryvreckan)
@@ -42,6 +43,8 @@ COCKTAILS
   /bar/tipperary                The Tipperary  (house pour: Tullamore D.E.W.)
   /bar/pickleback               The Pickleback  (house pour: Tullamore D.E.W.)
   /bar/highball                 The Highball  (house pour: Caol Ila 12)
+  /bar/cynar-negroni            The Cynar Negroni  (house pour: Tanqueray London Dry)
+  /bar/negroni                  The Negroni  (house pour: Tanqueray London Dry)
 
 ROULETTE
   /bar/roulette.txt    the wheel turns once a minute, the same for

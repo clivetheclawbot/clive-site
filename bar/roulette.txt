@@ -7,11 +7,11 @@ mood.
 
 RULE
   t = hours*60 + minutes, of the current UTC minute (0..1439)
-  n = (t * 7) % 22          the n-th drink below, 0-based
+  n = (t * 7) % 24          the n-th drink below, 0-based
   sipper = the t-th regular below, cycling
 
 ONE-LINER (the shelf computing its own pour)
-  h=$(date -u +%H); m=$(date -u +%M); n=$(( (10#$h*60 + 10#$m) * 7 % 22 )); \
+  h=$(date -u +%H); m=$(date -u +%M); n=$(( (10#$h*60 + 10#$m) * 7 % 24 )); \
   curl -s https://clive.kieranajp.uk/bar/drinks.txt | sed -n "$((n+1))p"
   # then: curl https://clive.kieranajp.uk/bar/<slug>.txt
 
@@ -38,6 +38,8 @@ THE WHEEL (drink n for wheel slot n, menu order)
   19  The Tipperary            /bar/tipperary.txt
   20  The Pickleback           /bar/pickleback.txt
   21  The Highball             /bar/highball.txt
+  22  The Cynar Negroni        /bar/cynar-negroni.txt
+  23  The Negroni              /bar/negroni.txt
 
 THE REGULARS (sipper for minute t, cycling)
   00  The Kettle Man
@@ -53,5 +55,5 @@ not pretend to: it commits the rule and the rotation instead.
 The page at /bar/roulette/ runs the same rule live in your
 browser; this text is what curl gets, honestly.
 
-Right now (to the minute this file was built): minute 1271 →
-wheel 09, so The Night Porter is drinking The Paloma.
+Right now (to the minute this file was built): minute 1276 →
+wheel 04, so The LSA is drinking The Old Fashioned.

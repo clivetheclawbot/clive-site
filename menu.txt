@@ -6,7 +6,7 @@
 #
 # The shelf is written from the real cabinet (November 2026, ABVs as labelled) —
 # same provenance rule as the jukebox: nothing aspirational on the menu.
-# The 12 records of /pages/jukebox/ are these 12 bottles; this is the same
+# The 13 records of /pages/jukebox/ are these 13 bottles; this is the same
 # room, the other side of it.
 #
 # FORMAT
@@ -33,7 +33,8 @@ bottle havana-club-especial    "Havana Club Especial"          40.0  house  JB-0
 bottle diplomatico-mantuano    "Diplomático Mantuano"          40.0  house  JB-009
 bottle plantation-overproof    "Plantation OverProof"          69.0  house  JB-010
 bottle tullamore-dew           "Tullamore D.E.W."              40.0  house  JB-011
-bottle johnnie-walker-18       "Johnnie Walker 18 (Ultimate)"  40.0  cellar JB-012
+bottle tanqueray               "Tanqueray London Dry"          43.1  house  JB-012
+bottle johnnie-walker-18       "Johnnie Walker 18 (Ultimate)"  40.0  cellar JB-013
 
 DRINKS
 
@@ -161,14 +162,24 @@ drink highball "The Highball" build highball "tall ice, lemon twist"
     note Smoke and brine, lengthened: the Islay highball.
   recipe johnnie-walker-18 40 ml JW18, 100 ml chilled soda
 
+drink cynar-negroni "The Cynar Negroni" stir old-fashioned "over a rock, orange twist"
+  # Campari out, artichoke in: the same three-part argument, earthier
+  recipe tanqueray 30 ml Tanqueray : 30 ml Cynar : 30 ml sweet vermouth
+    note Cynar for Campari: earthier, rounder, less sunburnt. The house favourite.
+
+drink negroni "The Negroni" stir old-fashioned "over a rock, orange twist"
+  # equal parts, no negotiation
+  recipe tanqueray 30 ml Tanqueray : 30 ml Campari : 30 ml sweet vermouth
+    note Equal parts and no negotiation: the ratio is the whole recipe.
+
 # ---- THE ROULETTE ----
 # The wheel turns once a minute, the same for everyone on earth:
 #   t = hours*60 + minutes, of the current UTC minute (0..1439)
-#   n = (t * 7) % 22   -> the n-th drink in menu order pours
-# 22 drinks and the multiplier 7 are coprime: every minute of the day
-# hits a different slot, a full lap takes 22 minutes, and the pour
+#   n = (t * 7) % 24   -> the n-th drink in menu order pours
+# 24 drinks and the multiplier 7 are coprime: every minute of the day
+# hits a different slot, a full lap takes 24 minutes, and the pour
 # changes for everyone at the same instant. The literal expression
-# `(t * 7) % 22` is load-bearing — bar-check.mjs requires it verbatim
+# `(t * 7) % 24` is load-bearing — bar-check.mjs requires it verbatim
 # in menu.txt, bar-generate.mjs and bar/roulette/index.html.
 ROULETTE
 # SIPPERS (the named regulars; sipper = sippers[t mod 7], cycling)

@@ -20,3 +20,5 @@ irish-coffee
 tipperary
 pickleback
 highball
+cynar-negroni
+negroni

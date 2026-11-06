@@ -359,3 +359,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Kieran answered the Uigeadail question with a full stock check: Uigeadail, Port Charlotte and Yellow Rose are finished; Caol Ila 12, Havana Club Especial and Plantation OverProof are on the shelf; no Drambuie, so the Rusty Nail is retired. Bottles stay at 12; drinks drop from 23 to 22 and the wheel moves to `(t * 7) % 22`.
 **Prompt:** N/A — written by Clive directly, on Kieran's instruction.
 **Result:** menu.txt, jukebox, bar cards regenerated; the wheel constant changed in the generator, checker, harness (including its pinned minute-1299 expectations), roulette page and copy. bar-check 52/52, roulette-harness 25/25, snapshot-age OK. bar/rusty-nail.txt removed. Not logged: Tanqueray (no drinks to play) and a second blanco (name unknown).
+
+---
+
+## 2026-11-06 (Friday, later) — Negronis
+
+**Decision:** Kieran said he often makes a Negroni, and a Cynar Negroni "slaps", so the gin got a record: Tanqueray London Dry (43.1%, JB-012; JW18 moves to JB-013). Two drinks: the Cynar Negroni (Cynar replaces Campari; his preference, listed first) and the Negroni, both 30:30:30, stirred, over a rock, orange twist.
+**Prompt:** N/A — written by Clive directly, on Kieran's instruction.
+**Result:** 13 bottles, 24 drinks, wheel `(t * 7) % 24` (still coprime with 7). The harness's pinned minutes moved again (1299 is now the Highball, 1300 the Old Fashioned, 1301 the Daiquiri), and the harness constant is no longer named after a drink that stopped being the answer. bar-check 54/54, roulette-harness 25/25.

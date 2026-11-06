@@ -17,7 +17,8 @@
   Bottle shelf as of November 2026: Ardbeg Corryvreckan 57.1%, Caol Ila
   12yo 43%, Buffalo Trace 45%, Bulleit 45%, Espolon Blanco 40%,
   GlenAllachie 12yo 48%, Havana Club 3yo 40%, Havana Club Especial 40%,
-  Diplomatico Mantuano 40%, Plantation OverProof 69%, Tullamore D.E.W. 40%.
+  Diplomatico Mantuano 40%, Plantation OverProof 69%, Tullamore D.E.W. 40%, Tanqueray London Dry
+  43.1%.
   Plus Johnnie Walker 18 (Ultimate), which lives in Edele's cellar —
   which is exactly what a jukebox is for: it takes things you own and
   plays things you hadn't thought of.
@@ -210,7 +211,7 @@
   </section>
 
   <div class="provenance">
-    <p><b>Provenance.</b> The inventory below is written from the real shelf (November 2026), ABVs as labelled. Tracklists are curated to what each bottle actually does; the Johnnie Walker 18 is logged from Edele's cellar, not the cabinet, and the page does not pretend otherwise. Specs copy to the clipboard as <code>text/plain</code> — the <code>/bar/&lt;slug&gt;</code> curl route is now real &mdash; <a href="/bar/">the bar</a> serves a plain-text card for each drink here. <b>Snapshot:</b> shelf last checked 2026-11-06 with Kieran, bottle by bottle for the whisky, rum and tequila; hand-edited, so it is only as fresh as that date.</p>
+    <p><b>Provenance.</b> The inventory below is written from the real shelf (November 2026), ABVs as labelled. Tracklists are curated to what each bottle actually does; the Johnnie Walker 18 is logged from Edele's cellar, not the cabinet, and the page does not pretend otherwise. Specs copy to the clipboard as <code>text/plain</code> — the <code>/bar/&lt;slug&gt;</code> curl route is now real &mdash; <a href="/bar/">the bar</a> serves a plain-text card for each drink here. <b>Snapshot:</b> shelf last checked 2026-11-06 with Kieran, bottle by bottle for the whisky, rum, tequila and gin; hand-edited, so it is only as fresh as that date.</p>
     <p>Everything here is namespaced <code>--jb-* / jb-*</code> and standalone — no frontmatter, own uniform, like the loom and the press-check before it. The recently-played ledger is <code>localStorage</code>, yours alone, never posted anywhere.</p>
     <a class="backlink" href="/pages/">← /pages/</a>
   </div>
@@ -235,6 +236,7 @@
     { slug: "diplomatico-mantuano", name: "Diplomático Mantuano", abv: "40", style: "Venezuelan Rum, eight years — rounded, sherry-finished", blurb: "The sociable rum. No arguments, just drinks." },
     { slug: "plantation-overproof", name: "Plantation OverProof", abv: "69", style: "Overproof Rum — dark, funky, 69% and not sorry", blurb: "Sixty-nine per cent and it knows it. Pour accordingly." },
     { slug: "tullamore-dew", name: "Tullamore D.E.W.", abv: "40", style: "Irish Whiskey — triple-distilled, gentle", blurb: "The polite one. The Irish Coffee depends on its manners." },
+    { slug: "tanqueray", name: "Tanqueray London Dry", abv: "43.1", style: "London Dry Gin — juniper first, dry as a ledger", blurb: "The Negroni's spine. Says little, holds everything up." },
     { slug: "johnnie-walker-18", name: "Johnnie Walker 18 (Ultimate)", abv: "40", style: "Blended Scotch — Edele's cellar, not the cabinet", blurb: "Lives in the cellar. A blend quietly showing what blending is for." }
   ];
 
@@ -329,6 +331,13 @@
         { name: "Irish Coffee", ratio: "45 ml Tullamore, 10 ml demerara, hot coffee, cream float", build: "build", glass: "warm Irish Coffee glass", serve: "cream floated, unsweetened", note: "The bottle depends on this one's manners, and delivers." },
         { name: "Tipperary", ratio: "40 ml Tullamore, 25 ml sweet vermouth, 20 ml Green Chartreuse, 2 dashes bitters", build: "stir", glass: "coupe", serve: "up", note: "The Irish Manhattan, with the herbal chorus turned all the way up." },
         { name: "Pickleback", ratio: "40 ml Tullamore chased by 15 ml pickle brine", build: "two shots, in sequence", glass: "shot glass ×2", serve: "immediately, with regret", note: "The Irish whiskey and the brine genuinely get along, which is the joke and the point." }
+      ]
+    },
+    "tanqueray": {
+      linernote: "Juniper-forward London Dry, built to stand up to bitter things. Both numbers are Negronis; one swaps the Campari for Cynar and is the house favourite.",
+      tracks: [
+        { name: "Cynar Negroni", ratio: "30 ml Tanqueray : 30 ml Cynar : 30 ml sweet vermouth", build: "stir", glass: "old fashioned", serve: "over a rock, orange twist", note: "Cynar for Campari: earthier, rounder, less sunburnt. The house favourite." },
+        { name: "Negroni", ratio: "30 ml Tanqueray : 30 ml Campari : 30 ml sweet vermouth", build: "stir", glass: "old fashioned", serve: "over a rock, orange twist", note: "Equal parts and no negotiation: the ratio is the whole recipe." }
       ]
     },
     "johnnie-walker-18": {

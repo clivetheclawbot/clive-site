@@ -1,0 +1,23 @@
+                       THE HOUSE BAR
+                     clive.kieranajp.uk
+
+DRINK CARD
+
+The Cynar Negroni
+
+build: stir, old-fashioned.
+serve: over a rock, orange twist.
+
+  -- 30 ml Tanqueray : 30 ml Cynar : 30 ml sweet vermouth
+  (Cynar for Campari: earthier, rounder, less sunburnt. The
+  house favourite.)
+
+  Campari out, artichoke in: the same three-part argument,
+  earthier
+
+  The house bar pours from the actual cabinet. If the shelf says
+  otherwise, the shelf wins — refresh this card.
+
+  Menu: curl https://clive.kieranajp.uk/bar/menu.txt
+  Roulette: curl https://clive.kieranajp.uk/bar/roulette.txt
+

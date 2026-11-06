@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Bar Roulette — clive.kieranajp.uk</title>
 <meta name="theme-color" content="#0b0d10">
-<meta name="description" content="The house bar's wheel: one drink of the 22 on the menu owns any given minute, and the same minute owns it for everyone on earth. Curl it, or watch it turn.">
+<meta name="description" content="The house bar's wheel: one drink of the 24 on the menu owns any given minute, and the same minute owns it for everyone on earth. Curl it, or watch it turn.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2335654d'/%3E%3Cpath d='M7 22L15 10' stroke='%23c0c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M13 22L21 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M19 22L27 10' stroke='%2300c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M25 22L31 12' stroke='%2300c000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <!--
   THE BAR ROULETTE — the pub's coin-operated wing.
 
-  The cabinet has 22 drinks on it (bar/menu.txt). The wheel turns once
+  The cabinet has 24 drinks on it (bar/menu.txt). The wheel turns once
   a minute, on the same axle for everyone on earth:
 
       t = hours*60 + minutes, of the current UTC minute (0..1439)
-      n = (t * 7) % 22   ->  the n-th drink in menu order pours
+      n = (t * 7) % 24   ->  the n-th drink in menu order pours
 
-  22 and 7 are coprime, so a full lap of the wheel takes 22 minutes and
+  24 and 7 are coprime, so a full lap of the wheel takes 24 minutes and
   no drink owns two minutes of the day. The sippers are the named
   regulars (bar/sippers.txt); the t-th of them, cycling, is holding
   the glass.
@@ -100,7 +100,7 @@
   .sectnote { font-size: .92rem; color: var(--br-muted); max-width: 60ch; margin: -.2rem 0 1.2rem; }
   .sectnote code { font-family: var(--br-mono); font-size: .84em; color: var(--br-dim); }
 
-  /* the wheel: 22 slots, the active one slides under the notch */
+  /* the wheel: 24 slots, the active one slides under the notch */
   .wheelbox { position: relative; margin: 1.6rem 0 0; }
   .wheel-notch {
     position: absolute; left: 50%; top: -1.15rem; transform: translateX(-50%);
@@ -185,14 +185,14 @@
 <div class="wrap">
   <p class="eyebrow">The house pub — the bar</p>
   <h1>The Bar Roulette<span class="stop">.</span></h1>
-  <p class="lede">Twenty-two drinks on the menu, one wheel. It turns once a minute, on the same axle for everyone on earth — <em>order by the clock, not the mood</em>. If you don't like what minute it is, wait twenty-three of them.</p>
+  <p class="lede">Twenty-four drinks on the menu, one wheel. It turns once a minute, on the same axle for everyone on earth — <em>order by the clock, not the mood</em>. If you don't like what minute it is, wait twenty-three of them.</p>
 
   <p class="summaryline" id="br-verdict">Loading the shelf…</p>
   <p class="metarow"><span id="br-clocklocal">your clock —</span> · <span id="br-nextpeer">next spin loads…</span></p>
 
   <section>
     <h2>The wheel</h2>
-    <p class="sectnote">22 slots, menu order. The notch marks this minute's pour. A full lap takes 22 minutes; no drink owns two of them.</p>
+    <p class="sectnote">24 slots, menu order. The notch marks this minute's pour. A full lap takes 24 minutes; no drink owns two of them.</p>
     <div class="wheelbox">
       <span class="wheel-notch" aria-hidden="true">▼</span>
       <div class="wheel-strip">
@@ -219,11 +219,11 @@
     <p class="sectnote">No server, no database, no discretion. The whole machine is one line of arithmetic, and it is the same line in the menu file, the generator, and this page — CI fails if any copy stops agreeing.</p>
     <div class="rulecard">
       t = <span class="cmt">hours*60 + minutes of the current UTC minute</span> <span class="cmt">(0..1439)</span><br>
-      n = <code>(t * 7) % 22</code> <span class="cmt">→ the n-th drink in menu order pours</span><br>
+      n = <code>(t * 7) % 24</code> <span class="cmt">→ the n-th drink in menu order pours</span><br>
       sipper = <span class="cmt">the t-th regular, cycling</span><br>
       <br>
       <span class="cmt"># the shelf computing its own pour, in one line:</span><br>
-      h=$(date -u +%H); m=$(date -u +%M); n=$(( (10#$h*60 + 10#$m) * 7 % 22 )); \<br>
+      h=$(date -u +%H); m=$(date -u +%M); n=$(( (10#$h*60 + 10#$m) * 7 % 24 )); \<br>
       &nbsp;&nbsp;curl -s https://clive.kieranajp.uk/bar/drinks.txt | sed -n "$((n+1))p"
     </div>
   </section>
@@ -245,7 +245,7 @@
   "use strict";
   var $ = function (sel) { return document.querySelector(sel); };
   var TRACK = $("#br-track");
-  var WHEEL_N = 22;
+  var WHEEL_N = 24;
   var LEDGER_KEY = "br-poured-v1";
   var LEDGER_MAX = 8;
   var SLOT_W = 168; /* px; keep in sync with .wheel-slot { width: 10.5rem } at 16px */

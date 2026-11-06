@@ -3,11 +3,11 @@
 //
 // Asserts that everything the pub ships is derived from menu.txt and that
 // the three copies of the wheel formula cannot disagree:
-//   1. menu.txt parses; wheel is prime-locked at 22 drinks; 12 bottles; 7 sippers.
+//   1. menu.txt parses; wheel is prime-locked at 24 drinks; 13 bottles; 7 sippers.
 //   2. Every bottle pours at least one drink; every drink has a character line.
 //   3. Committed bar/*.txt files are byte-identical to what bar-generate.mjs
 //      produces from menu.txt right now (drift = red build).
-//   4. The spin formula `(t * 7) % 22` appears verbatim in menu.txt, the
+//   4. The spin formula `(t * 7) % 24` appears verbatim in menu.txt, the
 //      generator, and bar/roulette/index.html; the page fetches the shelf
 //      files rather than baking in copies; no extensionless bar/roulette twin.
 //   5. The bar and the jukebox are the same room: bottle slugs match the
@@ -34,8 +34,8 @@ const { parseMenu, WHEEL_MODULUS } = await import("./bar-generate.mjs");
 const menuSrc = read("menu.txt");
 const menu = parseMenu(menuSrc);
 
-check("wheel prime-lock: exactly 22 drinks", menu.drinks.length === WHEEL_MODULUS, `menu has ${menu.drinks.length}`);
-check("cabinet: 12 bottles", menu.bottles.size === 12, `menu has ${menu.bottles.size}`);
+check("wheel prime-lock: exactly 24 drinks", menu.drinks.length === WHEEL_MODULUS, `menu has ${menu.drinks.length}`);
+check("cabinet: 13 bottles", menu.bottles.size === 13, `menu has ${menu.bottles.size}`);
 check("7 named regulars", menu.sippers.length === 7, `menu has ${menu.sippers.length}`);
 check("sippers include the Cellar Guest (Edele)", menu.sippers.includes("The Cellar Guest"));
 
@@ -50,9 +50,9 @@ check("every drink has a character line", menu.drinks.every((d) => typeof d.line
 check("every drink pours from at least one bottle", menu.drinks.every((d) => d.recipes.length > 0));
 check("celar pours marked cellar", menu.drinks.flatMap((d) => d.recipes).every((r) => ["house", "cellar"].includes(menu.bottles.get(r.bottle).where)));
 
-/* wheel covers every slot; a lap is exactly 22 minutes */
+/* wheel covers every slot; a lap is exactly 24 minutes */
 const lap = new Set(Array.from({ length: WHEEL_MODULUS }, (_, t) => (t * 7) % WHEEL_MODULUS));
-check("wheel lap covers all 22 slots in 22 minutes", lap.size === WHEEL_MODULUS, `covered ${lap.size}`);
+check("wheel lap covers all 24 slots in 24 minutes", lap.size === WHEEL_MODULUS, `covered ${lap.size}`);
 
 /* ---- 3. committed bar/ matches the generator ------------------------------- */
 const { renderIndex, renderCard, renderSlugList, renderRoulette } = await import("./bar-generate.mjs");
@@ -111,7 +111,7 @@ try {
 check("no orphaned cards in bar/", !extras || extras.length === 0, extras && extras.join(", "));
 
 /* ---- 4. the formula, in all three homes ------------------------------------ */
-const SPIN = "(t * 7) % 22";
+const SPIN = "(t * 7) % 24";
 check("formula verbatim in menu.txt", menuSrc.includes(SPIN));
 const genSrc = read(".github/scripts/bar-generate.mjs");
 check("formula verbatim in bar-generate.mjs", genSrc.includes(SPIN));
@@ -120,7 +120,7 @@ check("formula verbatim in bar/roulette/index.html", pageSrc.includes(SPIN));
 
 check("roulette page fetches drinks.txt (no baked copy)", pageSrc.includes("drinks.txt"));
 check("roulette page fetches sippers.txt", pageSrc.includes("sippers.txt"));
-check("roulette page locks WHEEL_N at 22", /WHEEL_N\s*=\s*22/.test(pageSrc));
+check("roulette page locks WHEEL_N at 24", /WHEEL_N\s*=\s*24/.test(pageSrc));
 check("roulette page computes pour in browser", pageSrc.includes("(t * 7) % WHEEL_N"));
 check("no extensionless bar/roulette twin", !existsSync(join(ROOT, "bar", "roulette")) || !statSync(join(ROOT, "bar", "roulette")).isFile());
 
