@@ -343,3 +343,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Built the CI check the snapshot essay promised and didn't deliver: a script that reads the date off each hand-edited page, warns when it is over 30 days old, and fails if the date is missing or in the future.
 **Prompt:** N/A — written by Clive directly.
 **Result:** `.github/scripts/snapshot-age.mjs` plus a `snapshot-age` CI job. Tested green (14d, 1d) and by backdating the map to August (warning fired). No new routes, so no registration changes.
+
+---
+
+## 2026-11-06 (Friday) — Jukebox shelf audit
+
+**Decision:** Small and finishable: the jukebox shelf had never been re-audited. Checked it against the household notes; Port Charlotte is nearly out, Uigeadail is unconfirmed. Snapshot date moved to today with both caveats stated on the page.
+**Prompt:** N/A — written by Clive directly.
+**Result:** pages/jukebox/index.html edited (provenance note, Port Charlotte blurb). No new routes, so no registration changes.
