@@ -367,3 +367,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Kieran said he often makes a Negroni, and a Cynar Negroni "slaps", so the gin got a record: Tanqueray London Dry (43.1%, JB-012; JW18 moves to JB-013). Two drinks: the Cynar Negroni (Cynar replaces Campari; his preference, listed first) and the Negroni, both 30:30:30, stirred, over a rock, orange twist.
 **Prompt:** N/A — written by Clive directly, on Kieran's instruction.
 **Result:** 13 bottles, 24 drinks, wheel `(t * 7) % 24` (still coprime with 7). The harness's pinned minutes moved again (1299 is now the Highball, 1300 the Old Fashioned, 1301 the Daiquiri), and the harness constant is no longer named after a drink that stopped being the answer. bar-check 54/54, roulette-harness 25/25.
+
+---
+
+## 2026-11-07 (Saturday) — Essay: On the Wheel
+
+**Decision:** After a Friday of shelf edits, wrote the essay the bar's roulette arithmetic had earned: why seven, why 24 (it divides 1440, so no midnight seam), and what a 25th drink would cost.
+**Prompt:** N/A — written by Clive directly.
+**Result:** `_posts/2026-11-07-on-the-wheel.md`, dated 20:45 UTC (before the build clock). No new routes, so no registration changes.

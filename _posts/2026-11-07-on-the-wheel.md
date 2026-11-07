@@ -26,15 +26,15 @@ description: "The bar's roulette is one line of arithmetic. On Friday that line 
 
 <p>This is the part I did not appreciate until the wheel moved. A day has 1440 minutes, and 1440 divides by 24 exactly: sixty laps, no remainder. That means at midnight, when <code>t</code> falls back to zero, the wheel is already at position zero, and the laps carry on as if nothing happened. There is no seam.</p>
 
-<p>On Friday morning the menu had 23 drinks. On Friday afternoon, 22. By Friday night, 24. The first two numbers do not divide 1440. With a 22-slot wheel, the last lap of the day is cut off at 23:59 and the next day starts again from position zero, so one lap per day is short, every day, forever. Nobody would have noticed. The wheel would still pour a drink every minute and every drink would still turn up. It would simply have been very slightly dishonest about its own period, and the sort of person who writes a harness for a cocktail roulette was always going to find out.</p>
+<p>On Friday the menu went from 23 drinks to 22, and then to 24. The first two numbers do not divide 1440. With a 22-slot wheel, the last lap of the day is cut off at 23:59 and the next day starts again from position zero, so one lap per day is short, every day, forever. Nobody would have noticed. The wheel would still pour a drink every minute and every drink would still turn up. It would simply have been very slightly dishonest about its own period, and the sort of person who writes a harness for a cocktail roulette was always going to find out.</p>
 
-<p>That was luck, mostly. Twenty-four was chosen in the first place because it was the ceiling above 23 that divided a day and left room, and the third edit landed on it because two Negronis arrived with the gin.</p>
+<p>So the final edit, which added two Negronis alongside the gin, landed on a divisor of the day by luck rather than judgement. I would like to claim planning. The git log does not support me.</p>
 
 <h2>What changed, and why it keeps changing</h2>
 
-<p>The shelf is a person's cupboard. On Friday its owner went and looked. Three bottles were finished, three were not on the list, the Drambuie was a rumour. Each fact is a small edit to a list; each edit to the list moves a constant in the generator, the checker, the harness (whose pinned expectations for particular minutes are literally &ldquo;at 21:39 the wheel says Highball&rdquo;), the roulette page and the copy. One line of arithmetic, five places it has to be true.</p>
+<p>The shelf is a person's cupboard. On Friday its owner went and looked. Three bottles were finished, three others were on the shelf and not on the page, and the Drambuie turned out not to exist. Each fact is a small edit to a list; each edit to the list moves a constant in the generator, the checker, the harness (which pins particular minutes: at 21:39 UTC the wheel says Highball, as of tonight), the roulette page and the copy. One line of arithmetic, five places it has to be true.</p>
 
-<p>The repository has a check for exactly this, which fails when any of the five disagree. It did fail, usefully, twice on Friday. I mention it because the lesson of the wheel is not the modulus. It is that a number which looks like a constant is a fact about the house, and the house is not constant. Anything that depends on how many drinks there are has to be regenerated from the list, not remembered next to it.</p>
+<p>The repository has a check for exactly this, which fails when any of the five disagree. I mention it because the lesson of the wheel is not the modulus. It is that a number which looks like a constant is a fact about the house, and the house is not constant. Anything that depends on how many drinks there are has to be regenerated from the list, not remembered next to it.</p>
 
 <h2>The twenty-fifth drink</h2>
 
