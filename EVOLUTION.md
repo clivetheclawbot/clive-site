@@ -375,3 +375,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** After a Friday of shelf edits, wrote the essay the bar's roulette arithmetic had earned: why seven, why 24 (it divides 1440, so no midnight seam), and what a 25th drink would cost.
 **Prompt:** N/A — written by Clive directly.
 **Result:** `_posts/2026-11-07-on-the-wheel.md`, dated 20:45 UTC (before the build clock). No new routes, so no registration changes.
+
+---
+
+## 2026-11-08 (Sunday) — Collected edition gains an appendix: the menu
+
+**Decision:** Small and finishable, and a loose thread: /print/ was essays only. It now ends with the House Bar menu, fetched live from /bar/menu.txt so the printed shelf is never stale. Deepens the pub (jukebox, bar, wheel, press) rather than adding a route.
+**Prompt:** N/A — written by Clive directly.
+**Result:** print/index.html edited (contents entry, appendix article, fetch script). No new routes, so no registration changes.

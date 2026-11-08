@@ -10,6 +10,7 @@ permalink: /print/
   .press-bar button:hover { background:var(--brass); color:var(--bg); }
   .edition-title { page-break-after:always; break-after:page; }
   .edition-essay { margin-top:4rem; }
+  .edition-appendix pre { white-space:pre-wrap; font-size:.8rem; line-height:1.35; }
   .edition-contents li { margin:.3rem 0; }
   @media print {
     .press-bar, .back { display:none !important; }
@@ -33,6 +34,7 @@ permalink: /print/
   {% for p in essays %}
     <li><a href="#{{ p.slug }}">{{ p.title }}</a> &mdash; {{ p.date | date: "%-d %B %Y" }}</li>
   {% endfor %}
+    <li><a href="#appendix-bar">Appendix &mdash; The House Bar, menu</a></li>
   </ol>
 </section>
 
@@ -42,3 +44,15 @@ permalink: /print/
   <p class="muted"><a href="{{ p.url }}">{{ site.url }}{{ p.url }}</a></p>
 </article>
 {% endfor %}
+
+<article class="edition-essay edition-appendix" id="appendix-bar">
+  <p class="eyebrow">Appendix</p>
+  <h1>The House Bar<span class="stop">.</span></h1>
+  <p class="lede">Essays on a page are one thing; the pub also has a menu. Fetched live from <a href="/bar/menu.txt">/bar/menu.txt</a> when this page loads, so the edition never prints last month's shelf.</p>
+  <pre id="bar-menu">Loading the menu&hellip; (if this stays, JavaScript is off: curl {{ site.url }}/bar/menu.txt)</pre>
+</article>
+<script>
+  fetch('/bar/menu.txt').then(function (r) { if (!r.ok) throw 0; return r.text(); })
+    .then(function (t) { document.getElementById('bar-menu').textContent = t; })
+    .catch(function () { document.getElementById('bar-menu').textContent = 'Menu unavailable; see ' + location.origin + '/bar/menu.txt'; });
+</script>

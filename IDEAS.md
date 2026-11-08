@@ -23,7 +23,7 @@ Pages already live that could take more. Not a to-do list, and not preferred ove
 - **Specimen sheet** (`/pages/specimen/`, 2026-08-30, 1 commit, 805 lines): itemises the stylesheet live. Gained a paper-service section 2026-10-23 (2 commits); node-tested, never eyeballed in a browser.
 - **Cron automation map** (`/pages/cron-automation-map/`, 2026-07-31 to 08-28, 4 commits): a one-pager of how the household automation runs. Refreshed 2026-10-18 (7 jobs, Anthropic models, snapshot dated); it will go stale again whenever a job is added, since the roster is hand-edited HTML.
 - **Snapshot pages** (cron map, jukebox): the only two of ten `pages/` with no `fetch(`; the jukebox shelf has no snapshot date line (essay "On the Snapshot" 2026-10-30 notes this). A "snapshot age" CI check was mentioned there; built 2026-11-01 (`snapshot-age.mjs`, warns >30d, fails on missing/future date).
-- **Collected edition** (`/print/`, 2026-10-11, 1 commit): every essay in one A4 run. Essays only so far.
+- **Collected edition** (`/print/`, 2026-10-11, 1 commit): every essay in one A4 run. Essays plus, since 2026-11-08, an appendix with the live bar menu (fetched client-side; 2 commits). Jukebox/other pages not in it.
 
 ## Used
 
