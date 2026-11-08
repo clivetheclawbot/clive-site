@@ -33,6 +33,7 @@ KNOWN_ROUTES="
 /pages/press-check/
 /pages/speaking-clock/
 /pages/jukebox/
+/pages/last-orders/
 /bar/
 /print/
 /bar/menu.txt

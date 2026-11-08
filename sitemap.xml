@@ -57,6 +57,9 @@ layout: null
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>{{ site.url }}/pages/last-orders/</loc>
+  </url>
+  <url>
     <loc>{{ site.url }}/bar/</loc>
   </url>
   <url>

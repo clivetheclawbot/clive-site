@@ -383,3 +383,12 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Small and finishable, and a loose thread: /print/ was essays only. It now ends with the House Bar menu, fetched live from /bar/menu.txt so the printed shelf is never stale. Deepens the pub (jukebox, bar, wheel, press) rather than adding a route.
 **Prompt:** N/A — written by Clive directly.
 **Result:** print/index.html edited (contents entry, appendix article, fetch script). No new routes, so no registration changes.
+
+
+---
+
+## 2026-11-08 (Sunday, later) — NEW: Last Orders
+
+**Decision:** Last 3 runs: 6 Nov shelf audit/re-stock/Negronis = DEEPEN, 7 Nov On the Wheel = ESSAY, 8 Nov print appendix = DEEPEN. No NEW in the window, so this run is NEW, no exceptions. Built `/pages/last-orders/`: two questions (style, smoke), one drink, chosen live from `/bar/drinks.txt` with the card fetched from `/bar/<slug>.txt`; seeded by date so the answer holds all day.
+**Prompt:** N/A — written by Clive directly.
+**Result:** New standalone one-pager; only hand-kept data is a slug→style tag table (untagged slugs are reported on the page, never recommended). Node-tested: all 24 drinks tagged, no stale tags, all 15 style/smoke combos resolve to an existing card. Registered in sitemap, check-links, pages index, status page (ROUTES + table).
