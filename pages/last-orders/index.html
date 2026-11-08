@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Last Orders — clive.kieranajp.uk</title>
+<meta name="theme-color" content="#0b0d10">
+<meta name="description" content="Two questions, one drink. The butler picks from the house bar's real menu and shows you the card.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2335654d'/%3E%3Cpath d='M7 22L15 10' stroke='%23c0c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<!--
+  LAST ORDERS. Standalone, no frontmatter.
+  Two questions (what kind of drink, how much smoke), one answer.
+  The drink list is NOT stored here: it is read live from /bar/drinks.txt,
+  and each card from /bar/<slug>.txt. The only hand-kept data is the TAGS
+  table below, which says what kind of drink each slug is. A slug on the
+  menu with no tag is simply never recommended (and is reported at the
+  foot of the page); a tag with no drink on the menu is ignored. So the
+  page cannot recommend a drink the bar no longer pours.
+  The pick is seeded by date + answers: ask twice in a day, get the same
+  drink. A butler who changes his mind is not a butler.
+-->
+<style>
+  :root { --bg:#0b0d10; --soft:#10131a; --ink:#d8dde6; --dim:#8a93a3; --felt:#35654d; --acc:#6fd3a0; --warn:#e2b96a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  main { max-width: 42rem; margin: 0 auto; padding: 2rem 1.2rem 4rem; }
+  a { color: var(--acc); }
+  h1 { font-size: 1.5rem; margin: .2rem 0; }
+  .lede { color: var(--dim); }
+  fieldset { border: 1px solid #222a36; background: var(--soft); border-radius: 6px; margin: 1.4rem 0; padding: .8rem 1rem 1rem; }
+  legend { color: var(--warn); padding: 0 .4rem; }
+  label { display: block; padding: .15rem 0; cursor: pointer; }
+  label small { color: var(--dim); }
+  button { background: var(--felt); color: #fff; border: 0; border-radius: 6px; padding: .6rem 1.2rem; font: inherit; cursor: pointer; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+  #out { margin-top: 1.5rem; }
+  pre { background: #07090c; border: 1px solid #222a36; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: .85rem; white-space: pre-wrap; }
+  .verdict { color: var(--warn); }
+  .foot { color: var(--dim); font-size: .8rem; margin-top: 3rem; }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="/pages/">← one-pagers</a></p>
+  <h1>Last Orders</h1>
+  <p class="lede">Two questions. I choose from what the bar actually pours today, so the answer is never a drink we cannot make.</p>
+
+  <form id="f">
+    <fieldset>
+      <legend>1. What sort of evening?</legend>
+      <label><input type="radio" name="kind" value="sharp" checked> Sharp <small>— sours, citrus, a bit of a slap</small></label>
+      <label><input type="radio" name="kind" value="stirred"> Stirred <small>— spirit-forward, sit down for it</small></label>
+      <label><input type="radio" name="kind" value="long"> Long <small>— ice, length, nothing to prove</small></label>
+      <label><input type="radio" name="kind" value="warm"> Warm <small>— a mug, a coat on the chair</small></label>
+      <label><input type="radio" name="kind" value="dare"> A dare <small>— I will not be responsible</small></label>
+    </fieldset>
+    <fieldset>
+      <legend>2. Smoke?</legend>
+      <label><input type="radio" name="smoke" value="yes"> Yes, Islay please</label>
+      <label><input type="radio" name="smoke" value="no"> No, thank you</label>
+      <label><input type="radio" name="smoke" value="any" checked> Whatever you think best</label>
+    </fieldset>
+    <button type="submit">Last orders, please</button>
+  </form>
+
+  <div id="out" aria-live="polite"></div>
+  <p class="foot">Menu: <a href="/bar/menu.txt">/bar/menu.txt</a> · Cards: <a href="/bar/">/bar/</a> · <span id="audit"></span></p>
+</main>
+<script>
+(function () {
+  "use strict";
+  // slug -> [kind, smoky?]. Smoky = house pour is Islay (Corryvreckan / Caol Ila).
+  var TAGS = {
+    "whiskey-sour":["sharp",0], "margarita":["sharp",0], "tommys-margarita":["sharp",0],
+    "daiquiri":["sharp",0], "hemingway-daiquiri":["sharp",0], "paper-plane":["sharp",0],
+    "penicillin":["sharp",1],
+    "old-fashioned":["stirred",0], "manhattan":["stirred",0], "rum-old-fashioned":["stirred",0],
+    "el-presidente":["stirred",0], "brooklyn":["stirred",0], "tipperary":["stirred",0],
+    "negroni":["stirred",0], "cynar-negroni":["stirred",0],
+    "rob-roy":["stirred",1], "godfather":["stirred",1],
+    "mint-julep":["long",0], "paloma":["long",0], "mojito":["long",0], "highball":["long",0],
+    "hot-toddy":["warm",1], "irish-coffee":["warm",0],
+    "pickleback":["dare",0]
+  };
+  var DAYS = 86400000;
+
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+  var menu = null;
+  function loadMenu() {
+    if (menu) return Promise.resolve(menu);
+    return fetch("/bar/drinks.txt", { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error("drinks.txt " + r.status);
+      return r.text();
+    }).then(function (t) {
+      menu = t.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+      var untagged = menu.filter(function (s) { return !TAGS[s]; });
+      document.getElementById("audit").textContent = untagged.length
+        ? "Untagged, never recommended: " + untagged.join(", ") + "."
+        : "All " + menu.length + " drinks on the menu are tagged.";
+      return menu;
+    });
+  }
+
+  // Pure choice function, exposed for testing.
+  function choose(menu, kind, smoke, day) {
+    var pool = menu.filter(function (s) { return TAGS[s] && TAGS[s][0] === kind && (smoke === "any" || (smoke === "yes") === !!TAGS[s][1]); });
+    var relaxed = false;
+    if (!pool.length) { pool = menu.filter(function (s) { return TAGS[s] && TAGS[s][0] === kind; }); relaxed = true; }
+    if (!pool.length) return null;
+    return { slug: pool[hash(day + "|" + kind + "|" + smoke) % pool.length], relaxed: relaxed, size: pool.length };
+  }
+  window.LastOrders = { choose: choose, hash: hash, TAGS: TAGS };
+
+  var out = document.getElementById("out");
+  document.getElementById("f").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var kind = this.kind.value, smoke = this.smoke.value;
+    var day = new Date().toISOString().slice(0, 10);
+    out.textContent = "Checking the cabinet…";
+    loadMenu().then(function (m) {
+      var c = choose(m, kind, smoke, day);
+      if (!c) { out.textContent = "Nothing on the menu fits. The shelf has spoken; try another kind."; return; }
+      return fetch("/bar/" + c.slug + ".txt", { cache: "no-cache" }).then(function (r) {
+        if (!r.ok) throw new Error(c.slug + " " + r.status);
+        return r.text();
+      }).then(function (card) {
+        out.textContent = "";
+        var p = document.createElement("p"); p.className = "verdict";
+        p.textContent = (c.relaxed ? "No smoke-matched option in that style, so I have ignored you on the smoke. " : "") +
+          "Tonight: " + c.slug + ". (Same answer all day, bc a butler who changes his mind is not one.)";
+        var pre = document.createElement("pre"); pre.textContent = card;
+        var a = document.createElement("a"); a.href = "/bar/" + c.slug + ".txt"; a.textContent = "curl /bar/" + c.slug + ".txt";
+        out.appendChild(p); out.appendChild(pre); out.appendChild(a);
+      });
+    }).catch(function (err) { out.textContent = "The cabinet is locked (" + err.message + ")."; });
+  });
+})();
+</script>
+</body>
+</html>
