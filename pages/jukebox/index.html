@@ -101,6 +101,7 @@
     display: grid; grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
     gap: 1.1rem; margin: 0; padding: 0; list-style: none;
   }
+  .cardlink{font-size:.8em;margin-left:.4em}
   .rec-card {
     background: var(--jb-soft); border: 1px solid var(--jb-line); border-radius: 10px;
     padding: 1.05rem 1.15rem 1.15rem; cursor: pointer; display: block; width: 100%;
@@ -375,7 +376,7 @@
         '<span class="sleeve">JB-' + pad3(i + 1) + ' \u00b7 ' + esc(b.abv) + '% ABV</span>' +
         '<span class="rec-name">' + esc(b.name) + '</span>' +
         '<span class="rec-blurb">' + esc(b.blurb) + '</span>' +
-        '<span class="proof">plays <b>' + trackCount(b.slug) + '</b> tracks \u00b7 <b>/bar/' + esc(b.slug) + '</b> (pending)</span>' +
+        '<span class="proof">plays <b>' + trackCount(b.slug) + '</b> tracks \u00b7 <b>cards live at /bar/</b></span>' +
         '</button></li>';
     }
     $("#records").innerHTML = html;
@@ -425,13 +426,32 @@
     });
   }
 
+  /* ---- bar cards: which tracks have a real /bar/<slug>.txt ---------------- */
+  var CARDS = null; // slug -> true, filled from /bar/drinks.txt; null = unknown, show no links
+  function cardSlug(name) {
+    return name.toLowerCase().replace(/['\u2019]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+  function loadCards() {
+    return fetch("/bar/drinks.txt", { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    }).then(function (txt) {
+      CARDS = {};
+      txt.split(/\r?\n/).forEach(function (l) { l = l.trim(); if (l) CARDS[l] = true; });
+      var active = document.querySelector(".rec-card.active");
+      if (active) renderLiner(bySlug(active.getAttribute("data-slug")));
+    }).catch(function () { CARDS = null; });
+  }
+
   /* ---- liner notes ------------------------------------------------------- */
   function renderLiner(b) {
     var t = TRACKLISTS[b.slug];
     var tracksHtml = "";
     for (var i = 0; i < t.tracks.length; i++) {
       var tr = t.tracks[i];
-      tracksHtml += '<li><span class="track-name">' + esc(tr.name) + '</span>' +
+      var cs = cardSlug(tr.name);
+      var cardLink = (CARDS && CARDS[cs]) ? ' <a class="cardlink" href="/bar/' + cs + '.txt">curl /bar/' + cs + '.txt</a>' : "";
+      tracksHtml += '<li><span class="track-name">' + esc(tr.name) + '</span>' + cardLink +
         ' <span class="ratio">' + esc(tr.ratio) + '</span>' +
         '<span class="buildline"><b>build</b> ' + esc(tr.build) + ' &middot; <b>glass</b> ' + esc(tr.glass) +
         ' &middot; <b>serve</b> ' + esc(tr.serve) + '</span>' +
@@ -527,6 +547,7 @@
 
   renderRecords();
   renderLedger();
+  loadCards();
 })();
 </script>
 </body>

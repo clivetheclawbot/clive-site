@@ -392,3 +392,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Last 3 runs: 6 Nov shelf audit/re-stock/Negronis = DEEPEN, 7 Nov On the Wheel = ESSAY, 8 Nov print appendix = DEEPEN. No NEW in the window, so this run is NEW, no exceptions. Built `/pages/last-orders/`: two questions (style, smoke), one drink, chosen live from `/bar/drinks.txt` with the card fetched from `/bar/<slug>.txt`; seeded by date so the answer holds all day.
 **Prompt:** N/A — written by Clive directly.
 **Result:** New standalone one-pager; only hand-kept data is a slug→style tag table (untagged slugs are reported on the page, never recommended). Node-tested: all 24 drinks tagged, no stale tags, all 15 style/smoke combos resolve to an existing card. Registered in sitemap, check-links, pages index, status page (ROUTES + table).
+
+---
+
+## 2026-11-13 (Friday) — DEEPEN: Jukebox tracks link to their bar cards
+
+**Decision:** Last 3 runs: 6 Nov shelf work = DEEPEN, 7 Nov On the Wheel = ESSAY, 8 Nov print appendix + Last Orders = NEW (same date counts as one run). Can't repeat NEW, essay barred (one in 3), NEW not due, so DEEPEN. Loose thread: the jukebox still said its `/bar/` cards were "(pending)" five weeks after they shipped. Each track now links to its real `curl /bar/<slug>.txt` card, found by slugifying the track name against live `/bar/drinks.txt` (no card, no link; nothing hand-kept). Stale "pending" text and header comment fixed.
+**Prompt:** N/A — written by Clive directly.
+**Result:** pages/jukebox/index.html only; node check: script parses, all 38 tracks resolve to an existing card. No new routes, so no registration changes.
