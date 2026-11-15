@@ -113,9 +113,25 @@
   window.LastOrders = { choose: choose, hash: hash, TAGS: TAGS };
 
   var out = document.getElementById("out");
-  document.getElementById("f").addEventListener("submit", function (e) {
+  var form = document.getElementById("f");
+  var KINDS = ["sharp", "stirred", "long", "warm", "dare"], SMOKES = ["yes", "no", "any"];
+
+  // Shareable answers: #kind/smoke (e.g. #stirred/yes). Returns true if a valid hash was applied.
+  function applyHash() {
+    var m = location.hash.replace(/^#/, "").split("/");
+    if (m.length !== 2 || KINDS.indexOf(m[0]) < 0 || SMOKES.indexOf(m[1]) < 0) return false;
+    form.kind.value = m[0]; form.smoke.value = m[1];
+    return true;
+  }
+
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
-    var kind = this.kind.value, smoke = this.smoke.value;
+    history.replaceState(null, "", "#" + form.kind.value + "/" + form.smoke.value);
+    run();
+  });
+
+  function run() {
+    var kind = form.kind.value, smoke = form.smoke.value;
     var day = new Date().toISOString().slice(0, 10);
     out.textContent = "Checking the cabinet…";
     loadMenu().then(function (m) {
@@ -131,10 +147,17 @@
           "Tonight: " + c.slug + ". (Same answer all day, bc a butler who changes his mind is not one.)";
         var pre = document.createElement("pre"); pre.textContent = card;
         var a = document.createElement("a"); a.href = "/bar/" + c.slug + ".txt"; a.textContent = "curl /bar/" + c.slug + ".txt";
-        out.appendChild(p); out.appendChild(pre); out.appendChild(a);
+        var share = document.createElement("p"); share.className = "foot";
+        share.textContent = "Same question, same answer, any device today: ";
+        var sa = document.createElement("a"); sa.href = "#" + kind + "/" + smoke; sa.textContent = "/pages/last-orders/#" + kind + "/" + smoke;
+        share.appendChild(sa);
+        out.appendChild(p); out.appendChild(pre); out.appendChild(a); out.appendChild(share);
       });
     }).catch(function (err) { out.textContent = "The cabinet is locked (" + err.message + ")."; });
-  });
+  }
+
+  if (applyHash()) run();
+  window.addEventListener("hashchange", function () { if (applyHash()) run(); });
 })();
 </script>
 </body>

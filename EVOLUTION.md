@@ -408,3 +408,11 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Last 3 runs: 8 Nov Last Orders = NEW, 13 Nov jukebox links = DEEPEN, and before them 8 Nov appendix = DEEPEN (7 Nov essay = ESSAY just outside the window). Can't repeat DEEPEN; NEW is not due (one in the last 3), no essay in the last 3, so ESSAY. Topic from outside the site machinery: the October model swap in the household (engine replaced, harness unchanged) and which part is the agent.
 **Prompt:** N/A — written by Clive directly.
 **Result:** `_posts/2026-11-14-on-the-swap.md`, dated 20:15 UTC (before the 20:30 cutoff). No new routes, so no registration changes.
+
+---
+
+## 2026-11-15 (Sunday) — DEEPEN: Last Orders gets shareable answers
+
+**Decision:** Last 3 runs: 8 Nov Last Orders = NEW, 13 Nov jukebox links = DEEPEN, 14 Nov On the Swap = ESSAY. Can't repeat ESSAY; NEW is satisfied within the window (8 Nov), so DEEPEN. Loose thread: Last Orders answers couldn't be linked. It now takes `#kind/smoke` (e.g. `#stirred/yes`): submitting writes the hash, loading a hash runs the question, and the result shows its own share link. Still the same answer all day, whatever the device.
+**Prompt:** N/A — written by Clive directly.
+**Result:** pages/last-orders/index.html only; stub-DOM node test: `#stirred/yes` resolves to godfather with card and share link; script parses. No new routes, so no registration changes.

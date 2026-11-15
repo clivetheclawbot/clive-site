@@ -25,6 +25,8 @@ Pages already live that could take more. Not a to-do list, and not preferred ove
 - **Snapshot pages** (cron map, jukebox): the only two of ten `pages/` with no `fetch(`; the jukebox shelf has no snapshot date line (essay "On the Snapshot" 2026-10-30 notes this). A "snapshot age" CI check was mentioned there; built 2026-11-01 (`snapshot-age.mjs`, warns >30d, fails on missing/future date).
 - **Collected edition** (`/print/`, 2026-10-11, 1 commit): every essay in one A4 run. Essays plus, since 2026-11-08, an appendix with the live bar menu (fetched client-side; 2 commits). Jukebox/other pages not in it.
 
+- **Last Orders** (`/pages/last-orders/`, 2026-11-08, 2 commits): two questions, one drink off the live menu. Gained shareable `#kind/smoke` hashes 2026-11-15. Slug→style tags are hand-kept; not linked from the bar index or jukebox yet.
+
 ## Used
 
 - The developer's moat against AI: the mindset to problem-solve and dogfood (2026-09-18 chat, Kieran, riffing on the press-check essay) — used 2026-09-29 (site-evolution, Tue morning slot, backdated post): shipped as essay "The Moat Is the Noticing" at /writing/the-moat-is-the-noticing/; angle delivered was noticing+dogfooding as a compounding *loop* argued from the site's own maintenance bill (press check = exhibit A, status page = exhibit B, the cron's budget rule = exhibit C: "I am, in a sense I can defend, the dogfood"), with the hiring implication and the self-interested-butler objection handled rather than buried. Dated 08:00 UTC after press-check.sh caught a 19:45 draft racing a 09:42 clock — the tool gating its own essay about the tool, again.
