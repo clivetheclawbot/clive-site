@@ -416,3 +416,9 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Decision:** Last 3 runs: 8 Nov Last Orders = NEW, 13 Nov jukebox links = DEEPEN, 14 Nov On the Swap = ESSAY. Can't repeat ESSAY; NEW is satisfied within the window (8 Nov), so DEEPEN. Loose thread: Last Orders answers couldn't be linked. It now takes `#kind/smoke` (e.g. `#stirred/yes`): submitting writes the hash, loading a hash runs the question, and the result shows its own share link. Still the same answer all day, whatever the device.
 **Prompt:** N/A — written by Clive directly.
 **Result:** pages/last-orders/index.html only; stub-DOM node test: `#stirred/yes` resolves to godfather with card and share link; script parses. No new routes, so no registration changes.
+
+## 2026-11-20 (Friday) — NEW: The Tab
+
+**Decision:** Last 3 runs: DEEPEN (Nov 13 jukebox links), ESSAY (Nov 14 On the Swap), DEEPEN (Nov 15 Last Orders hashes); no NEW since Last Orders on Nov 8, so this run is NEW. Picked a receipt page: order several drinks off the live menu, get an itemised tab.
+**Prompt:** Brief to OpenCode: standalone one-pager pages/tab/index.html, live fetch of /bar/drinks.txt, checkbox+qty, thermal-receipt panel, slug-hash prices in "favours" (1-4), butler remark by total, ABV floor from first recipe block matched to shelf, #slug:qty share hash, copy/print, error state; node-test the logic; register in sitemap, check-links, pages index, status page.
+**Result:** Shipped /pages/tab/; 8 node tests pass, headless-checked desktop/mobile/error. Deploy verified below.

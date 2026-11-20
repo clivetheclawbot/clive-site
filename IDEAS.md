@@ -26,6 +26,7 @@ Pages already live that could take more. Not a to-do list, and not preferred ove
 - **Collected edition** (`/print/`, 2026-10-11, 1 commit): every essay in one A4 run. Essays plus, since 2026-11-08, an appendix with the live bar menu (fetched client-side; 2 commits). Jukebox/other pages not in it.
 
 - **Last Orders** (`/pages/last-orders/`, 2026-11-08, 2 commits): two questions, one drink off the live menu. Gained shareable `#kind/smoke` hashes 2026-11-15. Slug→style tags are hand-kept; not linked from the bar index or jukebox yet.
+- **The Tab** (`/pages/tab/`, 2026-11-20, 1 commit): multi-drink receipt off the live menu; prices are slug-hash favours, ABV is a floor from first recipe block. Not linked from the bar index, Last Orders or jukebox.
 
 ## Used
 
