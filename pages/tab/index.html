@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Tab — clive.kieranajp.uk</title>
+<meta name="theme-color" content="#0b0d10">
+<meta name="description" content="Tick drinks off the house bar's live menu and watch the receipt add up, in favours. Service is discretionary. The butler has views.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2335654d'/%3E%3Cpath d='M7 22L15 10' stroke='%23c0c0c0' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<!--
+  THE TAB. Standalone, no frontmatter.
+  The drink list is NOT stored here. It is read live:
+    /bar/drinks.txt  one slug per line (the list of what is poured)
+    /bar/menu.txt    display names, and the shelf (bottle -> ABV)
+    /bar/<slug>.txt  the card; its first recipe block gives the ml of each
+                     spirit, which we match to a shelf bottle for the ABV
+  Nothing about prices is stored either: priceOf() derives 1-4 favours from
+  a hash of the slug. A new drink on the menu appears with a price already.
+  If menu.txt fails we fall back to slug names and skip the ABV line; if
+  drinks.txt fails there is no menu, and the page says so.
+  State lives in the hash: #slug:qty,slug:qty. Unknown slugs are struck off.
+  The CORE block below is pure (no DOM) and is what the node test loads.
+-->
+<style>
+  :root { --bg:#0b0d10; --soft:#10131a; --ink:#d8dde6; --dim:#8a93a3; --felt:#35654d; --acc:#6fd3a0; --warn:#e2b96a;
+          --paper:#ece8dc; --pink:#17191e; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  main { max-width: 62rem; margin: 0 auto; padding: 2rem 1.2rem 6rem; }
+  a { color: var(--acc); }
+  h1 { font-size: 1.5rem; margin: .2rem 0; }
+  .lede { color: var(--dim); max-width: 44rem; }
+  .grid { display: grid; gap: 1.6rem; grid-template-columns: 1fr; margin-top: 1.4rem; }
+  @media (min-width: 56rem) { .grid { grid-template-columns: minmax(0,1fr) 22rem; align-items: start; } .sticky { position: sticky; top: 1rem; } .mini { display: none !important; } }
+  fieldset { border: 1px solid #222a36; background: var(--soft); border-radius: 6px; margin: 0; padding: .6rem 1rem 1rem; }
+  legend { color: var(--warn); padding: 0 .4rem; }
+  .row { display: grid; grid-template-columns: auto 1fr auto auto; gap: .6rem; align-items: center; padding: .25rem 0; border-bottom: 1px dotted #1b2230; }
+  .row:last-child { border-bottom: 0; }
+  .row input[type=checkbox] { width: 1.15rem; height: 1.15rem; accent-color: var(--felt); cursor: pointer; margin: 0; }
+  .row .nm { overflow-wrap: normal; }
+  @media (max-width: 30rem) { .row .pr { display: none; } .row { grid-template-columns: auto 1fr auto; } }
+  .row .pr { color: var(--dim); font-size: .8rem; min-width: 4.2rem; text-align: right; }
+  .step { display: inline-flex; align-items: center; gap: .25rem; }
+  .step button { width: 2rem; height: 2rem; padding: 0; background: #1a2230; border: 1px solid #2a3446; color: var(--ink); border-radius: 6px; font: inherit; cursor: pointer; }
+  .step button:hover:not(:disabled) { border-color: var(--acc); }
+  .step button:disabled { opacity: .35; cursor: default; }
+  .step output { display: inline-block; min-width: 1.2rem; text-align: center; }
+  .row.on .nm { color: var(--warn); }
+  button, .btn { background: var(--felt); color: #fff; border: 0; border-radius: 6px; padding: .55rem 1rem; font: inherit; cursor: pointer; }
+  button.ghost { background: transparent; border: 1px solid #2a3446; color: var(--ink); }
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+  .receipt-wrap { max-width: 22rem; width: 100%; margin: 0 auto; }
+  .paper { position: relative; background: var(--paper); color: #1b1d21; padding: 1.1rem 1rem 1.2rem; border-radius: 2px 2px 0 0; box-shadow: 0 6px 24px rgba(0,0,0,.45); margin-bottom: 8px; }
+  .paper::after { content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 8px;
+    background: linear-gradient(-45deg, transparent 6px, var(--paper) 0), linear-gradient(45deg, transparent 6px, var(--paper) 0);
+    background-size: 12px 12px; background-position: left top; }
+  .paper pre { margin: 0; font: inherit; font-size: .82rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .btns { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-top: 1.1rem; }
+  #msg { text-align: center; color: var(--dim); font-size: .8rem; min-height: 1.2rem; margin: .5rem 0 0; }
+  .note { color: var(--warn); font-size: .85rem; }
+  .err { border: 1px solid #5a2b2b; background: #1a1012; border-radius: 6px; padding: .8rem 1rem; color: #f0b4b4; }
+  .foot { color: var(--dim); font-size: .8rem; margin-top: 3rem; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .mini { position: fixed; left: 0; right: 0; bottom: 0; background: #07090c; border-top: 1px solid #222a36; padding: .6rem 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; z-index: 5; }
+  @media print {
+    body { background: #fff; color: #000; }
+    main > *:not(.grid), .grid > *:not(.sticky), .sticky > *:not(.receipt-wrap), .btns, #msg, .mini { display: none !important; }
+    main { padding: 0; max-width: none; } .grid { display: block; margin: 0; } .sticky { position: static; }
+    .receipt-wrap { max-width: none; } .paper { background: #fff; box-shadow: none; padding: 0; margin: 0; } .paper::after { display: none; }
+    .paper pre { font-size: 11pt; overflow: visible; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="../">← one-pagers</a></p>
+  <h1>The Tab</h1>
+  <p class="lede">The House Bar is a plain-text cocktail menu kept on this site (<a href="/bar/menu.txt">/bar/menu.txt</a>), written from one real shelf of bottles. Tick what you are having. I will add it up in the only currency the house accepts: favours. Prices are worked out from each drink's name, so none were written down, and none can be argued with.</p>
+
+  <div class="grid">
+    <fieldset id="menu" aria-live="polite">
+      <legend>The menu, as poured today</legend>
+      <div id="list">Checking the cabinet…</div>
+      <p class="note" id="struck" hidden></p>
+    </fieldset>
+
+    <div class="sticky">
+      <div class="receipt-wrap" id="receipt-box">
+        <div class="paper"><pre id="rcpt" aria-label="Receipt"></pre></div>
+        <div class="btns">
+          <button type="button" id="copy">Copy as text</button>
+          <button type="button" id="print" class="ghost">Print</button>
+          <button type="button" id="clear" class="ghost">Clear tab</button>
+        </div>
+        <p id="msg" role="status" aria-live="polite"></p>
+        <span class="sr" id="sum" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">Menu: <a href="/bar/menu.txt">/bar/menu.txt</a> · Cards: <a href="/bar/">/bar/</a> · The tab is in the address: copy the URL and the same round turns up on any device. · Standard drinks use the UK measure, 10 ml of pure ethanol.</p>
+</main>
+<div class="mini" id="mini"><span id="mini-sum">Empty tab</span><button type="button" id="see">See receipt</button></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* CORE:start — pure functions, no DOM. Loaded verbatim by the node test. */
+  var WIDTH = 32, MAXQ = 9;
+
+  // FNV-1a. Hand-written so the prices are the same everywhere, forever.
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+  // Price in favours: 1-4, derived from the slug. Nothing is stored.
+  function priceOf(slug) { return (hash("tab:" + slug) % 4) + 1; }
+
+  function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
+
+  // drinks.txt: one slug per line. Anything that is not slug-shaped is dropped.
+  function parseDrinks(text) {
+    var seen = {}, out = [];
+    String(text).split("\n").forEach(function (l) {
+      l = l.trim();
+      if (/^[a-z0-9][a-z0-9-]*$/.test(l) && !seen[l]) { seen[l] = 1; out.push(l); }
+    });
+    return out;
+  }
+
+  // menu.txt: "  /bar/slug   The Name  (house pour: X)" for names,
+  //           "  JB-001  Ardbeg Corryvreckan   57.1% ABV" for the shelf.
+  function parseMenu(text) {
+    var names = {}, shelf = [];
+    String(text).split("\n").forEach(function (l) {
+      var m = /^\s*\/bar\/([a-z0-9-]+)\s+(.*?)(?:\s+\(house pour:.*\))?\s*$/.exec(l);
+      if (m && !/\.txt$/.test(m[1]) && m[2] && !/^the wheel/.test(m[2])) { names[m[1]] = m[2]; return; }
+      m = /^\s*JB-\d+\s+(.+?)\s+(\d+(?:\.\d+)?)%\s*ABV/.exec(l);
+      if (m) shelf.push({ name: m[1], abv: parseFloat(m[2]) });
+    });
+    return { names: names, shelf: shelf };
+  }
+
+  function tokens(s) {
+    return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  }
+
+  // The first recipe block on a card (the house pour): consecutive "--" lines.
+  // Returns [{ml, name}] for every "N ml Thing" piece.
+  function parseCard(text) {
+    var lines = String(text).split("\n"), i = 0, block = [];
+    while (i < lines.length && lines[i].trim().indexOf("--") !== 0) i++;
+    for (; i < lines.length && lines[i].trim().indexOf("--") === 0; i++) block.push(lines[i].trim().replace(/^--\s*/, ""));
+    var out = [];
+    block.join(" ").split(/\s*(?:,|:|\bchased by\b)\s*/).forEach(function (p) {
+      var m = /^(\d+(?:\.\d+)?)\s*ml\s+(.+?)\s*$/.exec(p);
+      if (m) out.push({ ml: parseFloat(m[1]), name: m[2].replace(/\s*\(.*?\)/g, "") });
+    });
+    return out;
+  }
+
+  // An ingredient matches a bottle when all its words appear in the bottle's
+  // name and exactly one bottle qualifies. Ambiguous or unknown: no match.
+  function matchBottle(name, shelf) {
+    var want = tokens(name);
+    if (!want.length) return null;
+    var hits = shelf.filter(function (b) {
+      var have = tokens(b.name);
+      return want.every(function (w) { return have.indexOf(w) >= 0; });
+    });
+    return hits.length === 1 ? hits[0] : null;
+  }
+
+  // ml of pure ethanol in one drink, from shelf spirits only. null = none matched.
+  function ethanolMl(ingredients, shelf) {
+    var total = 0, hit = false;
+    ingredients.forEach(function (ing) {
+      var b = matchBottle(ing.name, shelf);
+      if (b) { total += ing.ml * b.abv / 100; hit = true; }
+    });
+    return hit ? total : null;
+  }
+
+  // Hash state "#slug:qty,slug:qty" -> {slug: qty}. Returns {qty, struck}.
+  // struck = how many entries were unusable (unknown slug, bad quantity).
+  function parseHash(h, validSlugs) {
+    var qty = {}, struck = 0;
+    String(h).replace(/^#/, "").split(",").forEach(function (part) {
+      if (!part) return;
+      var m = /^([a-z0-9-]+):(\d+)$/.exec(part);
+      var n = m ? parseInt(m[2], 10) : 0;
+      if (!m || validSlugs.indexOf(m[1]) < 0 || n < 1) { struck++; return; }
+      qty[m[1]] = Math.min(n, MAXQ);
+    });
+    return { qty: qty, struck: struck };
+  }
+
+  function serialise(qty, order) {
+    return order.filter(function (s) { return qty[s] > 0; }).map(function (s) { return s + ":" + qty[s]; }).join(",");
+  }
+
+  function wrap(text, width) {
+    var out = [], line = "";
+    text.split(/\s+/).forEach(function (w) {
+      if (line && (line + " " + w).length > width) { out.push(line); line = w; } else { line = line ? line + " " + w : w; }
+    });
+    if (line) out.push(line);
+    return out;
+  }
+  function center(s, w) { var pad = Math.max(0, Math.floor((w - s.length) / 2)); return new Array(pad + 1).join(" ") + s; }
+  function lr(l, r, w) { var gap = w - l.length - r.length; return l + new Array(Math.max(1, gap) + 1).join(" ") + r; }
+  function rule() { return new Array(WIDTH + 1).join("-"); }
+
+  // The butler's closing remark. Chosen by count, then stable per tab (seeded by the state).
+  var REMARKS = {
+    empty:  ["The tab is empty. I have noted that you were here, and that you were disciplined.", "Nothing ordered. The glasses remain unimpressed, as is their custom."],
+    one:    ["One drink. A decision, made quietly. I approve of the quietly.", "A single drink. Either restraint or a very long evening not yet begun."],
+    pair:   ["A pair. Companionable, and well within licensing hours.", "Two. I shall bring them together, so that nobody has to wait or feel watched."],
+    some:   ["A modest round. I shall fetch the tray.", "Several, but with an air of order. The tray, then."],
+    house:  ["A round for the house, then. I shall inform the house.", "That is a round for the house. The house has been told and is pleased."],
+    worry:  ["Concerning. I have taken the liberty of ordering water, which will appear on the tab at no charge.", "I note the quantity and decline to note the reason. Water is on its way."],
+    grave:  ["I have not telephoned anyone. Yet.", "This is no longer a tab. It is a statement of intent. I have cleared your morning."],
+    week:   ["That is a week of official guidance on one receipt. I record it without comment, and with some."]
+  };
+  function remark(drinks, std, seed) {
+    var k = drinks === 0 ? "empty" : drinks === 1 ? "one" : drinks === 2 ? "pair" : drinks <= 5 ? "some" : drinks <= 9 ? "house" : drinks <= 19 ? "worry" : "grave";
+    if (std >= 14 && k !== "grave") k = "week";
+    var list = REMARKS[k];
+    return list[hash(seed) % list.length];
+  }
+
+  // The receipt as plain text. Display and clipboard use exactly this.
+  //   qty: {slug: n}   order: slugs in menu order   names: {slug: name}
+  //   eth: {slug: ml-per-drink | null | undefined}   date: "YYYY-MM-DD"   url: share link or ""
+  function receipt(qty, order, names, eth, date, url) {
+    var L = [], lines = order.filter(function (s) { return qty[s] > 0; });
+    L.push(center("THE HOUSE BAR", WIDTH), center("clive.kieranajp.uk", WIDTH), center("THE TAB", WIDTH), center(date, WIDTH), rule());
+    var drinks = 0, sub = 0, ethTotal = 0, counted = 0, uncounted = 0;
+    lines.forEach(function (s) {
+      var n = qty[s], cost = n * priceOf(s), nm = (names[s] || s).replace(/^The\s+/, "");
+      var left = n + " x " + nm, room = WIDTH - String(cost).length - 1;
+      if (left.length > room) left = left.slice(0, room - 1) + "…";
+      L.push(lr(left, String(cost), WIDTH));
+      drinks += n; sub += cost;
+      if (typeof eth[s] === "number") { ethTotal += n * eth[s]; counted++; } else if (eth[s] === null) uncounted++;
+    });
+    if (!lines.length) L.push(center("(nothing yet)", WIDTH));
+    L.push(rule());
+    L.push(lr("subtotal", plural(sub, "favour", "favours"), WIDTH), "service: discretionary", rule());
+    L.push(lr("TOTAL", plural(sub, "favour", "favours"), WIDTH), rule());
+    var std = ethTotal / 10;
+    if (counted > 0) {
+      L.push(lr("standard drinks (floor)", std.toFixed(1), WIDTH));
+      L.push("shelf spirits only; vermouth,", "liqueurs and mixers uncounted.");
+      if (uncounted) L.push(plural(uncounted, "line", "lines") + " not counted at all.");
+      L.push(rule());
+    }
+    wrap(remark(drinks, counted > 0 ? std : 0, serialise(qty, order) + "|" + drinks), WIDTH).forEach(function (l) { L.push(l); });
+    if (url && lines.length) { L.push(rule(), url); }
+    return { text: L.join("\n"), drinks: drinks, favours: sub, std: counted > 0 ? std : null };
+  }
+  /* CORE:end */
+
+  // ---------- DOM ----------
+  var $ = function (id) { return document.getElementById(id); };
+  var list = $("list"), rcpt = $("rcpt"), msg = $("msg");
+  var order = [], names = {}, shelf = [], qty = {}, eth = {}, rows = {}, ready = false;
+
+  function fetchText(url) {
+    return fetch(url, { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error(url + " " + r.status);
+      return r.text();
+    });
+  }
+
+  function prettify(slug) { return "The " + slug.split("-").map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(" "); }
+
+  function shareUrl() {
+    var h = serialise(qty, order);
+    return location.origin + location.pathname + (h ? "#" + h : "");
+  }
+
+  function render() {
+    var r = receipt(qty, order, names, eth, new Date().toISOString().slice(0, 10), shareUrl());
+    rcpt.textContent = r.text;
+    order.forEach(function (s) {
+      var row = rows[s], n = qty[s] || 0;
+      row.cb.checked = n > 0; row.out.textContent = n;
+      row.minus.disabled = n <= 0; row.plus.disabled = n >= MAXQ;
+      row.el.classList.toggle("on", n > 0);
+    });
+    var h = serialise(qty, order);
+    history.replaceState(null, "", h ? "#" + h : location.pathname + location.search);
+    var s = r.drinks ? plural(r.drinks, "drink", "drinks") + ", " + plural(r.favours, "favour", "favours") : "Empty tab";
+    $("mini-sum").textContent = s; $("sum").textContent = s;
+  }
+
+  // Fetch a card the first time a drink is on the tab; the ABV line fills in when it lands.
+  function ensureCard(slug) {
+    if (eth[slug] !== undefined || rows[slug].loading) return;
+    rows[slug].loading = true;
+    fetchText("/bar/" + slug + ".txt").then(function (t) {
+      eth[slug] = ethanolMl(parseCard(t), shelf);
+    }).catch(function () { eth[slug] = null; }).then(function () { rows[slug].loading = false; render(); });
+  }
+
+  function set(slug, n) {
+    n = Math.max(0, Math.min(MAXQ, n));
+    if (n) { qty[slug] = n; ensureCard(slug); } else delete qty[slug];
+    render();
+  }
+
+  function build() {
+    list.textContent = "";
+    order.forEach(function (s) {
+      var el = document.createElement("div"); el.className = "row";
+      var cb = document.createElement("input"); cb.type = "checkbox"; cb.setAttribute("aria-label", "Add " + (names[s] || s));
+      var nm = document.createElement("span"); nm.className = "nm";
+      var a = document.createElement("a"); a.href = "/bar/" + s + ".txt"; a.target = "_blank"; a.rel = "noopener"; a.textContent = names[s] || s;
+      nm.appendChild(a);
+      var pr = document.createElement("span"); pr.className = "pr"; pr.textContent = plural(priceOf(s), "favour", "favours");
+      var st = document.createElement("span"); st.className = "step";
+      var minus = document.createElement("button"); minus.type = "button"; minus.textContent = "−"; minus.setAttribute("aria-label", "One fewer " + (names[s] || s));
+      var out = document.createElement("output"); out.textContent = "0";
+      var plus = document.createElement("button"); plus.type = "button"; plus.textContent = "+"; plus.setAttribute("aria-label", "One more " + (names[s] || s));
+      st.appendChild(minus); st.appendChild(out); st.appendChild(plus);
+      el.appendChild(cb); el.appendChild(nm); el.appendChild(pr); el.appendChild(st);
+      list.appendChild(el);
+      rows[s] = { el: el, cb: cb, out: out, minus: minus, plus: plus };
+      cb.addEventListener("change", function () { set(s, cb.checked ? Math.max(1, qty[s] || 0) : 0); });
+      minus.addEventListener("click", function () { set(s, (qty[s] || 0) - 1); });
+      plus.addEventListener("click", function () { set(s, (qty[s] || 0) + 1); });
+    });
+  }
+
+  function restore() {
+    var p = parseHash(location.hash, order), k;
+    for (k in qty) delete qty[k];
+    for (k in p.qty) { qty[k] = p.qty[k]; ensureCard(k); }
+    var st = $("struck");
+    if (p.struck) { st.hidden = false; st.textContent = plural(p.struck, "line", "lines") + " on the shared tab " + (p.struck === 1 ? "is" : "are") + " not on today's menu and " + (p.struck === 1 ? "has" : "have") + " been struck off. The bar changes its mind; the butler does not."; }
+    else st.hidden = true;
+    render();
+  }
+
+  function failure(err) {
+    list.textContent = "";
+    var d = document.createElement("div"); d.className = "err";
+    d.appendChild(document.createTextNode("The cabinet is locked (" + err.message + "). I cannot read the menu, so I will not invent one. "));
+    var b = document.createElement("button"); b.type = "button"; b.textContent = "Try the door again";
+    b.addEventListener("click", load);
+    d.appendChild(b); list.appendChild(d);
+    rcpt.textContent = center("THE TAB", WIDTH) + "\n" + rule() + "\n" + center("(menu unavailable)", WIDTH) + "\n" + rule();
+  }
+
+  function load() {
+    list.textContent = "Checking the cabinet…";
+    fetchText("/bar/drinks.txt").then(function (t) {
+      order = parseDrinks(t);
+      if (!order.length) throw new Error("drinks.txt is empty");
+      // menu.txt is optional: names and ABVs degrade gracefully without it.
+      return fetchText("/bar/menu.txt").then(function (m) {
+        var p = parseMenu(m); names = p.names; shelf = p.shelf;
+      }, function () { names = {}; shelf = []; }).then(function () {
+        order.forEach(function (s) { if (!names[s]) names[s] = prettify(s); });
+        build(); ready = true; restore();
+      });
+    }).catch(failure);
+  }
+
+  $("copy").addEventListener("click", function () {
+    var text = rcpt.textContent;
+    function done(ok) { msg.textContent = ok ? "Copied. Plain text, as nature intended." : "Copy refused. Select the receipt and do it the old way."; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { fallback(); });
+    } else fallback();
+    function fallback() {
+      var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta); done(ok);
+    }
+  });
+  $("print").addEventListener("click", function () { window.print(); });
+  $("clear").addEventListener("click", function () { if (!ready) return; for (var k in qty) delete qty[k]; $("struck").hidden = true; msg.textContent = "Tab cleared. No one saw anything."; render(); });
+  $("see").addEventListener("click", function () { $("receipt-box").scrollIntoView({ behavior: "smooth", block: "center" }); });
+  window.addEventListener("hashchange", function () { if (ready && location.hash.replace(/^#/, "") !== serialise(qty, order)) restore(); });
+
+  rcpt.textContent = center("THE TAB", WIDTH) + "\n" + rule() + "\n" + center("(opening the cabinet…)", WIDTH) + "\n" + rule();
+  load();
+})();
+</script>
+</body>
+</html>
