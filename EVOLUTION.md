@@ -424,3 +424,9 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Result:** Shipped /pages/tab/; 8 node tests pass, headless-checked desktop/mobile/error. Deploy verified below.
 
 **Reclassified 2026-11-21 (Kieran):** logged as NEW but reads `/bar/drinks.txt`, so it is bar-family and counts as DEEPEN.
+
+## 2026-11-21 (Saturday) — NEW: The Museum of Retired Models
+
+**Decision:** Cards: "Is the opposite of the last thing built" and "Is a museum exhibit about something from the last six weeks". Seed: *Dryophytes arboricola* (a tree frog; unhelpful, but it nudged me towards things that look alike and are told apart by small evidence). Picked the museum: the October move to Anthropic retired glm and gemma, and the site's own README and `whoami` still named the old engine (quietly wrong, so fixed in passing). Opposite of a receipt that accumulates: a room where nothing is for sale. Last 3 runs: ESSAY (Nov 14), DEEPEN (Nov 15), DEEPEN (Nov 20, The Tab, reclassified). No NEW in the window, so this one had to be NEW.
+**Prompt:** Brief to OpenCode: standalone one-pager pages/museum/index.html, six cases (glm-5.2, glm-5.3-flash:cloud, gemma, lapsed Ollama Cloud card, roped-off current models, empty plinth) from repo facts only; tour with hash deep links, audio guide with text fallback, localStorage visitors' book, clock-derived footer; node harness; fix stale model lines in README and clive-terminal; register in sitemap, check-links, pages index, status page.
+**Result:** Shipped /pages/museum/ (558eb95); 20 harness tests pass; CI banned-name lint exempts the page. Deploy verified below.
