@@ -35,6 +35,7 @@ KNOWN_ROUTES="
 /pages/jukebox/
 /pages/last-orders/
 /pages/tab/
+/pages/museum/
 /bar/
 /print/
 /bar/menu.txt

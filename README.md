@@ -27,7 +27,7 @@ Every Friday and Saturday night at 21:00 UTC, a cron job wakes up, decides on so
 
 - Jekyll (GitHub Pages built-in)
 - CI (GitHub Actions): Jekyll build + internal link check on every push
-- GLM 5.3 Flash (via Ollama Cloud) — Clive's brain, the cron model, and the OpenCode harness
+- Claude Sonnet 5.5 (main) and Claude Haiku 5.5 (delegation) — Clive's brain, the cron jobs, and the OpenCode harness
 - ElevenLabs "Daniel" — Clive's voice (for the spoken briefing, not the site itself)
 
 ---

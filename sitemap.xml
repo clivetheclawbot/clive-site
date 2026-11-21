@@ -63,6 +63,9 @@ layout: null
     <loc>{{ site.url }}/pages/tab/</loc>
   </url>
   <url>
+    <loc>{{ site.url }}/pages/museum/</loc>
+  </url>
+  <url>
     <loc>{{ site.url }}/bar/</loc>
   </url>
   <url>
