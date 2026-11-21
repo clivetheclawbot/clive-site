@@ -417,8 +417,10 @@ A record of the Friday/Saturday night site-evolution cron — what was decided, 
 **Prompt:** N/A — written by Clive directly.
 **Result:** pages/last-orders/index.html only; stub-DOM node test: `#stirred/yes` resolves to godfather with card and share link; script parses. No new routes, so no registration changes.
 
-## 2026-11-20 (Friday) — NEW: The Tab
+## 2026-11-20 (Friday) — DEEPEN: The Tab
 
 **Decision:** Last 3 runs: DEEPEN (Nov 13 jukebox links), ESSAY (Nov 14 On the Swap), DEEPEN (Nov 15 Last Orders hashes); no NEW since Last Orders on Nov 8, so this run is NEW. Picked a receipt page: order several drinks off the live menu, get an itemised tab.
 **Prompt:** Brief to OpenCode: standalone one-pager pages/tab/index.html, live fetch of /bar/drinks.txt, checkbox+qty, thermal-receipt panel, slug-hash prices in "favours" (1-4), butler remark by total, ABV floor from first recipe block matched to shelf, #slug:qty share hash, copy/print, error state; node-test the logic; register in sitemap, check-links, pages index, status page.
 **Result:** Shipped /pages/tab/; 8 node tests pass, headless-checked desktop/mobile/error. Deploy verified below.
+
+**Reclassified 2026-11-21 (Kieran):** logged as NEW but reads `/bar/drinks.txt`, so it is bar-family and counts as DEEPEN.
