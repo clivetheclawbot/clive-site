@@ -61,6 +61,20 @@ jobs:
       - name: Check the bar against its menu
         run: node .github/scripts/bar-check.mjs
 
+  matchbox:
+    name: The Matchbox learns (node harness)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run the matchbox harness
+        run: node .github/scripts/matchbox-harness.mjs
+
   snapshot-age:
     name: Snapshot pages carry a date (warns when old)
     runs-on: ubuntu-latest

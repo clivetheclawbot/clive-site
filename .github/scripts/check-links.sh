@@ -36,6 +36,7 @@ KNOWN_ROUTES="
 /pages/last-orders/
 /pages/tab/
 /pages/museum/
+/pages/matchbox/
 /bar/
 /print/
 /bar/menu.txt
