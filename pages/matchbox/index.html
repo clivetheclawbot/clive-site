@@ -113,6 +113,43 @@
   .foot { color: var(--dim); font-size: .8rem; margin-top: 2.5rem; max-width: 46rem; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   @media (prefers-reduced-motion: reduce) { .box.pulse { animation: none; } .brow .bar i, .m { transition: none; } }
+
+  /* the paper kit: hidden on screen, the only thing printed */
+  #sheet { display: none; }
+  @page { size: A4; margin: 10mm; }
+  @media print {
+    html, body { background: #fff !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
+    body > main { display: none !important; }
+    #sheet { display: block; width: 190mm; height: 274mm; overflow: hidden; break-inside: avoid; page-break-inside: avoid;
+             font: 8.5pt/1.3 ui-monospace, SFMono-Regular, Menlo, "DejaVu Sans Mono", monospace; color: #000; background: #fff; }
+    #sheet * { box-sizing: border-box; color: #000; }
+    #sheet h1 { font-size: 19pt; line-height: 1.15; margin: 0; padding: 0; font-weight: bold; height: 11mm; overflow: hidden; white-space: nowrap; }
+    #sheet .sub { height: 7mm; margin: 0; font-size: 8pt; overflow: hidden; }
+    #sheet .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(5, 40mm); border-top: .35mm dotted #000; border-left: .35mm dotted #000; }
+    #sheet .lab { border-right: .35mm dotted #000; border-bottom: .35mm dotted #000; padding: 1.8mm 2.5mm; overflow: hidden; }
+    #sheet .lab .hd { display: flex; justify-content: space-between; align-items: baseline; border-bottom: .3mm solid #000; padding-bottom: .6mm; margin-bottom: 1.6mm; }
+    #sheet .lab .hd b { font-size: 13pt; line-height: 1.1; }
+    #sheet .lab .hd span { font-size: 7pt; }
+    #sheet .br { display: grid; grid-template-columns: 12mm 1fr 8mm; align-items: center; height: 9mm; }
+    #sheet .br .k { font-size: 8pt; white-space: nowrap; }
+    #sheet .br .n { text-align: right; font-weight: bold; font-size: 11pt; }
+    #sheet .br.na { opacity: 1; }
+    #sheet .br.na .ds { font-size: 7pt; letter-spacing: .1mm; }
+    #sheet .ds { display: flex; flex-wrap: nowrap; gap: .6mm; align-items: center; overflow: hidden; white-space: nowrap; }
+    /* border-thick dots, so they print solid even if the browser drops backgrounds */
+    #sheet .dt { flex: 0 0 auto; display: inline-block; width: 2.3mm; height: 2.3mm; border: .35mm solid #000; border-radius: 50%; }
+    #sheet .dt.s1 { border-width: 1.2mm; }
+    #sheet .dt.s3 { border-width: 1.2mm; border-radius: 0; }
+    #sheet .plus { font-size: 8pt; font-weight: bold; line-height: 1; padding-left: .4mm; }
+    #sheet .how { margin-top: 3mm; border: .35mm solid #000; padding: 2mm 3mm; height: 36mm; overflow: hidden; }
+    #sheet .how h2 { font-size: 9pt; line-height: 1.2; font-weight: bold; color: #000; margin: 0 0 1mm; }
+    #sheet .how ol { margin: 0; padding-left: 4.5mm; }
+    #sheet .how li { margin: 0 0 1.1mm; }
+    #sheet .foot2 { margin-top: 2mm; font-size: 7.5pt; height: 9mm; overflow: hidden; }
+    #sheet .foot2 p { margin: 0; white-space: nowrap; overflow: hidden; }
+    #sheet .sw { display: inline-block; vertical-align: -.35mm; }
+    #sheet, #sheet .lab, #sheet .dt { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
 </style>
 </head>
 <body>
@@ -160,6 +197,7 @@
       <div class="tools">
         <button type="button" id="share" class="ghost">Copy brain link</button>
         <button type="button" id="wipe" class="ghost">Wipe his memory</button>
+        <button type="button" id="print" class="ghost">Print the brain</button>
       </div>
       <p id="msg" role="status" aria-live="polite"></p>
     </fieldset>
@@ -177,8 +215,10 @@
     <p><span class="rule">A note on solving.</span> This game is small enough to solve on a napkin: hand your opponent a pile of 1, 5, 9 or 13 (one more than a multiple of four) and, played properly, they cannot win. Nobody tells the butler this. There is no strategy written down anywhere in the page; the boxes below simply are the memory. If the bead counts drift toward that rule, they got there by being punished for the alternative.</p>
   </section>
 
-  <p class="foot">History: <a href="https://en.wikipedia.org/wiki/Matchbox_Educable_Noughts_and_Crosses_Engine">MENACE on Wikipedia</a>. This page keeps its bead counts in your browser's local storage under <code>clive-matchbox-v1</code> and nowhere else; nothing is sent anywhere. The brain link puts the counts in the address (<code>#brain=…</code>) so another browser can borrow them.</p>
+  <p class="foot">History: <a href="https://en.wikipedia.org/wiki/Matchbox_Educable_Noughts_and_Crosses_Engine">MENACE on Wikipedia</a>. This page keeps its bead counts in your browser's local storage under <code>clive-matchbox-v1</code> and nowhere else; nothing is sent anywhere. The brain link puts the counts in the address (<code>#brain=…</code>) so another browser can borrow them. <em>Print the brain</em> turns the current beads into a one-page A4 paper kit you can cut out and play with real matches.</p>
 </main>
+
+<section id="sheet" aria-hidden="true"></section>
 
 <script>
 (function () {
@@ -363,6 +403,23 @@
       firstWin: !!o.firstWin, perfected: !!o.perfected
     };
   }
+
+  // Paper kit helpers. A count becomes at most `cap` drawn dots; `more` says whether the
+  // drawing is short of the truth (the number is always printed beside it).
+  var DOTCAP = 12;
+  function dotCount(count, cap) {
+    var n = Math.floor(+count), c = cap === undefined ? DOTCAP : Math.max(0, Math.floor(+cap));
+    if (!(n > 0)) n = 0;
+    return { dots: Math.min(n, c), more: n > c, total: n };
+  }
+
+  // Shorten a long string to at most `max` characters, head and tail kept, one ellipsis between.
+  function shortHash(text, max) {
+    var s = String(text), head, tail;
+    if (s.length <= max || max < 5) return s.length <= max ? s : s.slice(0, max);
+    tail = Math.floor((max - 1) / 3); head = max - 1 - tail;
+    return s.slice(0, head) + "\u2026" + s.slice(s.length - tail);
+  }
   /* CORE:end */
 
   // ---------- DOM ----------
@@ -504,7 +561,7 @@
     });
   }
 
-  function renderAll(flash) { renderPile(); renderBoxes(flash); renderStats(); renderSpark(); renderDrawn(); }
+  function renderAll(flash) { buildSheet(); renderPile(); renderBoxes(flash); renderStats(); renderSpark(); renderDrawn(); }
 
   // ---- remarks
   var LOSS = [
@@ -631,6 +688,57 @@
   $("p100").addEventListener("click", function () { practise(100); });
   $("p1000").addEventListener("click", function () { practise(1000); });
 
+  // ---- the paper kit (print-only sheet)
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+  function buildSheet() {
+    var sheet = $("sheet"), n, k, d = new Date();
+    var when = d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    var site = "clive.kieranajp.uk/pages/matchbox/";
+    sheet.textContent = "";
+    sheet.appendChild(el("h1", "", "Clive\u2019s brain, as of " + when));
+    sheet.appendChild(el("p", "sub", "A cut-and-play paper MENACE. \u2702 Cut along the dotted lines. One label per matchbox. \u25CF take 1   \u25CB take 2   \u25A0 take 3"));
+    var grid = el("div", "grid");
+    for (n = 1; n <= PILE; n++) {
+      var box = state.boxes[n], lab = el("div", "lab"), hd = el("div", "hd");
+      hd.appendChild(el("span", "", "pile"));
+      hd.appendChild(el("b", "", String(n)));
+      hd.appendChild(el("span", "", plural(boxTotal(box), "bead", "beads")));
+      lab.appendChild(hd);
+      for (k = 1; k <= 3; k++) {
+        var row = el("div", "br"), legal = k <= maxTake(n), dc = dotCount(box[k - 1], DOTCAP), ds = el("div", "ds");
+        row.appendChild(el("span", "k", "take " + k));
+        if (legal) {
+          for (var j = 0; j < dc.dots; j++) ds.appendChild(el("i", "dt s" + k));
+          if (dc.more) ds.appendChild(el("span", "plus", "+"));
+          row.appendChild(ds); row.appendChild(el("span", "n", String(dc.total)));
+        } else {
+          row.className = "br na"; ds.textContent = "no bead (pile too small)"; row.appendChild(ds); row.appendChild(el("span", "n", ""));
+        }
+        lab.appendChild(row);
+      }
+      grid.appendChild(lab);
+    }
+    sheet.appendChild(grid);
+    var how = el("div", "how"); how.appendChild(el("h2", "", "How to play it with real matches and beads"));
+    var ol = el("ol");
+    [
+      "Stick a label on each matchbox and fill it with beads as drawn: \u25CF black, \u25CB white, \u25A0 a button.",
+      "Fifteen matches; take 1-3 in turn, last match loses. Clive's turn: shake the pile's box, draw one bead blind.",
+      "Clive wins: return the drawn beads plus one more of each kind. Loses: remove up to 6 of each, keep one.",
+      "Dots stop at " + DOTCAP + "; the number is the true count. A \u201Cno bead\u201D row is a move that cannot happen."
+    ].forEach(function (t) { ol.appendChild(el("li", "", t)); });
+    how.appendChild(ol); sheet.appendChild(how);
+    var hash = "#brain=" + encodeBrain(state.boxes);
+    var ft = el("div", "foot2");
+    ft.appendChild(el("p", "", "Brain link: " + site + shortHash(hash, 36)));
+    ft.appendChild(el("p", "", "Shortened: the full link is behind \u201CCopy brain link\u201D on the page. After Michie\u2019s MENACE, 1961."));
+    sheet.appendChild(ft);
+  }
+
+  $("print").addEventListener("click", function () { buildSheet(); window.print(); });
+  window.addEventListener("beforeprint", buildSheet);
+
   // ---- memory: wipe and share
   var wipeTimer = null;
   $("wipe").addEventListener("click", function () {
@@ -682,7 +790,7 @@
   var borrowed = takeHash();
   newGame();
   if (borrowed) renderAll(false);
-  renderStats(); renderSpark();
+  renderStats(); renderSpark(); buildSheet();
   if (!borrowed && (state.practised || state.human.win || state.human.loss)) say("Welcome back. I have, I am relieved to say, kept everything in the matchboxes.");
 })();
 </script>

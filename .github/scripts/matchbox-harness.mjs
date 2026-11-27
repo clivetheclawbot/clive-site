@@ -42,6 +42,12 @@ test("self-contained: no external scripts, styles or fetches", () => {
   assert.ok(!/\bfetch\(|XMLHttpRequest/.test(html));
 });
 
+test("the whole page script parses", () => {
+  const src = html.match(/<script>([\s\S]*?)<\/script>/);
+  assert.ok(src, "no inline script");
+  new Function(src[1]); // throws on a syntax error; does not run it
+});
+
 /* ---- 2. load CORE --------------------------------------------------------- */
 const m = html.match(/\/\* CORE:start[^*]*\*\/([\s\S]*?)\/\* CORE:end \*\//);
 if (!m) { console.error("FAIL could not find the CORE block"); process.exit(1); }
@@ -49,7 +55,7 @@ const C = new Function(
   m[1] + `
   return { PILE, START, FLOOR, PENALTY, CAP, WINDOW, MAXHIST, KEY, mulberry32, maxTake, newBrain, cloneBrain, boxTotal,
     drawBead, reinforce, bestMove, mastered, selfPlay, ceiling, sparkPoints, lastRate,
-    encodeBrain, decodeBrain, freshState, parseState };`
+    encodeBrain, decodeBrain, freshState, parseState, DOTCAP, dotCount, shortHash };`
 )();
 
 /* ---- brain basics --------------------------------------------------------- */
@@ -185,6 +191,44 @@ test("state: round-trips through JSON; garbage falls back to null", () => {
   assert.equal(C.parseState(JSON.stringify(bad3)), null, "bad history");
   const long = C.freshState(); long.rand = "1".repeat(C.MAXHIST + 500);
   assert.equal(C.parseState(JSON.stringify(long)).rand.length, C.MAXHIST, "history is capped");
+});
+
+/* ---- the paper kit -------------------------------------------------------- */
+test("dotCount: caps the drawn dots, flags the overflow, keeps the true total", () => {
+  assert.equal(C.DOTCAP, 12);
+  assert.deepEqual(C.dotCount(0), { dots: 0, more: false, total: 0 });
+  assert.deepEqual(C.dotCount(3), { dots: 3, more: false, total: 3 });
+  assert.deepEqual(C.dotCount(12), { dots: 12, more: false, total: 12 });
+  assert.deepEqual(C.dotCount(13), { dots: 12, more: true, total: 13 });
+  assert.deepEqual(C.dotCount(255), { dots: 12, more: true, total: 255 });
+  assert.deepEqual(C.dotCount(40, 5), { dots: 5, more: true, total: 40 });
+  assert.deepEqual(C.dotCount(-2), { dots: 0, more: false, total: 0 });
+  assert.deepEqual(C.dotCount("x"), { dots: 0, more: false, total: 0 });
+  assert.equal(C.dotCount(7.9).total, 7);
+});
+test("dotCount: every box in a fresh and a practised brain draws at most 12 dots per row", () => {
+  const b = practise(7, 1000).brain;
+  for (let n = 1; n <= 15; n++) for (let k = 0; k < 3; k++) {
+    const d = C.dotCount(b[n][k]);
+    assert.ok(d.dots <= 12 && d.dots === Math.min(12, b[n][k]));
+  }
+});
+test("shortHash: short text untouched, long text trimmed to the limit with one ellipsis", () => {
+  assert.equal(C.shortHash("#brain=abc", 36), "#brain=abc");
+  const long = "#brain=" + C.encodeBrain(C.newBrain());
+  assert.equal(long.length, 67);
+  const s = C.shortHash(long, 36);
+  assert.equal(s.length, 36);
+  assert.equal((s.match(/\u2026/g) || []).length, 1);
+  assert.ok(s.startsWith("#brain=") && long.endsWith(s.slice(-11)));
+  assert.equal(C.shortHash(long, 67), long);
+  assert.equal(C.shortHash("abcdefghij", 3), "abc");
+});
+test("the print sheet: A4 page, print-only, no network", () => {
+  assert.ok(/@page\s*\{\s*size:\s*A4/.test(html));
+  assert.ok(/@media print/.test(html));
+  assert.ok(/#sheet\s*\{\s*display:\s*none/.test(html));
+  assert.ok(/id="print"/.test(html) && html.includes("Print the brain"));
 });
 
 /* ---- the sparkline -------------------------------------------------------- */
